@@ -11,8 +11,6 @@ cd web
 ln -s ../../../web/ extras
 cd $OLD_DIR
 
-pip install --upgrade -r requirements.txt
-
 echo "**************************************************"
 echo "Launching frontend..."
 cd $OLD_DIR
