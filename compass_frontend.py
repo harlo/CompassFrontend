@@ -5,15 +5,17 @@ from time import sleep
 
 from api import CompassAPI
 from lib.Frontend.unveillance_frontend import UnveillanceFrontend
-from lib.Frontend.lib.Core.Utils.uv_result import Result
+from lib.Frontend.lib.Core.vars import Result
 from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon, passesParameterFilter
 from conf import COMPASS_BASE_DIR
 
 class CompassFrontend(UnveillanceFrontend, CompassAPI):
 	def __init__(self):
 		UnveillanceFrontend.__init__(self)
-		
 		CompassAPI.__init__(self)		
+
+		self.default_on_loads = ['/web/js/compass.js']
+
 
 if __name__ == "__main__":
 	compass_frontend = CompassFrontend()
