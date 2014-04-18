@@ -14,7 +14,10 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		UnveillanceFrontend.__init__(self)
 		CompassAPI.__init__(self)		
 
-		self.default_on_loads = ['/web/js/compass.js']
+		self.default_on_loads = ['/web/js/compass.js', '/web/js/lib/sammy.js']
+		self.on_loads.update({
+			'documents' : ['/web/js/modules/documents.js']
+		})
 
 
 if __name__ == "__main__":
