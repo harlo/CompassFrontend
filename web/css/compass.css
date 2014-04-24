@@ -1,0 +1,13 @@
+#cp_document_view_holder {
+	position:relative;
+	width:100%;
+	height:auto;
+	overflow:hidden;
+	border:1px solid #000;
+}
+
+#cp_nlp_tools_viz {
+	width:inherit;
+	height:50em;
+	border:1px solid #000;
+}
