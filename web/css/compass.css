@@ -11,3 +11,9 @@
 	height:50em;
 	border:1px solid #000;
 }
+
+#cp_document_panel {
+	width:24em;
+	height:100%;
+	border-right:1px solid #000;
+}

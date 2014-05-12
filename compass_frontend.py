@@ -21,7 +21,18 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 			'documents' : ['/web/js/modules/documents.js'],
 			'document' : ['/web/js/lib/crossfilter.min.js',
 				'/web/js/models/cp_document.js', '/web/js/modules/document.js',
-				'/web/js/viz/uv_viz.js']
+				'/web/js/viz/uv_viz.js'],
+			'main' : [
+				'/web/js/lib/d3.min.js',
+				'/web/js/lib/visualsearch.js',
+				'/web/js/lib/jquery.ui.core.js',
+				'/web/js/lib/jquery.ui.position.js',
+				'/web/js/lib/jquery.ui.widget.js',
+				'/web/js/lib/jquery.ui.menu.js',
+				'/web/js/lib/jquery.ui.autocomplete.js',
+				'/web/js/viz/uv_viz.js',
+				'/web/js/viz/cp_document_browser.js',
+				'/web/js/modules/cp_document_browser.js']
 		})
 
 
