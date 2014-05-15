@@ -4,19 +4,25 @@ from multiprocessing import Process
 from time import sleep
 
 from api import CompassAPI
+from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon, passesParameterFilter, parseRequestEntity
 from lib.Frontend.unveillance_frontend import UnveillanceFrontend
 from lib.Frontend.lib.Core.vars import Result
-from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon, passesParameterFilter
-from conf import COMPASS_BASE_DIR
+from conf import COMPASS_BASE_DIR, DEBUG
 
 class CompassFrontend(UnveillanceFrontend, CompassAPI):
 	def __init__(self):
 		UnveillanceFrontend.__init__(self)
 		CompassAPI.__init__(self)		
 
+		self.reserved_routes.extend(["auth"])
+		self.routes.extend([
+			(r"/auth/(drive|globaleaks)", self.AuthHandler)
+		])
+		
 		self.default_on_loads = [
 			'/web/js/compass.js', 
 			'/web/js/lib/sammy.js']
+		self.on_loads['setup'].extend(['/web/js/modules/cp_setup.js'])
 		self.on_loads.update({
 			'documents' : ['/web/js/modules/documents.js'],
 			'document' : ['/web/js/lib/crossfilter.min.js',
@@ -34,7 +40,22 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				'/web/js/viz/cp_document_browser.js',
 				'/web/js/modules/cp_document_browser.js']
 		})
-
+	
+	class AuthHandler(tornado.web.RequestHandler):
+		@tornado.web.asynchronous
+		def get(self, auth_type):
+			endpoint = "/"
+			
+			if auth_type == "drive":
+				try:
+					if self.application.drive_client.authenticate(
+						parseRequestEntity(self.request.query)['code']):
+							self.application.do_send_public_key()
+				except KeyError as e:
+					if DEBUG: print "no auth code. do step 1\n%s" % e
+					endpoint = self.application.drive_client.authenticate()
+					
+			self.redirect(endpoint)
 
 if __name__ == "__main__":
 	compass_frontend = CompassFrontend()
