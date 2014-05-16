@@ -19,10 +19,14 @@ class CompassDriveClient(object):
 			http = credentials.authorize(http)
 			
 			self.service = build('drive', 'v2', http=http)
+			self.setInfo()
 			
 		except KeyError as e:
 			print "NO AUTH YET!"
 			return
+	
+	def setInfo(self):
+		print "setting user info"
 	
 	def share(self, fileId, email=None):
 		if not hasattr(self, "service"): return None
@@ -58,7 +62,33 @@ class CompassDriveClient(object):
 			if DEBUG: print e
 		
 		return None
+	
+	def getFile(self, fileId):
+		try:
+			return self.service.files().get(fileId=fileId).execute()
+		except errors.HttpError as e:
+			if DEBUG: print e
 		
+		return None
+	
+	def dowload(self, file):
+		if type(file) is str or type(file) is unicode:
+			return self.download(self.getFile(file))
+		
+		url = file.get('downloadUrl')
+		if url:
+			response, content = self.service._http.request(url)
+			if response.status == 200: return content
+		
+		return None
+	
+	def listAssets(self):
+		try:
+			return self.service.files().list().execute()
+		except errors.HttpError as e:
+			if DEBUG: print e
+		
+		return None
 	
 	def authenticate(self, auth_token=None):
 		if auth_token is None:

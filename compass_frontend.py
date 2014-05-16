@@ -7,7 +7,7 @@ from api import CompassAPI
 from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon, passesParameterFilter, parseRequestEntity
 from lib.Frontend.unveillance_frontend import UnveillanceFrontend
 from lib.Frontend.lib.Core.vars import Result
-from conf import COMPASS_BASE_DIR, DEBUG
+from conf import COMPASS_BASE_DIR, COMPASS_CONF_ROOT, DEBUG
 
 class CompassFrontend(UnveillanceFrontend, CompassAPI):
 	def __init__(self):
@@ -40,6 +40,9 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				'/web/js/viz/cp_document_browser.js',
 				'/web/js/modules/cp_document_browser.js']
 		})
+		
+		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
+			self.init_vars = json.loads(IV.read())
 	
 	class AuthHandler(tornado.web.RequestHandler):
 		@tornado.web.asynchronous
@@ -50,12 +53,27 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				try:
 					if self.application.drive_client.authenticate(
 						parseRequestEntity(self.request.query)['code']):
-							self.application.do_send_public_key()
+							self.application.do_send_public_key(self)
 				except KeyError as e:
 					if DEBUG: print "no auth code. do step 1\n%s" % e
 					endpoint = self.application.drive_client.authenticate()
 					
 			self.redirect(endpoint)
+	
+	"""
+		Overrides
+	"""
+	def do_send_public_key(self, handler):
+		super(CompassFrontend, self).do_send_public_key(handler)
+		
+		upload = self.drive_client.upload(getConfig('unveillance.local_remote.pub_key'), 
+			{'title' : "my_public_key.pub"})	
+		try:
+			return self.drive_client.share(upload['id'])
+		except KeyError as e:
+			if DEBUG: print e
+		
+		return False
 
 if __name__ == "__main__":
 	compass_frontend = CompassFrontend()
