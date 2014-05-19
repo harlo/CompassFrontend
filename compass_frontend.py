@@ -12,7 +12,11 @@ from conf import COMPASS_BASE_DIR, COMPASS_CONF_ROOT, DEBUG
 class CompassFrontend(UnveillanceFrontend, CompassAPI):
 	def __init__(self):
 		UnveillanceFrontend.__init__(self)
-		CompassAPI.__init__(self)		
+		CompassAPI.__init__(self)
+		
+		# sketchy...
+		from conf import UNVEILLANCE_LM_VARS
+		self.UNVEILLANCE_LM_VARS.update(UNVEILLANCE_LM_VARS)	
 
 		self.reserved_routes.extend(["auth"])
 		self.routes.extend([
@@ -20,6 +24,7 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		])
 		
 		self.default_on_loads = [
+			'/cdn/apis.google.com/js/api.js',
 			'/web/js/compass.js', 
 			'/web/js/lib/sammy.js']
 		self.on_loads['setup'].extend(['/web/js/modules/cp_setup.js'])
@@ -42,7 +47,7 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		})
 		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
-			self.init_vars = json.loads(IV.read())
+			self.init_vars = json.loads(IV.read())['web']
 	
 	class AuthHandler(tornado.web.RequestHandler):
 		@tornado.web.asynchronous
@@ -57,8 +62,42 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				except KeyError as e:
 					if DEBUG: print "no auth code. do step 1\n%s" % e
 					endpoint = self.application.drive_client.authenticate()
+				except AttributeError as e:
+					if DEBUG: print "no drive client even started! do that first\n%s" % e
+
+					if not self.application.initDriveClient():
+						if DEBUG: print "client has no auth. let's start that"
+						
+						from conf import getSecrets
+						endpoint = getSecrets(
+							key="compass.sync")['google_drive']['redirect_uri']
+					else:
+						if DEBUG: print "client has been authenticated already."
 					
 			self.redirect(endpoint)
+		
+		@tornado.web.asynchronous
+		def post(self, auth_type):
+			res = Result()
+			
+			if auth_type == "drive":
+				status_check = "get_drive_status"
+			
+			if status_check is not None:
+				res = self.application.routeRequest(res, status_check, self)
+			
+			self.set_status(res.result)
+			self.finish(res.emit())
+	
+	"""
+		Frontend-accessible methods
+	"""
+	def do_get_drive_status(self, handler=None):
+		if hasattr(self, "drive_client"):
+			if hasattr(self.drive_client, "service"):
+				return True
+
+		return False
 	
 	"""
 		Overrides
@@ -66,14 +105,21 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 	def do_send_public_key(self, handler):
 		super(CompassFrontend, self).do_send_public_key(handler)
 		
-		upload = self.drive_client.upload(getConfig('unveillance.local_remote.pub_key'), 
-			{'title' : "my_public_key.pub"})	
+		from conf import getConfig
+		upload = self.drive_client.upload(getConfig('unveillance.local_remote.pub_key'),
+			title="unveillance.local_remote.pub_key")
+		
 		try:
 			return self.drive_client.share(upload['id'])
 		except KeyError as e:
 			if DEBUG: print e
 		
-		return False
+		return None
+	
+	def do_link_annex(self, handler):
+		super(CompassFrontend, self).do_link_annex(handler)
+		
+		print "LINKING OUR ANNEX SOMEHOW!"
 
 if __name__ == "__main__":
 	compass_frontend = CompassFrontend()
