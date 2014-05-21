@@ -47,3 +47,12 @@ def saveSecret(key, secret, password=None):
 		if DEBUG: print "Cannot save secret: %s" % e
 	
 	return False
+
+try:
+	with open(os.path.join(COMPASS_CONF_ROOT, "compass.secrets.json"), 'rb') as C:
+		config = json.loads(C.read())
+		
+		try: UNVEILLANCE_LM_VARS = config['unveillance.local_remote']
+		except KeyError as e: pass
+except IOError as e:
+	if DEBUG: print "NO COMPASS CONF YET"

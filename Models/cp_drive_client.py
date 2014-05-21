@@ -6,7 +6,7 @@ from apiclient.discovery import build
 
 from lib.Frontend.Models.uv_annex_client import UnveillanceAnnexClient
 
-from conf import DEBUG, API_PORT, saveSecret, COMPASS_CONF_ROOT, ANNEX_DIR, getSecrets
+from conf import DEBUG, API_PORT, saveSecret, COMPASS_CONF_ROOT, getSecrets
 
 class CompassDriveClient(UnveillanceAnnexClient):
 	def __init__(self):
@@ -79,7 +79,9 @@ class CompassDriveClient(UnveillanceAnnexClient):
 		return None
 		
 	def upload(self, data, mime_type=None, as_binary=False, **body):
-		if not hasattr(self, "service"): return None
+		if not hasattr(self, "service"):
+			if DEBUG: print "NO SERVICE FOR DRIVE!!!!"
+			return None
 		
 		if not as_binary:
 			try:
@@ -107,6 +109,7 @@ class CompassDriveClient(UnveillanceAnnexClient):
 			upload = self.service.files().insert(
 				body=body, media_body=media_body).execute()
 			
+			if DEBUG: print upload
 			return upload
 		except errors.HttpError as e:
 			if DEBUG: print e
@@ -133,6 +136,8 @@ class CompassDriveClient(UnveillanceAnnexClient):
 		
 		url = file.get('downloadUrl')
 		if url:
+			from conf import ANNEX_DIR
+			
 			content = None
 			destination_path = None
 			
@@ -171,8 +176,12 @@ class CompassDriveClient(UnveillanceAnnexClient):
 	
 	def listAssets(self):
 		try:
-			return self.service.files().list().execute()
+			return self.service.files().list().execute()['items']
 		except errors.HttpError as e:
+			print "WTF"
+			if DEBUG: print e
+		except Exception as e:
+			print "LIST ASSETS ERROR:"
 			if DEBUG: print e
 		
 		return None

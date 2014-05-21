@@ -18,20 +18,24 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		from conf import UNVEILLANCE_LM_VARS
 		self.UNVEILLANCE_LM_VARS.update(UNVEILLANCE_LM_VARS)	
 
-		self.reserved_routes.extend(["auth"])
+		self.reserved_routes.extend(["auth", "commit"])
 		self.routes.extend([
-			(r"/auth/(drive|globaleaks)", self.AuthHandler)
+			(r"/auth/(drive|globaleaks)", self.AuthHandler),
+			(r"/commit/", self.GDCommitHandler)
 		])
 		
 		self.default_on_loads = [
-			'/cdn/apis.google.com/js/api.js',
+			'/cdn/apis.google.com/js/api.js?onload=initCompassUser',
+			'/web/js/lib/sammy.js',
 			'/web/js/compass.js', 
-			'/web/js/lib/sammy.js']
+			'/web/js/models/cp_user.js']
 		self.on_loads['setup'].extend(['/web/js/modules/cp_setup.js'])
 		self.on_loads.update({
 			'documents' : ['/web/js/modules/documents.js'],
-			'document' : ['/web/js/lib/crossfilter.min.js',
-				'/web/js/models/cp_document.js', '/web/js/modules/document.js',
+			'document' : [
+				'/web/js/lib/crossfilter.min.js',
+				'/web/js/models/cp_document.js', 
+				'/web/js/modules/document.js',
 				'/web/js/viz/uv_viz.js'],
 			'main' : [
 				'/web/js/lib/d3.min.js',
@@ -58,7 +62,8 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				try:
 					if self.application.drive_client.authenticate(
 						parseRequestEntity(self.request.query)['code']):
-							self.application.do_send_public_key(self)
+							if self.application.initDriveClient(restart=True):
+								self.application.do_send_public_key(self)
 				except KeyError as e:
 					if DEBUG: print "no auth code. do step 1\n%s" % e
 					endpoint = self.application.drive_client.authenticate()
@@ -86,18 +91,60 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 			if status_check is not None:
 				res = self.application.routeRequest(res, status_check, self)
 			
+			if DEBUG: print res.emit()
+			
+			self.set_status(res.result)
+			self.finish(res.emit())
+	
+	class GDCommitHandler(tornado.web.RequestHandler):
+		def get(self):			
+			res = self.application.routeRequest(Result(), "commit_drive_file", self)
+			
+			if DEBUG: print res.emit()
+			
 			self.set_status(res.result)
 			self.finish(res.emit())
 	
 	"""
 		Frontend-accessible methods
 	"""
+	def do_commit_drive_file(self, handler):
+		if DEBUG: print "commiting some google drive files..."
+		if self.initDriveClient(restart=True):
+			for _id in parseRequestEntity(handler.request.query)['_ids']:
+				if DEBUG: print _id
+		
+		return None
+	
 	def do_get_drive_status(self, handler=None):
-		if hasattr(self, "drive_client"):
+		print "getting drive status"
+		if not hasattr(self, "drive_client"):
+			return self.initDriveClient()
+		else:
+			print "has drive_client..."
 			if hasattr(self.drive_client, "service"):
+				"AND has service!"
 				return True
+			print "but no service..."
 
+		# /Users/LvH/Proj/KMFellows/Danse/unveillance_remote
 		return False
+	
+	def do_drive_client(self, handler):
+		try:
+			action = parseRequestEntity(handler.request.body)['action']
+		except Exception as e:
+			if DEBUG: print e
+			return None
+		
+		if not self.do_get_drive_status(): 
+			if DEBUG: print "NO DRIVE CLIENT?"
+			return None
+		
+		if action == "list_all":
+			return self.drive_client.listAssets()
+		
+		return None
 	
 	"""
 		Overrides
@@ -109,9 +156,13 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		upload = self.drive_client.upload(getConfig('unveillance.local_remote.pub_key'),
 			title="unveillance.local_remote.pub_key")
 		
+		if DEBUG: print upload
+		
 		try:
 			return self.drive_client.share(upload['id'])
 		except KeyError as e:
+			if DEBUG: print e
+		except TypeError as e:
 			if DEBUG: print e
 		
 		return None

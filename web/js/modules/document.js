@@ -1,7 +1,6 @@
 var cp_doc = null;
 
 (function($) {
-
 	$(function() {
 		initDocument();
 	});
