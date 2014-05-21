@@ -53,6 +53,9 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
 			self.init_vars = json.loads(IV.read())['web']
 	
+	"""
+		Custom handlers
+	"""
 	class AuthHandler(tornado.web.RequestHandler):
 		@tornado.web.asynchronous
 		def get(self, auth_type):
@@ -111,8 +114,17 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 	def do_commit_drive_file(self, handler):
 		if DEBUG: print "commiting some google drive files..."
 		if self.initDriveClient(restart=True):
+			committed_files = None
+			
 			for _id in parseRequestEntity(handler.request.query)['_ids']:
 				if DEBUG: print _id
+				
+				download = self.drive_client.download(_id)
+				if download is not None and self.drive_client.sendToAnnex(download):
+					if committed_files is None: committed_files = []
+					committed_files.append(download)
+			
+			return committed_files
 		
 		return None
 	
