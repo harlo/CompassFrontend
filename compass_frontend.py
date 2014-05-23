@@ -150,7 +150,8 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				if entry is not None:						
 					p = UnveillanceFabricProcess(netcat, {
 						'file' : entry[0],
-						'save_as' : entry[1]
+						'save_as' : entry[1],
+						'password' : getSecrets(key="unveillance.local_remote")['pwd']
 					})
 					p.join()
 			
