@@ -47,13 +47,14 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				'/web/js/lib/jquery.ui.menu.js',
 				'/web/js/lib/jquery.ui.autocomplete.js',
 				'/web/js/viz/uv_viz.js',
+				'/web/js/models/cp_visual_search.js',
 				'/web/js/models/cp_document_browser.js',
 				'/web/js/modules/main.js',
 				'/web/js/models/cp_batch.js']
 		})
 		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
-			self.init_vars = json.loads(IV.read())['web']
+			self.init_vars.update(json.loads(IV.read())['web'])
 	
 	"""
 		Custom handlers

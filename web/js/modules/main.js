@@ -11,18 +11,23 @@ function initDocumentBrowser() {
 					data: json.data.documents
 				});
 			}
-		} catch(err) {}
+		} catch(err) { console.warn(err); }
 	});
 }
 
+function initVisualSearch() {
+	visual_search = new CompassVisualSearch();
+}
+
 function buildDocumentBatch(batch) {
-	console.info("BUILDING BATCH WITH DOCUMENTS");
-	console.info(batch);
 	current_batch = new CompassBatch(batch);
 	
 	try {
 		document_browser.applyBatch();
-	} catch(err) {}
+	} catch(err) {
+		console.warn("COULD NOT APPLY BATCH AT THIS TIME");
+		console.warn(err);
+	}
 }
 
 function onViewerModeChanged(mode) {
@@ -35,6 +40,14 @@ function onViewerModeChanged(mode) {
 	
 	if(current_mode == "batch" && current_batch) {
 		data = { batch_size : current_batch.get('batch').length };
+		callback = function(res) {
+			try {
+				current_batch.update();
+			} catch(err) { 
+				console.warn("COULD NOT UPDATE BATCH AT THIS TIME");
+				console.warn(err);
+			}
+		};
 	}
 	
 	insertTemplate(mode + "_status.html", data, 
@@ -51,7 +64,10 @@ function onViewerModeChanged(mode) {
 					decodeURIComponent(this.params['batch']).replace(/\'/g, '"') + 
 					"}");
 				buildDocumentBatch(batch);
-			} catch(err) { console.error(err); }
+			} catch(err) { 
+				console.warn(err);
+				console.warn("COULD NOT BUILD DOC BATCH AT THIS TIME");
+			}
 			
 		});
 	});
@@ -70,17 +86,6 @@ function onViewerModeChanged(mode) {
 			document.getElementsByTagName("head")[0].appendChild(css.get(0));
 		});
 		
-		visual_search = VS.init({
-			container : $("#cp_document_search"),
-			query : '',
-			callbacks: {
-				search: function(query, search_collection) {},
-				facetMatches: function(callback) {
-					callback(['facet_1', 'facet_2', { label : "facet_3" , category : 'loc'}]);
-				},
-				valueMatches: function(facet, search_term, callback) {}
-			}
-		});
 		batch_sammy.run();
 		
 		$.ajax({
@@ -99,6 +104,9 @@ function onViewerModeChanged(mode) {
 			}
 		});
 		
-		window.setTimeout(initDocumentBrowser, 2000);
+		window.setTimeout(function() {
+			initDocumentBrowser();
+			initVisualSearch();
+		}, 2000);
 	});
 })(jQuery);

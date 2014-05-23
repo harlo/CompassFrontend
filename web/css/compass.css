@@ -1,8 +1,20 @@
+.cp_button {
+	border:1px solid #ccc;
+	padding:0.2em;
+	margin:0.1em;
+}
+
 #cp_document_view_holder {
 	position:relative;
 	width:100%;
 	height:auto;
 	overflow:hidden;
+	border:1px solid #000;
+}
+
+#cp_batch_doc_list span {
+	padding:0.2em 0.5em;
+	margin:0.1em 0.35em;
 	border:1px solid #000;
 }
 
@@ -25,7 +37,6 @@
 #cp_viewer_panel {
 	width:70%;
 	height:100%;
-	background-color:#ccc;
 	float:right;
 	right:0;
 }

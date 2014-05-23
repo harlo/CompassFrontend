@@ -42,6 +42,16 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		
 	},
 	
+	clearSelected: function() {
+		var ctx = this;
+		
+		$.each($(this.root_el).find("input:checkbox"), function() {
+			$(this).prop('checked', false);
+			var _id = $($(this).parent()).attr('id').replace("cp_db_", "");
+			ctx.get('batch').removeItem(_id);
+		});
+	},
+	
 	buildBatch: function() {
 		var selected = [];
 		$.each($(this.root_el).find(":checked"), function() {
@@ -61,11 +71,16 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		$("#cp_doc_batch_toggle").prop('checked', false);
 	},
 	
-	applyBatch: function(batch) {
-		if(!batch && current_batch) { batch = current_batch; }
-		if(!batch) { return; }
+	applyBatch: function() {		
+		if(!this.has('batch')) {
+			if(current_batch) { this.set('batch', current_batch); }
+		}
 		
+		if(!this.has('batch')) { return; }
+		
+		var batch = this.get('batch');
 		var is_real_batch = false;
+		
 		_.each(batch.get('batch'), function(item) {
 			if(item._id) {
 				if(!is_real_batch) { is_real_batch = true; }				
@@ -86,14 +101,15 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 					batch.removeItem(_id);
 				}
 			});
-			
 		}
 	},
 
 	buildDocumentTree: function(dir) {
-		// TODO: THIS GOES ON CROSSFILTER for easy sort. (? or just UNDERSCORE?)
-		console.info(this);
+		$(this.root_el).empty();
+		this.clearBatch();
+		
 		if(!dir) { dir = this.get('data'); }
+		
 		
 		var ctx = this;
 		_.each(dir, function(doc) {
