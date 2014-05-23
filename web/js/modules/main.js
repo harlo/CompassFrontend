@@ -1,5 +1,4 @@
-var document_browser, visual_search, current_batch;
-var current_mode = "document";
+var document_browser, visual_search, current_batch, current_document, current_mode;
 
 function initDocumentBrowser() {	
 	doInnerAjax("documents", "post", null, function(json) {
@@ -10,6 +9,8 @@ function initDocumentBrowser() {
 					root_el : "#cp_document_browser_holder",
 					data: json.data.documents
 				});
+				
+				if(current_document) { current_document.updateInfo(); }
 			}
 		} catch(err) { console.warn(err); }
 	});
@@ -17,6 +18,22 @@ function initDocumentBrowser() {
 
 function initVisualSearch() {
 	visual_search = new CompassVisualSearch();
+}
+
+function loadModule(module_name) {
+	$("#cp_module_output_holder").empty();
+}
+
+function loadDocument(_id) {
+	current_document = new CompassDocument({ _id : _id });
+	
+	try {
+		current_document.updateInfo();
+		console.info(document);
+	} catch(err) {
+		console.warn("COULD NOT LOAD WHOLE DOCUMENT AT THIS TIME");
+		console.warn(err);
+	}
 }
 
 function buildDocumentBatch(batch) {
@@ -30,11 +47,10 @@ function buildDocumentBatch(batch) {
 	}
 }
 
-function onViewerModeChanged(mode) {
-	if(mode == current_mode) { return; }
+function onViewerModeChanged(mode, force_reload) {
+	if(!force_reload && mode == current_mode) { return; }
 	
-	current_mode = mode;
-	
+	current_mode = mode;	
 	var data = null;
 	var callback = null;
 	
@@ -48,6 +64,16 @@ function onViewerModeChanged(mode) {
 				console.warn(err);
 			}
 		};
+	} else if(current_mode == "document" && current_document) {
+		data = current_document.toJSON();
+		callback = function(res) {
+			try {
+				current_document.initViewer();
+			} catch(err) {
+				console.warn("COULD NOT INIT DOCUMENT VIEWER AT THIS TIME");
+				console.warn(err);
+			}
+		}
 	}
 	
 	insertTemplate(mode + "_status.html", data, 
@@ -62,13 +88,22 @@ function onViewerModeChanged(mode) {
 				var batch = JSON.parse(
 					"{ \"batch\" : " + 
 					decodeURIComponent(this.params['batch']).replace(/\'/g, '"') + 
-					"}");
+					"}"
+				);
 				buildDocumentBatch(batch);
 			} catch(err) { 
 				console.warn(err);
 				console.warn("COULD NOT BUILD DOC BATCH AT THIS TIME");
 			}
 			
+		});
+		
+		this.get('#module/:module', function() {
+			loadModule(this.params['module']);
+		});
+		
+		this.get('#document/:_id', function() {
+			loadDocument(this.params['_id']);
 		});
 	});
 	

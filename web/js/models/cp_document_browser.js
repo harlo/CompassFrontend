@@ -103,6 +103,11 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 			});
 		}
 	},
+	
+	exportBatch: function() {
+		console.info("EXPORTING CURRENT BATCH");
+		this.get('batch').save();
+	},
 
 	buildDocumentTree: function(dir) {
 		$(this.root_el).empty();

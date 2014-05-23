@@ -33,12 +33,8 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 			'/web/js/models/cp_user.js']
 		self.on_loads['setup'].extend(['/web/js/modules/cp_setup.js'])
 		self.on_loads.update({
-			'document' : [
-				'/web/js/lib/crossfilter.min.js',
-				'/web/js/models/cp_document.js', 
-				'/web/js/modules/document.js',
-				'/web/js/viz/uv_viz.js'],
 			'main' : [
+				'/web/js/lib/crossfilter.min.js',
 				'/web/js/lib/d3.min.js',
 				'/web/js/lib/visualsearch.js',
 				'/web/js/lib/jquery.ui.core.js',
@@ -49,8 +45,9 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				'/web/js/viz/uv_viz.js',
 				'/web/js/models/cp_visual_search.js',
 				'/web/js/models/cp_document_browser.js',
-				'/web/js/modules/main.js',
-				'/web/js/models/cp_batch.js']
+				'/web/js/models/cp_batch.js',
+				'/web/js/models/cp_document.js',
+				'/web/js/modules/main.js']
 		})
 		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
