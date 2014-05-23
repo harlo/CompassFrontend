@@ -3,3 +3,5 @@
 
 conf/*.config.yaml
 conf/*.json
+
+test.*
