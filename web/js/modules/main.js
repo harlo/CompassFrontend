@@ -1,65 +1,61 @@
-var document_browser, visual_search;
+var document_browser, visual_search, current_batch;
+var current_mode = "document";
 
-function initDocumentBrowser() {
-	var documents = [];
-	
-	doInnerAjax("drive_client", "post", { action : "list_all" }, function(json) {
+function initDocumentBrowser() {	
+	doInnerAjax("documents", "post", null, function(json) {
 		try {
 			json = JSON.parse(json.responseText);
 			if(json.result == 200) {
-				documents = _.map(json.data, function(file) {
-					return {
-						file_name: file.title,
-						is_in_annex: false,
-						_id : file.id,
-						gd_info: file,
-						mime_type: file.mimeType,
-						date_created: moment(file.createdDate).valueOf()
-					};
-				});
-				
 				document_browser = new CompassDocumentBrowser({
 					root_el : "#cp_document_browser_holder",
-					data: documents
+					data: json.data.documents
 				});
-				
-				/*
-				doInnerAjax("documents", "post", null, function(json) {
-					try {
-						json = JSON.parse(json.responseText);
-						if(json.result == 200) {
-							documents = _.union(
-								documents, 
-								_.map(json.data.documents, function(file) {
-									return {
-										file_name : file.file_name,
-										is_in_annex: true,
-										_id : file._id,
-										an_info: file,
-										mime_type: file.mime_type,
-										date_created: file.date_added
-									}
-								})
-							);
-						}
-					} catch(err) {}
-					
-					console.info(documents);
-					document_browser = new CompassDocumentBrowser({
-						root_el : "#cp_document_browser_holder",
-						data: documents
-					});
-				});
-				*/
-				
 			}
 		} catch(err) {}
-		
-		
 	});
 }
 
+function buildDocumentBatch(batch) {
+	console.info("BUILDING BATCH WITH DOCUMENTS");
+	console.info(batch);
+	current_batch = new CompassBatch(batch);
+	
+	try {
+		document_browser.applyBatch();
+	} catch(err) {}
+}
+
+function onViewerModeChanged(mode) {
+	if(mode == current_mode) { return; }
+	
+	current_mode = mode;
+	
+	var data = null;
+	var callback = null;
+	
+	if(current_mode == "batch" && current_batch) {
+		data = { batch_size : current_batch.get('batch').length };
+	}
+	
+	insertTemplate(mode + "_status.html", data, 
+		$("#cp_viewer_panel"), callback, "/web/layout/views/main/");
+}
+
 (function($) {
+	var batch_sammy = $.sammy("#content", function() {
+		this.get('#batch=:batch', function() {
+			
+			try {
+				var batch = JSON.parse(
+					"{ \"batch\" : " + 
+					decodeURIComponent(this.params['batch']).replace(/\'/g, '"') + 
+					"}");
+				buildDocumentBatch(batch);
+			} catch(err) { console.error(err); }
+			
+		});
+	});
+	
 	$(function() {
 		var css_stub = $(document.createElement('link'))
 			.attr({
@@ -85,6 +81,7 @@ function initDocumentBrowser() {
 				valueMatches: function(facet, search_term, callback) {}
 			}
 		});
+		batch_sammy.run();
 		
 		$.ajax({
 			url: "/auth/drive",

@@ -1,5 +1,6 @@
 import httplib2, json, os, re
 from subprocess import Popen
+from cStringIO import StringIO
 
 from apiclient import errors
 from apiclient.discovery import build
@@ -126,52 +127,40 @@ class CompassDriveClient(UnveillanceAnnexClient):
 		
 		return None
 	
-	def dowload(self, file, save_as=None, save=True, return_content=False):
-		# don't waste my time.
+	def download(self, file, save_as=None, save=False):
 		if not hasattr(self, "service"): return None
-		if not save and not return_content: return None
 		
 		if type(file) is str or type(file) is unicode:
 			return self.download(self.getFile(file))
 		
 		url = file.get('downloadUrl')
 		if url:
-			from conf import ANNEX_DIR
+			if save_as is None:
+				save_as = self.getFileName(file)
 			
-			content = None
-			destination_path = None
+			# fuck you. (path traversal)
+			if len(re.findall(r'\.\.', save_as)) > 0:
+				return None
 			
-			if save:
-				if save_as is None:
-					save_as = self.getFileName(file)
-				
-				# fuck you. (path traversal)
-				if len(re.findall(r'\.\.', save_as)) > 0:
-					return None
-				
+			response, content = self.service._http.request(url)
+			if response.status != 200: 
+				return None
+			
+			if not save:
+				container = StringIO()
+				container.write(content)
+				return (container, save_as)
+			else:				
+				from conf import ANNEX_DIR
 				destination_path = os.path.join(ANNEX_DIR, save_as)
 				
-				p = Popen(["wget", "-O", destination_path, url])
-				p.wait()
-			else:
-				response, content = self.service._http.request(url)
-				if response.status != 200:
-					return None
-				
-				return_content = True
-		
-			if return_content:
-				if content is None and destination_path is not None:
-					try:
-						with open(destination_path, 'rb') as C:
-							content = C.read()
-					except IOError as e:
-						if DEBUG: print e
-					
-					return content
-			else:
-				return destination_path
-		
+				try:
+					with open(destination_path, 'wb+') as C:
+						C.write(content)
+						return destination_path
+				except IOError as e:
+					if DEBUG: print e					
+			
 		return None
 	
 	def listAssets(self):

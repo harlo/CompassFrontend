@@ -1,4 +1,4 @@
-import json, signal, os, logging, tornado.web
+import json, signal, os, logging, tornado.web, urllib, requests
 from sys import exit, argv
 from multiprocessing import Process
 from time import sleep
@@ -6,8 +6,11 @@ from time import sleep
 from api import CompassAPI
 from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon, passesParameterFilter, parseRequestEntity
 from lib.Frontend.unveillance_frontend import UnveillanceFrontend
+from lib.Frontend.Models.uv_fabric_process import UnveillanceFabricProcess
+from lib.Frontend.Utils.fab_api import netcat
 from lib.Frontend.lib.Core.vars import Result
-from conf import COMPASS_BASE_DIR, COMPASS_CONF_ROOT, DEBUG
+
+from conf import COMPASS_BASE_DIR, COMPASS_CONF_ROOT, DEBUG, buildServerURL
 
 class CompassFrontend(UnveillanceFrontend, CompassAPI):
 	def __init__(self):
@@ -21,17 +24,15 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		self.reserved_routes.extend(["auth", "commit"])
 		self.routes.extend([
 			(r"/auth/(drive|globaleaks)", self.AuthHandler),
-			(r"/commit/", self.GDCommitHandler)
+			(r"/commit/", self.DriveOpenHandler)
 		])
 		
 		self.default_on_loads = [
-			'/cdn/apis.google.com/js/api.js?onload=initCompassUser',
 			'/web/js/lib/sammy.js',
 			'/web/js/compass.js', 
 			'/web/js/models/cp_user.js']
 		self.on_loads['setup'].extend(['/web/js/modules/cp_setup.js'])
 		self.on_loads.update({
-			'documents' : ['/web/js/modules/documents.js'],
 			'document' : [
 				'/web/js/lib/crossfilter.min.js',
 				'/web/js/models/cp_document.js', 
@@ -46,8 +47,9 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				'/web/js/lib/jquery.ui.menu.js',
 				'/web/js/lib/jquery.ui.autocomplete.js',
 				'/web/js/viz/uv_viz.js',
-				'/web/js/viz/cp_document_browser.js',
-				'/web/js/modules/cp_document_browser.js']
+				'/web/js/models/cp_document_browser.js',
+				'/web/js/modules/main.js',
+				'/web/js/models/cp_batch.js']
 		})
 		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
@@ -99,34 +101,69 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 			self.set_status(res.result)
 			self.finish(res.emit())
 	
-	class GDCommitHandler(tornado.web.RequestHandler):
-		def get(self):			
-			res = self.application.routeRequest(Result(), "commit_drive_file", self)
+	class DriveOpenHandler(tornado.web.RequestHandler):
+		def get(self):
+			endpoint = "/"			
+			res = self.application.routeRequest(Result(), "open_drive_file", self)
 			
 			if DEBUG: print res.emit()
 			
-			self.set_status(res.result)
-			self.finish(res.emit())
-	
+			if res.result == 200 and hasattr(res, "data"):
+				endpoint += "#batch=%s" % json.dumps(res.data)
+			
+			self.redirect(endpoint)
 	"""
 		Frontend-accessible methods
 	"""
-	def do_commit_drive_file(self, handler):
+	def do_open_drive_file(self, handler):
 		if DEBUG: print "commiting some google drive files..."
-		if self.initDriveClient(restart=True):
-			committed_files = None
-			
-			for _id in parseRequestEntity(handler.request.query)['_ids']:
-				if DEBUG: print _id
-				
-				download = self.drive_client.download(_id)
-				if download is not None and self.drive_client.sendToAnnex(download):
-					if committed_files is None: committed_files = []
-					committed_files.append(download)
-			
-			return committed_files
+		if not self.initDriveClient(restart=True): return None
 		
-		return None
+		files = None
+			
+		for _id in parseRequestEntity(handler.request.query)['_ids']:
+			_id = urllib.unquote(_id).replace("'", "")[1:]
+			file_name = self.drive_client.getFileName(_id)
+
+			if file_name is None: return None
+			url = "%s/documents/?file_name=%s" % (buildServerURL(), file_name)
+
+			entry = None
+			handled_file = None
+		
+			if DEBUG: print url
+			
+			# look up the file in annex. (annex/documents/?file_name=file)
+			# if this file exists in annex, return its _id for opening in-app
+			try:
+				entry = json.loads(requests.get(
+					url, verify=False).content)['data']['documents'][0]
+			except Exception as e:
+				if DEBUG: print "COULD NOT GET ENTRY:\n%s" % e
+			
+			if entry is not None:
+				print type(entry['_id'])
+				handled_file = { '_id' : entry['_id'] }
+			else:
+				entry = self.drive_client.download(_id, save=False)
+				if entry is not None:						
+					p = UnveillanceFabricProcess(netcat, {
+						'file' : entry[0],
+						'save_as' : entry[1]
+					})
+					p.join()
+			
+					if p.output is not None:
+						if DEBUG: print p.output
+						handled_file = { 'file_name' : entry[1] }
+					
+					if DEBUG and p.error is not None: print p.error
+			
+			if handled_file is not None:
+				if files is None: files = []
+				files.append(handled_file)
+		
+		return files		
 	
 	def do_get_drive_status(self, handler=None):
 		print "getting drive status"
@@ -135,7 +172,6 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		else:
 			print "has drive_client..."
 			if hasattr(self.drive_client, "service"):
-				"AND has service!"
 				return True
 			print "but no service..."
 
@@ -165,7 +201,7 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 		super(CompassFrontend, self).do_send_public_key(handler)
 		
 		from conf import getConfig
-		upload = self.drive_client.upload(getConfig('unveillance.local_remote.pub_key'),
+		upload = self.drive_client.upload("%s.pub" % getConfig('unveillance.local_remote.pub_key'),
 			title="unveillance.local_remote.pub_key")
 		
 		if DEBUG: print upload

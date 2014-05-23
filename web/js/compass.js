@@ -2,6 +2,7 @@ var cp_user;
 
 (function($) {
 	$(function() {
+		
 		var css = $(document.createElement('link'))
 			.attr({
 				'rel' : "stylesheet",

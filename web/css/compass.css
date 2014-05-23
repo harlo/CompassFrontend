@@ -13,11 +13,23 @@
 }
 
 #cp_document_panel {
-	width:24em;
+	width:30%;
 	height:100%;
 	border-right:1px solid #000;
 }
 
 #cp_document_browser_holder li.cp_in_annex_false {
 	background-color:#ccc;
+}
+
+#cp_viewer_panel {
+	width:70%;
+	height:100%;
+	background-color:#ccc;
+	float:right;
+	right:0;
+}
+
+#cp_viewer_panel, #cp_document_panel {
+	position:absolute;
 }
