@@ -1,7 +1,22 @@
+#content ul {
+	list-style-type:none;
+}
+
 .cp_button {
 	border:1px solid #ccc;
 	padding:0.2em;
 	margin:0.1em;
+}
+
+.cp_active {
+	border:1px solid #ccc;
+}
+
+div.cp_module {
+	position:relative;
+	width:100%;
+	min-height:2em;
+	clear:both;
 }
 
 #cp_document_view_holder {
@@ -43,4 +58,10 @@
 
 #cp_viewer_panel, #cp_document_panel {
 	position:absolute;
+}
+
+#cp_document_main_ctrl li {
+	float:left;
+	padding:0.1em 0.35em;
+	margin:0.1em 0.35em;
 }

@@ -15,7 +15,26 @@ var CompassDocument = UnveillanceDocument.extend({
 		if(!this.has('available_views')) {
 			this.set('available_views', []);
 		}
+	},
+	requestReindex: function() {
+	
+	},
+	setInPanel: function(asset) {
+		var callback = null;
 		
+		insertTemplate(
+			asset + ".html", 
+			this.toJSON(), 
+			"#cp_document_view_panel", 
+			callback, 
+			"/web/layout/views/document/");
 		
+		$.each($("#cp_document_main_ctrl").children('li'), function() {
+			if($(this).attr('id') == "cp_d_" + asset) {
+				$(this).addClass("cp_active");
+			} else {
+				$(this).removeClass("cp_active");
+			}
+		});
 	}
 });

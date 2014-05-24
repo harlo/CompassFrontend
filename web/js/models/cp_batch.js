@@ -30,7 +30,6 @@ var CompassBatch = Backbone.Model.extend({
 			return _.indexOf(_ids, doc._id) >= 0;
 		}), "file_name");
 		
-		console.info(file_names);
 		_.each(file_names, function(name) {
 			$("#cp_batch_doc_list").append($(document.createElement('span'))
 				.addClass('cp_file_name cp_inactive')

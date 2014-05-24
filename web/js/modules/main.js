@@ -29,7 +29,6 @@ function loadDocument(_id) {
 	
 	try {
 		current_document.updateInfo();
-		console.info(document);
 	} catch(err) {
 		console.warn("COULD NOT LOAD WHOLE DOCUMENT AT THIS TIME");
 		console.warn(err);
@@ -69,6 +68,8 @@ function onViewerModeChanged(mode, force_reload) {
 		callback = function(res) {
 			try {
 				current_document.initViewer();
+				current_document.setInPanel('info');
+				$("#cp_doc_batch_toggle").prop('checked', false);
 			} catch(err) {
 				console.warn("COULD NOT INIT DOCUMENT VIEWER AT THIS TIME");
 				console.warn(err);

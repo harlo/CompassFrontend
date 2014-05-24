@@ -1,1 +1,15 @@
 <h2>{{ file_name }}</h2>
+<div class="cp_module">
+	<ul id="cp_document_main_ctrl">
+		<li id="cp_d_info">
+			<a onclick="current_document.setInPanel('info');">Info</a>
+		</li>
+		<li id="cp_d_original">
+			<a onclick="current_document.setInPanel('original');">Original</a>
+		</li>
+		<li id="cp_d_reindex">
+			<a onclick="current_document.setInPanel('reindex');">Reindex</a>
+		</li>
+	</ul>
+</div>
+<div id="cp_document_view_panel"></div>
