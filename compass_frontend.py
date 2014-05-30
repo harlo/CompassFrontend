@@ -42,7 +42,9 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				'/web/js/lib/jquery.ui.widget.js',
 				'/web/js/lib/jquery.ui.menu.js',
 				'/web/js/lib/jquery.ui.autocomplete.js',
+				'/web/js/lib/jquery.csv.js',
 				'/web/js/viz/uv_viz.js',
+				'/web/js/models/uv_csv.js',
 				'/web/js/models/cp_visual_search.js',
 				'/web/js/models/cp_document_browser.js',
 				'/web/js/models/cp_batch.js',
@@ -76,8 +78,8 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 					if not self.application.initDriveClient():
 						if DEBUG: print "client has no auth. let's start that"
 						
-						from conf import getSecrets
-						endpoint = getSecrets(
+						from conf import getSecrets, SECRET_PATH
+						endpoint = getSecrets(SECRET_PATH,
 							key="compass.sync")['google_drive']['redirect_uri']
 					else:
 						if DEBUG: print "client has been authenticated already."
@@ -107,7 +109,7 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 			if DEBUG: print res.emit()
 			
 			if res.result == 200 and hasattr(res, "data"):
-				endpoint += "#batch=%s" % json.dumps(res.data)
+				endpoint += "#analyze=%s" % json.dumps(res.data)
 			
 			self.redirect(endpoint)
 	"""
@@ -144,11 +146,18 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				handled_file = { '_id' : entry['_id'] }
 			else:
 				entry = self.drive_client.download(_id, save=False)
-				if entry is not None:						
+				if entry is not None:
+					from conf import getSecrets, SECRET_PATH
+					
+					pwd = getSecrets(SECRET_PATH, key="unveillance.local_remote")['pwd']
+					print "HEY HERE IS YOUR PASSSWORD %s" % pwd
+					
+					if pwd is None: return None
+										
 					p = UnveillanceFabricProcess(netcat, {
 						'file' : entry[0],
 						'save_as' : entry[1],
-						'password' : getSecrets(key="unveillance.local_remote")['pwd']
+						'password' : pwd
 					})
 					p.join()
 			

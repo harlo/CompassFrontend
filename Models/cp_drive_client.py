@@ -7,7 +7,7 @@ from apiclient.discovery import build
 
 from lib.Frontend.Models.uv_annex_client import UnveillanceAnnexClient
 
-from conf import DEBUG, API_PORT, saveSecret, COMPASS_CONF_ROOT, getSecrets
+from conf import DEBUG, API_PORT, saveSecret, COMPASS_CONF_ROOT, SECRET_PATH, getSecrets
 
 class CompassDriveClient(UnveillanceAnnexClient):
 	def __init__(self):
@@ -16,7 +16,7 @@ class CompassDriveClient(UnveillanceAnnexClient):
 		credentials = None
 		
 		try:
-			self.config = getSecrets(key="compass.sync")['google_drive']
+			self.config = getSecrets(SECRET_PATH, key="compass.sync")['google_drive']
 			
 			if self.config['account_type'] == "service":
 				from oauth2client.client import SignedJwtAssertionCredentials
@@ -198,7 +198,7 @@ class CompassDriveClient(UnveillanceAnnexClient):
 				'account_type' : "user"
 			})
 			
-			sync_config = getSecrets(key="compass.sync")
+			sync_config = getSecrets(SECRET_PATH, key="compass.sync")
 			sync_config['google_drive'].update(self.config)
 			saveSecret("compass.sync", sync_config)
 			

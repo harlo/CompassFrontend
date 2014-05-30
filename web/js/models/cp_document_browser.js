@@ -18,7 +18,7 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		
 		$("#cp_doc_batch_toggle").change(function() {
 			if($(this).prop('checked')) {
-				window.location = "#batch=" + ctx.buildBatch()
+				window.location = "#analyze=" + ctx.buildBatch()
 			} else { 
 				ctx.clearBatch();
 				window.location = "#";

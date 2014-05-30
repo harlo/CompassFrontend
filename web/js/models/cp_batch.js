@@ -56,6 +56,12 @@ var CompassBatch = Backbone.Model.extend({
 				label : "View word stats",
 				asset_tags : [UV.ASSET_TAGS.TXT_JSON],
 				_ids : []
+			},
+			{
+				name: "forensic_metadata",
+				label : "Compare metadata",
+				asset_tags : [UV.ASSET_TAGS.F_MD],
+				_ids : []
 			}
 		]));
 		
@@ -78,6 +84,10 @@ var CompassBatch = Backbone.Model.extend({
 					var idx = _.indexOf(
 						_.flatten(_.pluck(ctx.get('modules'), "name")),
 						module.name);
+					
+					if(!ctx.get('modules')[idx]._ids) {
+						ctx.get('modules')[idx]._ids = [];
+					}
 					
 					if(idx >= 0) { ctx.get('modules')[idx]._ids.push(document._id); }
 				}
