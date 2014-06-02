@@ -149,9 +149,7 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 				if entry is not None:
 					from conf import getSecrets, SECRET_PATH
 					
-					pwd = getSecrets(SECRET_PATH, key="unveillance.local_remote")['pwd']
-					print "HEY HERE IS YOUR PASSSWORD %s" % pwd
-					
+					pwd = getSecrets(SECRET_PATH, key="unveillance.local_remote")['pwd']					
 					if pwd is None: return None
 										
 					p = UnveillanceFabricProcess(netcat, {
