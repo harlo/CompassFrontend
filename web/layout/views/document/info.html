@@ -1,14 +1,15 @@
 <ul id="cp_document_info_list">
 	<li>Date Added: <span class="uv_translate uv_date">{{ date_added }}</span></li>
 	<li>Mime Type: {{ mime_type }}</li>
-	<li>Assets:
-		<ul id="cp_document_asset_list">
-			{{ #assets }}
-			<li>{{ file_name }} ({{ description }})</li>
-			{{ /assets }}
-		</ul>
-	</li>
 	<li>Keywords:
 		<ul id="cp_document_keyword_list"></ul>
+	</li>
+	<li>Assets:
+		<ol id="cp_document_asset_list">
+			{{ #assets }}
+			<li><a onclick="setRawAsset('#cp_document_asset_viewer', '{{ base_path}}/{{ file_name }}')">{{ file_name }}</a> ({{ description }})</li>
+			{{ /assets }}
+		</ol>
+		<div id="cp_document_asset_viewer"></div>
 	</li>
 </ul>

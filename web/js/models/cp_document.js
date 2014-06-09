@@ -40,9 +40,11 @@ var CompassDocument = UnveillanceDocument.extend({
 	},
 	setInPanel: function(asset) {
 		var callback = null;
+		var ctx = this;
+		
 		switch(asset) {
 			case "reindex":
-				var ctx = this;
+				
 				callback = function() {
 					var tmpl = _.template('<% _.each(tasks, function(task) { %> <li><a onclick="current_document.requestReindex(this, \'<%= task.path %>\');"><%= task.desc %></a><span style="display:none;" class="cp_waiter"></span></li> <% }) %>');
 					var tasks = _.map(UV.MIME_TYPE_TASKS[ctx.get('mime_type')], function(task) {
@@ -55,8 +57,7 @@ var CompassDocument = UnveillanceDocument.extend({
 					
 					$("#cp_reindex_list").html(tmpl({ tasks : tasks }));
 				};
-				
-				break;	
+				break;
 		}
 		
 		insertTemplate(

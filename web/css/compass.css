@@ -65,3 +65,14 @@ div.cp_module {
 	padding:0.1em 0.35em;
 	margin:0.1em 0.35em;
 }
+
+#cp_document_asset_viewer {
+	width:90%;
+	min-height:26em;
+}
+
+#cp_document_asset_viewer textarea {
+	width:100%;
+	min-height:inherit;
+	border:1px solid #999;
+}
