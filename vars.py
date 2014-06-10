@@ -11,9 +11,11 @@ compass_mime_type_map = {
 compass_mime_type_tasks = {
 	"application/pdf" : [
 		"PDF.process_metadata.processPDFMetadata", 
-		"PDF.split_pdf_pages.splitPDFPages", 
+		"PDF.split_pdf_pages.splitPDFPages",
+		"PDF.ocr_pdf.OCRPDF", 
 		"PDF.extract_pdf_text.extractPDFText", 
-		"Text.preprocess_nlp.preprocessNLP"
+		"Text.preprocess_nlp.preprocessNLP",
+		"NLP.tokenizer.basicTokenizer"
 	]
 }
 

@@ -229,13 +229,18 @@ class CompassFrontend(UnveillanceFrontend, CompassAPI):
 if __name__ == "__main__":
 	compass_frontend = CompassFrontend()
 	
+	openurl = False
+	if len(argv) == 3 and argv[2] == "-webapp":
+		openurl = True
+		argv.pop()
+		
 	if len(argv) != 2: exit("Usage: compass_frontend.py [-start, -stop, -restart]")
 	
 	if argv[1] == "-start" or argv[1] == "-firstuse":
-		compass_frontend.startup()
+		compass_frontend.startup(openurl)
 	elif argv[1] == "-stop":
 		compass_frontend.shutdown()
 	elif argv[1] == "-restart":
 		compass_frontend.shutdown()
 		sleep(5)
-		compass_frontend.startup()
+		compass_frontend.startup(openurl)
