@@ -20,12 +20,12 @@ if __name__ == "__main__":
 	if len(ssh_root) == 0: ssh_root = "~/.ssh"
 
 	os.chdir("lib/Frontend")
-	setup_cmd = "./setup.sh %s %s %s 8888 false" % (base_dir, ssh_root, annex_host)
+	setup_cmd = "python setup.py '%s' '%s' '%s' 8888 False" % (base_dir, 
+		ssh_root, annex_host)
 	setup_step = local(setup_cms)
 	
 	os.chdir("web")
 	ln_step = local("ln -s ../../../web/ extras")
-	print ln_step
 	
 	os.chdir(base_dir)
 	local("pip install --upgrade -r requirements.txt")
