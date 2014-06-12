@@ -37,6 +37,6 @@ if __name__ == "__main__":
 	
 	os.chdir(base_dir)
 	local("pip install --upgrade -r requirements.txt")
-	local("python compass_frontend.py -firstuse -webapp")
+	local("python compass_frontend.py -start -webapp")
 	
 	exit(0)
