@@ -1,9 +1,4 @@
-var cp_user = null;
 var current_document;
-
-function initUser() {
-	
-}
 
 function loadDocument(_id) {
 	current_document = new CompassDocument({ _id : _id });
@@ -42,9 +37,7 @@ function loadDocument(_id) {
 				} catch(err) {
 					console.warn("no onConfLoaded in any of these scripts");
 					console.warn(err);
-				}
-				
-				initUser();
+				}				
 			});
 		
 		document.getElementsByTagName("head")[0].appendChild(conf.get(0));

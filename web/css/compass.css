@@ -19,6 +19,15 @@ div.cp_module {
 	clear:both;
 }
 
+#header #cp_popup_holder {
+	z-index:100;
+	border:1px solid #000;
+	width:70%;
+	min-height:6em;
+	left:15%;
+	display:none;
+}
+
 #cp_document_view_holder {
 	position:relative;
 	width:100%;

@@ -35,11 +35,14 @@ class CompassFrontend(UnveillanceFrontend):
 		
 		self.on_loads_by_status[2].extend([
 			'/web/js/modules/cp_logout.js',
+			'/web/js/models/unveillance_user.js',
 			'/web/js/models/cp_user.js'
 		])
 		
 		self.on_loads_by_status[3].extend([
 			'/web/js/modules/cp_logout.js',
+			'/web/js/models/unveillance_user.js',
+			'/web/js/models/cp_user.js',
 			'/web/js/models/cp_user_admin.js'
 		])
 
@@ -60,6 +63,10 @@ class CompassFrontend(UnveillanceFrontend):
 		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
 			self.init_vars.update(json.loads(IV.read())['web'])
+		
+		tmpl_root = os.path.join(COMPASS_BASE_DIR, "web", "layout", "tmpl")
+		self.INDEX_HEADER = os.path.join(tmpl_root, "header.html")
+		self.MODULE_HEADER = self.INDEX_HEADER
 	
 	"""
 		Custom handlers

@@ -1,6 +1,6 @@
 var CompassWordCloud = UnveillanceViz.extend({
 	constructor: function() {
-		UnveillanceDocument.prototype.constructor.apply(this, arguments);
+		UnveillanceViz.prototype.constructor.apply(this, arguments);
 		this.set('data', this.buildDataTree());
 	},
 	buildDataTree: function() {

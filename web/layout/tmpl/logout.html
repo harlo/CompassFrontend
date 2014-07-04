@@ -1,0 +1,8 @@
+<p><a onclick="toggleElement('#cp_logout_with_data');">Save your data</a>? or <a onclick="logout();">just log out</a>?</p>
+<div id="cp_logout_with_data">
+	<input type="hidden" name="username" value="{{ username }}" />
+	<p>Password: 
+		<input type="password" name="password" />
+	</p>
+	<p><a class="uv_button" onclick="logout();">Go</a></p>
+</div>
