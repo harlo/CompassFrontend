@@ -1,7 +1,7 @@
 #! /bin/bash
 THIS_DIR=`pwd`
 
-#pip install --upgrade fabric
+pip install --upgrade fabric
 
 cd lib/Frontend
 ./setup.sh $THIS_DIR/conf/compass.secrets.json
