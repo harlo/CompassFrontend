@@ -1,12 +1,7 @@
-function login() {
-	var user = {
-		username: $($("#cp_login").find("input[name=username]")[0]).val(),
-		password: $($("#cp_login").find("input[name=password]")[0]).val()
-	};
-	
-	doInnerAjax("login", "post", user, function(json) {
-		console.info(json);
-	});
+var current_user;
+
+function init() {
+	current_user = new UnveillanceUser();
 }
 
 (function($) {
@@ -20,6 +15,7 @@ function login() {
 	
 	$(function() {
 		login_sammy.run();
+		init();
 		$("#cp_nav_options").append($(document.createElement('li'))
 			.html('<a href="#login">log in</a>'));
 	});

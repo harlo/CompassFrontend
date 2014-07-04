@@ -1,21 +1,7 @@
 var current_user;
 
-function initUser() {
+function init() {
 	current_user = new CompassUser();
-}
-
-function logout() {
-	var user = {};
-	
-	if($("#cp_logout_with_data").css('display') != "none") {
-		user = current_user.toJSON();
-		user.password = $($("#cp_logout_with_data")
-			.find("input[name=password]")[0]).val();
-	}
-	
-	doInnerAjax("logout", "post", user, function(json) {
-		console.info(json);
-	});
 }
 
 (function($) {
@@ -29,8 +15,8 @@ function logout() {
 	
 	$(function() {
 		logout_sammy.run();
+		init();
 		$("#cp_nav_options").append($(document.createElement('li'))
 			.html('<a href="#logout">log out</a>'));
-		initUser();
 	});
 })(jQuery);

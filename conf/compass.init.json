@@ -1,18 +1,7 @@
-{"unveillance.local_remote" : {
-	"hostname" : "ec2-75-101-242-197.compute-1.amazonaws.com",
-	"port" : 22,
-	"user" : "ubuntu",
-	"uv_uuid" : "danse-v1",
-	"remote_path" : "/home/ubuntu/Compass/unveillance_remote"
-},
-"web" : {
-	"BATCH_SALT" : "w8vhla3AYO4jtbabso7TECHNOLOGYzlc!!ladifal",
-	"API_PORT" : 8889,
-	"REMOTE_HOST" : "https://ec2-75-101-242-197.compute-1.amazonaws.com:8080",
-	"GD_CID": "1069642418271-9m2mbba5sse0fmrika9s82fh0vob9g3q.apps.googleusercontent.com",
-	"GD_SCOPES" : [
-		"https://www.googleapis.com/auth/drive",
-		"https://www.googleapis.com/auth/drive.file",
-		"https://www.googleapis.com/auth/drive.install"
-	]
-}}
+{
+	"web" : {
+		"BATCH_SALT" : "w8vhla3AYO4jtbabso7TECHNOLOGYzlc!!ladifal",
+		"API_PORT" : 8889,
+		"REMOTE_HOST" : "https://ec2-75-101-242-197.compute-1.amazonaws.com:8080"
+	}
+}
