@@ -1,7 +1,14 @@
-var document_browser, visual_search, current_batch, current_document, current_mode;
+var document_browser, visual_search, current_batch, current_mode;
 
-function initDocumentBrowser() {	
+function initDocumentBrowser() {
+	console.info("init doc browser");
 	doInnerAjax("documents", "post", null, function(json) {
+		if(json.status == 500) {
+			console.info("No Annex Connection...");
+			alert("Cannot connect to Annex...");
+			return;
+		}
+		
 		try {
 			json = JSON.parse(json.responseText);
 			if(json.result == 200) {
@@ -90,17 +97,6 @@ function loadModule(module_name) {
 	});
 }
 
-function loadDocument(_id) {
-	current_document = new CompassDocument({ _id : _id });
-	
-	try {
-		current_document.updateInfo();
-	} catch(err) {
-		console.warn("COULD NOT LOAD WHOLE DOCUMENT AT THIS TIME");
-		console.warn(err);
-	}
-}
-
 function buildDocumentBatch(batch) {
 	current_batch = new CompassBatch(batch);
 	
@@ -147,8 +143,15 @@ function onViewerModeChanged(mode, force_reload) {
 		$("#cp_viewer_panel"), callback, "/web/layout/views/main/");
 }
 
+function onConfLoaded() {
+	window.setTimeout(function() {
+		initDocumentBrowser();
+		initVisualSearch();
+	}, 200);
+}
+
 (function($) {
-	var batch_sammy = $.sammy("#content", function() {
+	var content_sammy = $.sammy("#content", function() {
 		this.get('#analyze=:analyze', function() {
 			console.info(this.params['analyze']);
 			try {
@@ -171,40 +174,6 @@ function onViewerModeChanged(mode, force_reload) {
 	});
 	
 	$(function() {
-		var css_stub = $(document.createElement('link'))
-			.attr({
-				'rel' : "stylesheet",
-				'type' : "text/css",
-				'media' : "screen"
-			});
-		
-		_.each(['visualsearch-datauri', 'visualsearch'], function(c) {
-			var css = $(css_stub).clone();
-			css.attr('href', "/web/css/" + c + ".css");
-			document.getElementsByTagName("head")[0].appendChild(css.get(0));
-		});
-		
-		batch_sammy.run();
-		
-		$.ajax({
-			url: "/auth/drive",
-			dataType: "json",
-			method: "post",
-			complete: function(json) {
-				try {
-					json = JSON.parse(json.responseText);
-					if(json.result == 200) {
-						if(json.data != true) { window.location = "/auth/drive"; }
-					}
-				} catch(err) {
-					console.info(err);
-				}
-			}
-		});
-		
-		window.setTimeout(function() {
-			initDocumentBrowser();
-			initVisualSearch();
-		}, 2000);
+		content_sammy.run();
 	});
 })(jQuery);
