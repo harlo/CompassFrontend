@@ -10,5 +10,6 @@ cd web
 ln -s $THIS_DIR/web/ extras
 
 cd $THIS_DIR
-chmod 0400 lib/Frontend/conf/*
+chmod 0400 lib/Frontend/conf/unveillance.secrets.json
+chmod 0400 lib/Frontend/conf/local.config.yaml
 python compass_frontend.py -firstuse -webapp

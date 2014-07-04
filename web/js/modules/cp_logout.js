@@ -7,9 +7,11 @@ function init() {
 (function($) {
 	var logout_sammy = $.sammy("#header", function() {
 		this.get("#logout", function() {
-			insertTemplate("logout.html", null, $("#cp_popup_content"), function() {
-				toggleElement("#cp_popup_holder");
-			});
+			insertTemplate("logout.html", current_user.toJSON(), $("#cp_popup_content"),
+				function() {
+					toggleElement("#cp_popup_holder");
+				}
+			);
 		});
 	});
 	
