@@ -2,7 +2,7 @@ var cp_user = null;
 var current_document;
 
 function initUser() {
-
+	
 }
 
 function loadDocument(_id) {

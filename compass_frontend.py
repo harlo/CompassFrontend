@@ -27,8 +27,21 @@ class CompassFrontend(UnveillanceFrontend):
 			'/web/js/lib/d3.min.js',
 			'/web/js/viz/uv_viz.js',
 			'/web/js/models/cp_document.js',
-			'/web/js/models/cp_batch.js',
-			'/web/js/models/cp_user.js'])
+			'/web/js/models/cp_batch.js'])
+		
+		self.on_loads_by_status[1].extend([
+			'/web/js/modules/cp_login.js'
+		])
+		
+		self.on_loads_by_status[2].extend([
+			'/web/js/modules/cp_logout.js',
+			'/web/js/models/cp_user.js'
+		])
+		
+		self.on_loads_by_status[3].extend([
+			'/web/js/modules/cp_logout.js',
+			'/web/js/models/cp_user_admin.js'
+		])
 
 		self.on_loads.update({
 			'main' : [
