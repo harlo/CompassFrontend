@@ -2,28 +2,30 @@ var document_browser, visual_search, current_batch, current_mode;
 
 function initDocumentBrowser() {
 	console.info("init doc browser");
-	doInnerAjax("documents", "post", null, function(json) {
-		if(json.status == 500) {
-			console.info("No Annex Connection...");
-			alert("Cannot connect to Annex...");
-			return;
-		}
-		
-		try {
-			json = JSON.parse(json.responseText);
-			if(json.result == 200) {
-				document_browser = new CompassDocumentBrowser({
-					root_el : "#cp_document_browser_holder",
-					data: json.data.documents
-				});
-				
-				if(current_document) { current_document.updateInfo(); }
+	doInnerAjax("documents", "post", { mime_type: "[text/plain,application/pdf]" },
+		function(json) {
+			if(json.status == 500) {
+				console.info("No Annex Connection...");
+				alert("Cannot connect to Annex...");
+				return;
 			}
-		} catch(err) { 
-			console.warn("COULD NOT UPDATE DOCUMENT BROWSER AT THIS TIME");
-			console.warn(err); 
+		
+			try {
+				json = JSON.parse(json.responseText);
+				if(json.result == 200) {
+					document_browser = new CompassDocumentBrowser({
+						root_el : "#cp_document_browser_holder",
+						data: json.data.documents
+					});
+				
+					if(current_document) { current_document.updateInfo(); }
+				}
+			} catch(err) { 
+				console.warn("COULD NOT UPDATE DOCUMENT BROWSER AT THIS TIME");
+				console.warn(err); 
+			}
 		}
-	});
+	);
 }
 
 function initVisualSearch() {
