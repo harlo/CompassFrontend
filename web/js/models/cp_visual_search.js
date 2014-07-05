@@ -26,6 +26,7 @@ var CompassVisualSearch = Backbone.Model.extend({
 		try {
 			_.each(search_collection.models, function(term) {
 				var value = term.get('value');
+				var filter_func;
 				
 				switch(term.get('category')) {	
 					case "Mime Type":
@@ -39,7 +40,30 @@ var CompassVisualSearch = Backbone.Model.extend({
 							console.info(value);
 							return _.contains(
 								_.flatten(_.pluck(doc.assets, "tags")), value);
+						};
+						break;
+					case "text":
+						console.info(value);
+						var ids = doInnerAjax("documents", "post", 
+							{
+								cast_as : "media_id",
+								searchable_text : value.toLowerCase() 
+							},
+						null, false);
+						
+						try {
+							var json = JSON.parse(ids.responseText);
+							if(json.result == 200) {
+								console.info(json.data);
+								ids = json.data.documents;
+							}
+						} catch(err) {
+							console.warn(err);
 						}
+												
+						filter_func = function(doc) {
+							return _.findWhere(ids, { _id : doc._id });
+						};
 						break;
 				}
 				
