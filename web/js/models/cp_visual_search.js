@@ -44,26 +44,24 @@ var CompassVisualSearch = Backbone.Model.extend({
 						break;
 					case "text":
 						console.info(value);
+						var searchable_text = value.toLowerCase()
+							.replace(/\s/g, ",")
+							.replace(/,,/g, ",");
+						
 						var ids = doInnerAjax("documents", "post", 
 							{
 								cast_as : "media_id",
-								searchable_text : value.toLowerCase() 
+								searchable_text : "[" + searchable_text + "]"
 							},
 						null, false);
 						
-						try {
-							var json = JSON.parse(ids.responseText);
-							if(json.result == 200) {
-								console.info(json.data);
-								ids = json.data.documents;
+						if(ids != null && ids.result == 200) {
+							filter_func = function(doc) {
+								return _.findWhere(ids.data.documents, {
+									_id : doc._id
+								});
 							}
-						} catch(err) {
-							console.warn(err);
 						}
-												
-						filter_func = function(doc) {
-							return _.findWhere(ids, { _id : doc._id });
-						};
 						break;
 				}
 				
