@@ -27,7 +27,7 @@ var CompassConsole = Backbone.Model.extend({
 		$("#cp_console_output_holder").get(0).scrollIntoView();
 	},
 	save: function() {
-		if(!window.CompassUserAdmin || !current_user) { return; }
+		if(!window.CompassUserAdmin || !current_user) { return false; }
 		
 		var scripts;
 		try {
@@ -38,10 +38,11 @@ var CompassConsole = Backbone.Model.extend({
 		
 		if(!scripts) {
 			current_user.get('session_log').push({ scripts: [] });
-			scripts = _.pluck(current_user.get('session_log'), "scripts")[0];
+			return this.save();
 		}
 		
 		current_user.save();
+		return true;
 	},
 	doOutput: function(outp) {
 		if(outp.length <= 1) { return; }
@@ -56,6 +57,9 @@ var CompassConsole = Backbone.Model.extend({
 		}
 		
 		return Sk.builtinFiles['files'][x];
+	},
+	pushObjectToEditor: function(obj) {
+	
 	}
 });
 
@@ -68,10 +72,10 @@ var CompassConsoleObject = Backbone.Model.extend({
 				.attr({'id' : this.cid })
 				.addClass("cp_console_obj uv_button")
 				.html(this.get('tags'))
-				.click(this.addToEditor())
+				.click(this.addToEditor)
 		});
 	},
 	addToEditor: function() {
-		
+		cp_console.pushObjectToEditor(this);
 	}
 });
