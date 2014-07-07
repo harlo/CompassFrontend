@@ -1,8 +1,26 @@
-#content ul {
+#content ul, #header #cp_nav_options, #cp_document_browser_holder {
 	list-style-type:none;
 }
 
-.cp_button {
+#header {
+	height:2em;
+}
+
+#header #cp_nav_options {
+	margin:0.5em;
+	padding:0;
+}
+
+#header #cp_nav_options li {
+	float:left;
+	padding:0 1em 0 0;
+}
+
+#cp_document_browser_holder .cp_dir_root {
+	visibility:hidden;
+}
+
+.cp_button, .uv_button {
 	border:1px solid #ccc;
 	padding:0.2em;
 	margin:0.1em;
@@ -19,6 +37,10 @@ div.cp_module {
 	clear:both;
 }
 
+#cp_document_view_panel div.cp_pod {
+	margin:0.5em;
+}
+
 #header #cp_popup_holder {
 	z-index:100;
 	border:1px solid #000;
@@ -26,6 +48,9 @@ div.cp_module {
 	min-height:6em;
 	left:15%;
 	display:none;
+	position:absolute;
+	padding:1em;
+	background-color:#fff;
 }
 
 #cp_document_view_holder {
@@ -84,4 +109,42 @@ div.cp_module {
 	width:100%;
 	min-height:inherit;
 	border:1px solid #999;
+}
+
+#cp_console div {
+	margin:0 1em;
+	width:90%;
+}
+
+#cp_console #cp_console_obj_holder ul li {
+	float:left;
+	padding:1em;
+}
+
+#cp_console #cp_console_script_holder textarea {
+	height:20em;
+	color:#fff;
+	background-color:#909090;
+	width:100%;
+}
+
+#cp_console #cp_console_opts {
+	height:1.5em;
+	background-color:#000;
+	color:#fff;
+}
+
+#cp_console #cp_console_output_holder {
+	height:5em;
+	border:1px solid #000;
+}
+
+#cp_console #cp_console_opts ul {
+	margin:0;
+	padding:0;
+}
+
+#cp_console #cp_console_opts ul li {
+	float:left;
+	padding:0.1em 0.2em;
 }

@@ -6,6 +6,9 @@ pip install --upgrade fabric
 cd lib/Frontend
 ./setup.sh $THIS_DIR/conf/compass.secrets.json
 
+cd $THIS_DIR
+python setup.py
+
 cd web
 ln -s $THIS_DIR/web/ extras
 

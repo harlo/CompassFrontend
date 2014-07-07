@@ -43,7 +43,6 @@ var CompassVisualSearch = Backbone.Model.extend({
 						};
 						break;
 					case "text":
-						console.info(value);
 						var searchable_text = value.toLowerCase()
 							.replace(/\s/g, ",")
 							.replace(/,,/g, ",");

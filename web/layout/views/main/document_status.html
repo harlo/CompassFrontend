@@ -7,9 +7,22 @@
 		<li id="cp_d_reindex">
 			<a onclick="current_document.setInPanel('reindex');">Reindexer</a>
 		</li>
-		<li id="cp_d_editor">
-			<a onclick="current_document.setInPanel('editor');">Editor</a>
+		<li id="cp_d_assets">
+			<a onclick="current_document.setInPanel('assets');">Assets</a>
 		</li>
 	</ul>
 </div>
 <div id="cp_document_view_panel"></div>
+<script type="text/javascript">
+	if(window.CompassConsole) {
+		$("#cp_document_main_ctrl").append(
+			$(document.createElement('li'))
+				.attr('id', "cp_d_console")
+				.append(
+					$(document.createElement('a'))
+						.click(function() { current_document.setInPanel('console'); })
+						.html("Console")
+				)
+			);
+	}
+</script>

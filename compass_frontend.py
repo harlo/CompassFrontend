@@ -41,10 +41,12 @@ class CompassFrontend(UnveillanceFrontend):
 		])
 		
 		self.on_loads_by_status[3].extend([
+			'/web/js/lib/skulpt.min.js',
 			'/web/js/models/unveillance_user.js',
 			'/web/js/modules/cp_logout.js',
 			'/web/js/models/cp_user.js',
-			'/web/js/models/cp_user_admin.js'
+			'/web/js/models/cp_user_admin.js',
+			'/web/js/models/cp_console.js',
 		])
 
 		self.on_loads.update({

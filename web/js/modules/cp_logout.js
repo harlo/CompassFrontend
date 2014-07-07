@@ -18,7 +18,10 @@ function init() {
 	$(function() {
 		logout_sammy.run();
 		init();
-		$("#cp_nav_options").append($(document.createElement('li'))
-			.html('<a href="#logout">log out</a>'));
+		$("#cp_nav_options")
+			.append($(document.createElement('li'))
+				.html('<a href="#me">' + current_user.get('username') + '</a>'))
+			.append($(document.createElement('li'))
+				.html('<a href="#logout">log out</a>'));
 	});
 })(jQuery);

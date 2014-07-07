@@ -38,13 +38,15 @@ var CompassDocument = UnveillanceDocument.extend({
 			}, 5000);
 		});
 	},
-	setInPanel: function(asset) {
+	setInPanel: function(asset, panel) {
 		var callback = null;
+		var asset_tmpl;
 		var ctx = this;
+		
+		if(!panel) { panel = "#cp_document_view_panel"; }
 		
 		switch(asset) {
 			case "reindex":
-				
 				callback = function() {
 					var tmpl = _.template('<% _.each(tasks, function(task) { %> <li><a onclick="current_document.requestReindex(this, \'<%= task.path %>\');"><%= task.desc %></a><span style="display:none;" class="cp_waiter"></span></li> <% }) %>');
 					var tasks = _.map(UV.MIME_TYPE_TASKS[ctx.get('mime_type')], function(task) {
@@ -58,11 +60,22 @@ var CompassDocument = UnveillanceDocument.extend({
 					$("#cp_reindex_list").html(tmpl({ tasks : tasks }));
 				};
 				break;
+			case "console":
+				if(window.CompassConsole) {
+					callback = function() {
+						window.cp_console = new CompassConsole({
+							documents : [current_document.toJSON()]
+						});
+					};
+				}
+
+				break;
 		}
 		
+		if(asset_tmpl === undefined) { asset_tmpl = asset; }
 		insertTemplate(
-			asset + ".html", this.toJSON(), 
-			"#cp_document_view_panel", callback, "/web/layout/views/document/");
+			asset_tmpl + ".html", this.toJSON(), 
+			panel, callback, "/web/layout/views/document/");
 		
 		$.each($("#cp_document_main_ctrl").children('li'), function() {
 			if($(this).attr('id') == "cp_d_" + asset) {
