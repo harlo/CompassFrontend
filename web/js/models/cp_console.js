@@ -44,19 +44,18 @@ var CompassConsole = Backbone.Model.extend({
 		current_user.save();
 	},
 	doOutput: function(outp) {
-		console.info(outp.length);
 		if(outp.length <= 1) { return; }
 		
 		$(cp_console.get('output_el')).html(
 			$(cp_console.get('output_el')).html() + "<br />" + outp);
 	},
 	doRead: function(x) {
-		console.info("CONSOLE: " + x);
 		if(Sk.builtinFiles === undefined || Sk.builtinFiles['files'][x] === undefined) {
+			console.error("Could not find " + x);
 			throw "File not found: '" + x + "'";
 		}
 		
-		return Sk.builtinFiles['files'][x]
+		return Sk.builtinFiles['files'][x];
 	}
 });
 
