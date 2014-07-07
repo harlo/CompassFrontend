@@ -7,7 +7,7 @@ var CompassConsole = Backbone.Model.extend({
 			output_el: $("#cp_console_output_holder")
 		});
 		
-		Sk.configure({ output : this.get('output_el').get(0) });
+		Sk.configure({ output : this.doOutput, read: this.doRead });
 		
 		if(this.has('documents')) {
 			_.each(_.pluck(this.get('documents'), 'assets'), function(doc) {
@@ -22,10 +22,23 @@ var CompassConsole = Backbone.Model.extend({
 		}
 	},
 	run: function() {
+		$(this.get('output_el')).empty();
 		Sk.importMainWithBody("<stdin>", false, $(this.get('code_el')).val());
 	},
 	save: function() {
 	
+	},
+	doOutput: function(outp) {
+		$(cp_console.get('output_el')).html(
+			$(cp_console.get('output_el')).html() + "\n" + outp);
+	},
+	doRead: function(x) {
+		console.info("CONSOLE: " + x);
+		if(Sk.builtinFiles === undefined || Sk.builtinFiles['files'][x] === undefined) {
+			throw "File not found: '" + x + "'";
+		}
+		
+		return Sk.builtinFiles['files'][x]
 	}
 });
 

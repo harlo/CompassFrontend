@@ -113,7 +113,7 @@ div.cp_module {
 
 #cp_console div {
 	margin:0 1em;
-	width:90%;
+	width:97%;
 }
 
 #cp_console #cp_console_obj_holder ul li {
@@ -126,6 +126,7 @@ div.cp_module {
 	color:#fff;
 	background-color:#909090;
 	width:100%;
+	border:none;
 }
 
 #cp_console #cp_console_opts {
