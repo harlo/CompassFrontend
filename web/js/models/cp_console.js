@@ -24,13 +24,31 @@ var CompassConsole = Backbone.Model.extend({
 	run: function() {
 		$(this.get('output_el')).empty();
 		Sk.importMainWithBody("<stdin>", false, $(this.get('code_el')).val());
+		$("#cp_console_output_holder").get(0).scrollIntoView();
 	},
 	save: function() {
-	
+		if(!window.CompassUserAdmin || !current_user) { return; }
+		
+		var scripts;
+		try {
+			scripts = _.pluck(current_user.get('session_log'), "scripts")[0];
+		} catch(err) {
+			console.warn(err);
+		}
+		
+		if(!scripts) {
+			current_user.get('session_log').push({ scripts: [] });
+			scripts = _.pluck(current_user.get('session_log'), "scripts")[0];
+		}
+		
+		current_user.save();
 	},
 	doOutput: function(outp) {
+		console.info(outp.length);
+		if(outp.length <= 1) { return; }
+		
 		$(cp_console.get('output_el')).html(
-			$(cp_console.get('output_el')).html() + "\n" + outp);
+			$(cp_console.get('output_el')).html() + "<br />" + outp);
 	},
 	doRead: function(x) {
 		console.info("CONSOLE: " + x);

@@ -10,7 +10,10 @@ for word in document.bag_of_words:
 		<ul></ul>
 	</div>
 	<div id="cp_console_script_holder">
-		<textarea>print "WANT TO TEST? %d" % (10 * 2)</textarea>
+		<textarea>
+print "WANT TO TEST? %d" % (10 * 2)
+print "DONE!"
+		</textarea>
 	</div>
 	<div id="cp_console_opts">
 		<ul>
@@ -18,5 +21,6 @@ for word in document.bag_of_words:
 			<li><a onclick="cp_console.save();">save</a></li>
 		</ul>
 	</div>
+	<a name="cp_console_output_holder"></a>
 	<div id="cp_console_output_holder"></div>
 </div>
