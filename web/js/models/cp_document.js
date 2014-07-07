@@ -38,6 +38,57 @@ var CompassDocument = UnveillanceDocument.extend({
 			}, 5000);
 		});
 	},
+	addMetadata: function(el) {
+		if(!window.CompassUserAdmin || !current_user) { return; }
+		
+		var key = $("#cp_metadata_stub_" + el).find('input[name=cp_metadata_key]')[0];
+		var value = $("#cp_metadata_stub_" + el).find('input[name=cp_metadata_value]')[0];
+				
+		if(!key || $(key).val() == "") { return; }
+		if(!value || $(value).val() == "") { return; }
+		
+		var k = $(key).val();
+		var v = $(value).val();
+		var md;
+		
+		try {
+			md = _.pluck(current_user.get('session_log'), 'metadata')[0];
+		} catch(err) {
+			console.warn(err);
+		}
+		
+		if(!md) {
+			current_user.get('session_log').push({ metadata : [] });
+			md = _.pluck(current_user.get('session_log'), 'metadata')[0];
+		}
+		
+		var kvp = _.findWhere(md, {
+			key : k,
+			media_id : current_document.get('_id')
+		});
+		
+		if(!kvp) {
+			kvp = { key : k, id: randomString(), media_id: current_document.get('_id') };
+			md.push(kvp);
+		}
+		
+		kvp.value = v;
+		current_user.save();
+		
+		if(el == "stub") {
+			var viewer_el = $(document.createElement('li'));
+			insertTemplate("edit_metadata.html", kvp, viewer_el, function() {
+				$("#cp_document_metadata_list").prepend(viewer_el);
+				$(key).val("");
+				$(value).val("");
+			});
+		} else {
+			var viewer_el = $("#cp_metadata_view_" + el).find('.cp_metadata_value')[0];
+			$(viewer_el).html(v);
+		}
+		
+		toggleElement("#cp_metadata_stub_" + el);	
+	},
 	setInPanel: function(asset, panel) {
 		var callback = null;
 		var asset_tmpl;
@@ -46,6 +97,44 @@ var CompassDocument = UnveillanceDocument.extend({
 		if(!panel) { panel = "#cp_document_view_panel"; }
 		
 		switch(asset) {
+			case "info":
+				if(window.UnveillanceUser && current_user) {
+					callback = function() {
+						var md_holders = [];
+						var tmpl = "view_metadata.html";
+						
+						try {
+							md_holders = _.map(
+								_.pluck(current_user.get('session_log'), "metadata")[0], 
+								function(md) {
+									return {
+										key: md.key,
+										value: md.value,
+										id: randomString(),
+										media_id: md.media_id
+									}
+								}
+							);
+						} catch(err) {
+							console.info("NO COULD NOT FIND METADATA");
+							console.warn(err);
+						}
+						
+						if(window.CompassUserAdmin) {
+							tmpl = "edit_metadata.html";
+							md_holders.push({ id : "stub" });
+						}
+						
+						_.each(md_holders, function(md) {
+							var add_li = $(document.createElement('li'));
+							insertTemplate(tmpl, md, add_li, function() {
+								$("#cp_document_metadata_list").append(add_li);
+							});
+						});
+					}
+				}
+				
+				break;
 			case "reindex":
 				callback = function() {
 					var tmpl = _.template('<% _.each(tasks, function(task) { %> <li><a onclick="current_document.requestReindex(this, \'<%= task.path %>\');"><%= task.desc %></a><span style="display:none;" class="cp_waiter"></span></li> <% }) %>');

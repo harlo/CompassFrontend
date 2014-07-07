@@ -1,7 +1,6 @@
 var document_browser, visual_search, current_batch, current_mode;
 
 function initDocumentBrowser() {
-	console.info("init doc browser");
 	doInnerAjax("documents", "post", { mime_type: "[text/plain,application/pdf]" },
 		function(json) {
 			if(json.status == 500) {
