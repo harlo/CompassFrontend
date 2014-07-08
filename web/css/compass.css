@@ -32,6 +32,10 @@
 	font-weight:normal !important;
 }
 
+.cp_button:hover, .uv_button:hover {
+	text-decoration:none;
+}
+
 .cp_active {
 	border:1px solid #ccc;
 }

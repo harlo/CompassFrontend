@@ -75,7 +75,6 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 			$(cb).unbind();
 		});
 		
-		onViewerModeChanged("document");
 		$("#cp_doc_batch_toggle").prop('checked', false);
 	},
 	

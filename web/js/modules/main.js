@@ -93,11 +93,14 @@ function loadModule(module_name) {
 							return;
 						}
 					} catch(err) {}
+					
+					if(uv_res) { delete uv_res; }
 				
 					try {
 						if(!this[doc.get('_id')]) {
 							this[doc.get('_id')] = [];
 						}
+						
 						this[doc.get('_id')].push(res.responseText);
 					} catch(err) {
 						console.error(err);
