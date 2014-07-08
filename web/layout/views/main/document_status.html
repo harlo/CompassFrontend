@@ -1,0 +1,28 @@
+<h2>{{ file_name }}</h2>
+<div class="cp_module">
+	<ul id="cp_document_main_ctrl">
+		<li id="cp_d_info">
+			<a onclick="current_document.setInPanel('info');">Info</a>
+		</li>
+		<li id="cp_d_reindex">
+			<a onclick="current_document.setInPanel('reindex');">Reindexer</a>
+		</li>
+		<li id="cp_d_assets">
+			<a onclick="current_document.setInPanel('assets');">Assets</a>
+		</li>
+	</ul>
+</div>
+<div id="cp_document_view_panel"></div>
+<script type="text/javascript">
+	if(window.CompassConsole) {
+		$("#cp_document_main_ctrl").append(
+			$(document.createElement('li'))
+				.attr('id', "cp_d_console")
+				.append(
+					$(document.createElement('a'))
+						.click(function() { current_document.setInPanel('console'); })
+						.html("Console")
+				)
+			);
+	}
+</script>

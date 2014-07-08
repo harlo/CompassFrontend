@@ -1,0 +1,7 @@
+{
+	"web" : {
+		"BATCH_SALT" : "w8vhla3AYO4jtbabso7TECHNOLOGYzlc!!ladifal",
+		"API_PORT" : 8889,
+		"REMOTE_HOST" : "https://ec2-75-101-242-197.compute-1.amazonaws.com:8080"
+	}
+}

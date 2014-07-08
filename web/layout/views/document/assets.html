@@ -1,0 +1,9 @@
+<div class="cp_pod cp_instructions">
+	<p><b>Assets</b> are attached bits of data that can be operated on.  Assets are generated during the indexing process, and can be edited here.</p>
+</div>
+<ol id="cp_document_asset_list">
+	{{ #assets }}
+	<li><a onclick="setRawAsset('#cp_document_asset_viewer', '{{ base_path}}/{{ file_name }}')">{{ file_name }}</a> ({{ description }})</li>
+	{{ /assets }}
+</ol>
+<div id="cp_document_asset_viewer"></div>

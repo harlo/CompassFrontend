@@ -8,5 +8,34 @@ compass_mime_type_map = {
 	'application/pdf' : "pdf"
 }
 
+compass_mime_type_tasks = {
+	"application/pdf" : [
+		"PDF.process_metadata.processPDFMetadata", 
+		"PDF.split_pdf_pages.splitPDFPages",
+		"PDF.ocr_pdf.OCRPDF", 
+		"PDF.extract_pdf_text.extractPDFText", 
+		"Text.preprocess_nlp.preprocessNLP",
+		"NLP.tokenizer.basicTokenizer"
+	]
+}
+
+text_plain_tasks = [
+	"DocumentCloud.upload_doc.uploadDocument",
+	"DocumentCloud.get_assets.getAssets"
+]
+
+compass_asset_tags = {
+	"TOKENS_NLP" : "stanford_core_nlp_tokenizer",
+	"DOC_CLOUD_ENTITIES" : "document_cloud_entities",
+	"DOC_CLOUD_MANIFEST" : "document_cloud_manifest",
+	"DOC_CLOUD_DOC" : "document_cloud_document"
+}
+
 MIME_TYPES.update(compass_mime_types)
-MIME_TYPES.update(compass_mime_type_map)
+MIME_TYPE_MAP.update(compass_mime_type_map)
+
+MIME_TYPE_TASKS.update(compass_mime_type_tasks)
+MIME_TYPE_TASKS["application/pdf"].extend(text_plain_tasks)
+MIME_TYPE_TASKS["text/plain"].extend(text_plain_tasks)
+
+ASSET_TAGS.update(compass_asset_tags)

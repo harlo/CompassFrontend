@@ -1,0 +1,14 @@
+<a id="cp_metadata_view_{{ id }}" onclick="toggleElement('#cp_metadata_stub_{{ id }}');">
+	<span class="cp_metadata_key">{{ key }}</span> : 
+	<span class="cp_metadata_value">{{ value }}</span>
+</a>
+<div id="cp_metadata_stub_{{ id }}" style="display:none;">
+	<input name="cp_metadata_key" rel="key" type="text" value="{{ key }}" /> : 
+	<input name="cp_metadata_value" rel="value" type="text" value="{{ value }}" />
+	<a class="uv_button" onclick="current_document.addMetadata('{{ id }}');">OK</a>
+</div>
+<script>
+	if($($("#cp_metadata_view_{{ id }}").find('.cp_metadata_key')[0]).html() == "") {
+		$("#cp_metadata_view_{{ id }}").html("[ + ]");
+	}
+</script>
