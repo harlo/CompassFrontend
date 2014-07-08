@@ -1,7 +1,8 @@
 var document_browser, visual_search, current_batch, current_mode;
 
 function initDocumentBrowser() {
-	doInnerAjax("documents", "post", { mime_type: "[text/plain,application/pdf]" },
+	doInnerAjax("documents", "post",
+		{ mime_type: "[" +  UV.DEFAULT_MIME_TYPES.join() + "]" },
 		function(json) {
 			if(json.status == 500) {
 				console.info("No Annex Connection...");

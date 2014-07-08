@@ -52,6 +52,14 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		});
 	},
 	
+	selectAllVisible: function() {
+		var ctx = this;
+		
+		$.each($(this.root_el).find("input:checkbox"), function() {
+			$(this).prop('checked', true);
+		});
+	},
+	
 	buildBatch: function() {
 		var selected = [];
 		$.each($(this.root_el).find(":checked"), function() {
@@ -104,11 +112,6 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		}
 	},
 	
-	exportBatch: function() {
-		console.info("EXPORTING CURRENT BATCH");
-		this.get('batch').save();
-	},
-
 	buildDocumentTree: function(dir) {
 		$(this.root_el).empty();
 		this.clearBatch();

@@ -1,8 +1,15 @@
 #! /bin/bash
 THIS_DIR=`pwd`
 
+if [ $# -eq 0 ]
+then
+	WITH_CONFIG=$THIS_DIR/conf/compass.secrets.json
+else
+	WITH_CONFIG=$1
+fi
+
 cd lib/Frontend
-./setup.sh $THIS_DIR/conf/compass.secrets.json
+./setup.sh $WITH_CONFIG
 
 cd $THIS_DIR
 python setup.py

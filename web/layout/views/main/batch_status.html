@@ -1,9 +1,15 @@
-<h2><span id="cp_batch_num">{{ batch_size }}</span> document(s) analyzed.</h2>
-<a class="cp_button" onclick="document_browser.exportBatch();">Save</a>
-<div class="cp_module">
-	<ul id="cp_batch_doc_list"></ul>
-</div>
-<div class="cp_module">
-	<ul id="cp_batch_common_funcs_list"></ul>
+<h3>
+	<span id="cp_batch_num">Analyzing {{ batch_size }}</span> document(s)
+	<a class="cp_button" onclick="current_batch.save();">Save</a>
+</h3>
+
+
+<div id="cp_module_ctrl_holder">
+	<div class="cp_module">
+		<ul id="cp_batch_doc_list"></ul>
+	</div>
+	<div class="cp_module">
+		<ul id="cp_batch_common_funcs_list"></ul>
+	</div>
 </div>
 <div id="cp_module_output_holder"></div>

@@ -1,6 +1,16 @@
 var CompassBatch = Backbone.Model.extend({
 	constructor: function() {
 		Backbone.Model.apply(this, arguments);
+		
+		if(visual_search && visual_search.searchBar.searchQuery.models.length > 0) {
+			this.set({
+				initial_query : _.map(visual_search.searchBar.searchQuery.models,
+					function(mod) {
+						return _.omit(mod.toJSON(), 'app');
+					}
+				)
+			});
+		}
 	},
 	addItem: function(_id) {
 		if(!_.findWhere(this.get('batch'), { _id : _id })) {
@@ -16,7 +26,23 @@ var CompassBatch = Backbone.Model.extend({
 		}
 	},
 	save: function() {
-	
+		if(!window.CompassUserAdmin || !current_user) { return false; }
+		
+		var batches;
+		try {
+			batches = _.pluck(current_user.get('session_log'), "batches")[0];
+		} catch(err) {
+			console.warn(err);
+		}
+		
+		if(!batches) {
+			current_user.get('session_log').push({ batches : [] });
+			return this.save();
+		}
+		
+		batches.push(this.get('batch'));
+		current_user.save();
+		return true;
 	},
 	update: function() {
 		this.updateCommonModules();
@@ -58,9 +84,15 @@ var CompassBatch = Backbone.Model.extend({
 				_ids : []
 			},
 			{
-				name: "forensic_metadata",
+				name : "forensic_metadata",
 				label : "Compare metadata",
 				asset_tags : [UV.ASSET_TAGS.F_MD],
+				_ids : []
+			},
+			{
+				name : "entities",
+				label : "View entities",
+				asset_tags : [UV.ASSET_TAGS.DOC_CLOUD_ENTITIES],
 				_ids : []
 			}
 		]));

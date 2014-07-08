@@ -41,6 +41,8 @@ var CompassConsole = Backbone.Model.extend({
 			return this.save();
 		}
 		
+		// AND DO WHAT?
+		
 		current_user.save();
 		return true;
 	},

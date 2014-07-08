@@ -1,12 +1,9 @@
-import json, signal, os, logging, tornado.web, urllib, requests
+import json, os, tornado.web
 from sys import exit, argv
-from multiprocessing import Process
 from time import sleep
 
-from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon, passesParameterFilter, parseRequestEntity
+from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon
 from lib.Frontend.unveillance_frontend import UnveillanceFrontend
-from lib.Frontend.Models.uv_fabric_process import UnveillanceFabricProcess
-from lib.Frontend.Utils.fab_api import netcat
 from lib.Frontend.lib.Core.vars import Result
 
 from conf import COMPASS_BASE_DIR, COMPASS_CONF_ROOT, DEBUG, buildServerURL
@@ -70,7 +67,9 @@ class CompassFrontend(UnveillanceFrontend):
 		
 		tmpl_root = os.path.join(COMPASS_BASE_DIR, "web", "layout", "tmpl")
 		self.INDEX_HEADER = os.path.join(tmpl_root, "header.html")
+		self.INDEX_FOOTER = os.path.join(tmpl_root, "footer.html")
 		self.MODULE_HEADER = self.INDEX_HEADER
+		self.MODULE_FOOTER = self.INDEX_FOOTER
 	
 	"""
 		Custom handlers

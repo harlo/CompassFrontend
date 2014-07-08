@@ -20,10 +20,16 @@
 	visibility:hidden;
 }
 
+#cp_viewer_panel h2 {
+	margin-top:0 !important;
+}
+
 .cp_button, .uv_button {
 	border:1px solid #ccc;
 	padding:0.2em;
 	margin:0.1em;
+	font-size:14px !important;
+	font-weight:normal !important;
 }
 
 .cp_active {
@@ -109,6 +115,10 @@ div.cp_module {
 	width:100%;
 	min-height:inherit;
 	border:1px solid #999;
+}
+
+#cp_module_ctrl_holder {
+	margin-top:1em;
 }
 
 #cp_console div {
