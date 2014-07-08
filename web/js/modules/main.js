@@ -62,6 +62,10 @@ function loadModule(module_name) {
 				});
 			};
 			break;
+		case "entities":
+			break;
+		case "forensic_metadata":
+			break;
 	}
 	
 	_.each(module._ids, function(_id) {
