@@ -20,7 +20,7 @@
 	visibility:hidden;
 }
 
-#cp_viewer_panel h2 {
+#cp_viewer_panel h2, #cp_viewer_panel h3 {
 	margin-top:0 !important;
 }
 

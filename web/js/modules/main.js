@@ -36,65 +36,80 @@ function loadModule(module_name) {
 	$("#cp_module_output_holder").empty();
 	var module = _.findWhere(
 		current_batch.get('modules'), { name : module_name });
-	if(!module) { return; }
 	
-	var ctx = this;
+	if(!module) { return; }
+		
 	var data = {};
 	var data_handled = 0;
+	var on_data_handled;
 	
-	var onDataHandled = function(callback) {
-		console.info("DATA DONE!");
-		console.info(data);
-		
+	var onDataHandled = function() {		
 		getTemplate(module_name + ".html", function(res) {
 			if(res.status != 200) { return; }
 			
 			$("#cp_module_output_holder").html(Mustache.to_html(res.responseText, data));
-			callback.call();
+			if(on_data_handled) { on_data_handled.call(); }
+			current_batch.set({ data : data });
 			
 		}, "/web/layout/views/module/", this);
 	};
+	
+	switch(module_name) {
+		case "word_stats":
+			on_data_handled = function() {
+				_.each(_.keys(data), function(id) {
+					data[id] = JSON.parse(data[id][0]);
+				});
+			};
+			break;
+	}
 	
 	_.each(module._ids, function(_id) {
 		var doc = new UnveillanceDocument(
 			_.findWhere(document_browser.get('data'), { _id : _id }));
 		if(!doc) { return; }
-	
-		switch(module_name) {
-			case "forensic_metadata":
-				try {
-					var md_file = doc.getAssetsByTagName(UV.ASSET_TAGS.F_MD)[0].file_name;
-					md_file = doc.get('base_path') + "/" + md_file;
-				} catch(err) {
-					console.error(err);
-					return;
-				}
-				
+		
+		_.each(module.asset_tags, function(tag) {
+			try {
+				var md_file = doc.getAssetsByTagName(tag)[0].file_name;
+				md_file = doc.get('base_path') + "/" + md_file;
+			} catch(err) {
+				console.error(err);
+				return;
+			}
+			
+			try {
 				getFileContent(data, md_file, function(res) {
 					try {
-						if(JSON.parse(res.responseText).result) {
+						// if we can't get the file, we'll throw a 404 and nothing else.
+						var uv_res = JSON.parse(res.responseText);
+						if(_.keys(uv_res).length == 1 && uv_res.result) {
 							console.error(res.responseText);
+							delete uv_res;
 							return;
 						}
 					} catch(err) {}
-					
-					if(!this.csv) { this.csv = []; }
-					this.csv.push(res.responseText);
-
-					data_handled ++;
-					
-					if(data_handled == module._ids.length) {						
-						onDataHandled(function() {
-							new UnveillanceCSV({
-								data : data.csv,
-								root_el : "#cp_fm_csv"
-							});
-						});
-					}
-					
-				}, data);
 				
-				break;
+					try {
+						if(!this[doc.get('_id')]) {
+							this[doc.get('_id')] = [];
+						}
+						this[doc.get('_id')].push(res.responseText);
+					} catch(err) {
+						console.error(err);
+						return;
+					}
+				
+				}, data);
+			} catch(err) {
+				console.error(err);
+				return;
+			}
+		});
+		
+		data_handled++;
+		if(data_handled == module._ids.length) {
+			onDataHandled();
 		}
 	});
 }
