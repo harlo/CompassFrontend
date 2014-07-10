@@ -76,26 +76,7 @@ var CompassBatch = Backbone.Model.extend({
 		
 	},
 	updateCommonModules: function() {
-		this.set('modules', _.clone([
-			{
-				name : "word_stats",
-				label : "View word stats",
-				asset_tags : [UV.ASSET_TAGS.TXT_JSON],
-				_ids : []
-			},
-			{
-				name : "forensic_metadata",
-				label : "Compare metadata",
-				asset_tags : [UV.ASSET_TAGS.F_MD],
-				_ids : []
-			},
-			{
-				name : "entities",
-				label : "View entities",
-				asset_tags : [UV.ASSET_TAGS.DOC_CLOUD_ENTITIES],
-				_ids : []
-			}
-		]));
+		this.set('modules', _.clone(UV.ASSET_MODULES));
 		
 		var ctx = this;
 		

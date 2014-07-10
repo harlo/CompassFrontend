@@ -8,6 +8,7 @@ var CompassDocument = UnveillanceDocument.extend({
 		
 		if(updated_info) {
 			this.set(updated_info);
+			this.updateModules();
 			onViewerModeChanged("document", force_reload=true);
 		}
 	},
@@ -17,15 +18,25 @@ var CompassDocument = UnveillanceDocument.extend({
 		}
 	},
 	requestReindex: function(el, task_path) {
-		var req = { _id : this.get('_id') }
+		var req = { doc_id : this.get('_id') };
 		var waiter_span = $($(el).siblings('.cp_waiter')[0]);
-		if(task_path) { _.extend(req, { task_path : task_path })}				
 		
 		$(waiter_span)
 			.html("(indexing...)")
 			.css('display', 'block');
 		
-		doInnerAjax("reindex", "post", req, function(json) {
+		var extra_data;
+		try {
+			extra_data = _.find(UV.MIME_TYPE_TASK_REQUIREMENTS, function(task_req) {
+				return _.contains(_.keys(task_req), task_path);
+			});
+			_.extend(req, extra_data[task_path]);
+		} catch(err) {
+			console.info(err);
+		}
+		
+		console.info(req);
+		UnveillanceDocument.prototype.requestReindex(function(json) {
 			json = JSON.parse(json.responseText);
 			var result = "Could not reindex."
 			if(json.result == 200) {
@@ -36,7 +47,10 @@ var CompassDocument = UnveillanceDocument.extend({
 			window.setTimeout(function() {
 				$(waiter_span).css('display', 'none');
 			}, 5000);
-		});
+		}, req, task_path);
+	},
+	saveAsset: function() {
+	
 	},
 	addMetadata: function(el) {
 		if(!window.CompassUserAdmin || !current_user) { return; }
@@ -49,27 +63,19 @@ var CompassDocument = UnveillanceDocument.extend({
 		
 		var k = $(key).val();
 		var v = $(value).val();
-		var md;
-		
-		try {
-			md = _.pluck(current_user.get('session_log'), 'metadata')[0];
-		} catch(err) {
-			console.warn(err);
-		}
-		
-		if(!md) {
-			current_user.get('session_log').push({ metadata : [] });
-			md = _.pluck(current_user.get('session_log'), 'metadata')[0];
-		}
-		
-		var kvp = _.findWhere(md, {
+
+		var metadata = current_user.getDirective("metadata");
+
+		var kvp = _.findWhere(metadata, {
 			key : k,
 			media_id : current_document.get('_id')
 		});
 		
 		if(!kvp) {
 			kvp = { key : k, id: randomString(), media_id: current_document.get('_id') };
-			md.push(kvp);
+			try {
+				metadata.push(kvp);
+			} catch(err) {}
 		}
 		
 		kvp.value = v;
@@ -89,6 +95,84 @@ var CompassDocument = UnveillanceDocument.extend({
 		
 		toggleElement("#cp_metadata_stub_" + el);	
 	},
+	
+	updateModules: function() {
+		var ctx = this;
+
+		this.modules = _.map(
+			_.filter(UV.ASSET_MODULES, function(mod) {			
+				var doc_tags = _.flatten(_.pluck(ctx.get('assets'), 'tags'));			
+				var common_tags = _.intersection(doc_tags, mod.asset_tags);
+			
+				return common_tags.length > 0;
+			}), function(mod) {
+				return _.extend(_.clone(mod), {
+					_ids : [ctx.get('_id')]
+				});
+			}
+		);
+		
+		_.each(this.modules, function(mod) {
+			var build_func;
+			var root_el_id = mod.name + "_" + ctx.get('_id');
+			
+			var root_el = $(document.createElement('div'))
+				.attr('_id', root_el_id)
+				.addClass('cp_pod');
+			
+			switch(mod.name) {
+				case "word_stats":
+					mod.viz = new CompassWordStats({
+						'data' : _.map(
+							ctx.getAssetDataForModule(mod.asset_tags), 
+							function(asset) {
+								return JSON.parse(asset);
+							}
+						),
+						'root_el' : "#" + root_el_id
+					});
+					break;
+			}
+			
+			console.info(mod);
+		});
+	},
+	
+	getAssetDataForModule: function(asset_tags) {
+		var assets = [];
+		var ctx = this;
+		
+		_.each(asset_tags, function(tag) {
+			try {
+				var asset_path = ctx.getAssetsByTagName(tag)[0].file_name;
+			} catch(err) {
+				console.warn(err);
+				return;
+			}
+			
+			getFileContent(this, ctx.get('base_path') + "/" + asset_path, function(res) {
+				try {
+					var check_res = JSON.parse(res.responseText);
+					if(check_res.result && _.keys(check_res).length == 1) {
+						return;
+					}
+					
+					check_res = null;
+					delete check_res;
+				} catch(err) {}
+				
+				assets.push(res.responseText);
+			});
+		});
+		
+		
+		if(assets.length > 0) {
+			return assets;
+		}
+		
+		return undefined;
+	},
+	
 	setInPanel: function(asset, panel) {
 		var callback = null;
 		var asset_tmpl;
@@ -105,7 +189,7 @@ var CompassDocument = UnveillanceDocument.extend({
 						
 						try {
 							md_holders = _.map(
-								_.pluck(current_user.get('session_log'), "metadata")[0], 
+								current_user.getDirective("metadata"), 
 								function(md) {
 									return {
 										key: md.key,
@@ -130,6 +214,10 @@ var CompassDocument = UnveillanceDocument.extend({
 							insertTemplate(tmpl, md, add_li, function() {
 								$("#cp_document_metadata_list").append(add_li);
 							});
+						});
+						
+						_.each(ctx.modules, function(mod) {
+							//$("#cp_document_module_holder").append(mod.viz);
 						});
 					}
 				}

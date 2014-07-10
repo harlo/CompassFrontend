@@ -39,3 +39,5 @@ MIME_TYPE_TASKS["application/pdf"].extend(text_plain_tasks)
 MIME_TYPE_TASKS["text/plain"].extend(text_plain_tasks)
 
 ASSET_TAGS.update(compass_asset_tags)
+
+MIME_TYPE_TASK_REQUIREMENTS.extend([{ tp : { "auth_string" : "documentcloud_auth_str"}} for tp in text_plain_tasks])

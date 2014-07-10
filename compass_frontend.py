@@ -6,6 +6,7 @@ from lib.Frontend.unveillance_frontend import UnveillanceFrontend
 from lib.Frontend.lib.Core.vars import Result
 
 from conf import COMPASS_BASE_DIR, COMPASS_CONF_ROOT, DEBUG, buildServerURL
+from vars import MIME_TYPE_TASK_REQUIREMENTS
 
 class CompassFrontend(UnveillanceFrontend):
 	def __init__(self):
@@ -18,12 +19,13 @@ class CompassFrontend(UnveillanceFrontend):
 		
 		self.default_on_loads.extend([
 			'/web/js/lib/sammy.js',
-			'/web/js/compass.js', 
 			'/web/js/lib/crossfilter.min.js',
 			'/web/js/lib/d3.min.js',
 			'/web/js/viz/uv_viz.js',
 			'/web/js/models/cp_document.js',
-			'/web/js/models/cp_batch.js'])
+			'/web/js/models/cp_batch.js',
+			'/web/js/compass.js'
+		])
 		
 		self.on_loads_by_status[1].extend([
 			'/web/js/modules/cp_login.js',
@@ -61,8 +63,20 @@ class CompassFrontend(UnveillanceFrontend):
 				'/web/js/modules/main.js']
 		})
 		
+		viz_root = os.path.join(COMPASS_BASE_DIR, "web", "js", "viz")		
+		for _, _, files in os.walk(viz_root):
+			viz_js = ["/%s" % os.path.join("web", "js", "viz", v) for v in files]
+
+			if DEBUG: print "adding all vizez:\n%s" % viz_js
+			
+			self.on_loads['main'].extend(viz_js)				
+			break
+		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
-			self.init_vars.update(json.loads(IV.read())['web'])
+			init_vars = json.loads(IV.read())['web']
+			init_vars['MIME_TYPE_TASK_REQUIREMENTS'] = MIME_TYPE_TASK_REQUIREMENTS
+			
+			self.init_vars.update(init_vars)
 		
 		tmpl_root = os.path.join(COMPASS_BASE_DIR, "web", "layout", "tmpl")
 		self.INDEX_HEADER = os.path.join(tmpl_root, "header.html")

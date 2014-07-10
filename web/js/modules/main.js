@@ -168,8 +168,9 @@ function onViewerModeChanged(mode, force_reload) {
 }
 
 function onConfLoaded() {
-	window.setTimeout(function() {
-		initDocumentBrowser();
+	initDocumentBrowser();
+	
+	window.setTimeout(function() {	
 		initVisualSearch();
 	}, 200);
 }
@@ -198,6 +199,20 @@ function onConfLoaded() {
 	});
 	
 	$(function() {
+		try {
+			updateConf();
+		} catch(err) {
+			console.warn(err);
+			console.warn("no updateConf()");
+		}
+		
+		try {
+			onConfLoaded();
+		} catch(err) {
+			console.warn(err);
+			console.warn("no onConfLoaded()");
+		}
+		
 		content_sammy.run();
 	});
 })(jQuery);
