@@ -3,7 +3,7 @@ from sys import exit
 from farbic.operations import prompt
 
 from lib.Frontend.lib.Core.Utils.funcs import generateNonce
-from conf import CONF_ROOT, API_PORT, buildServerURL
+from conf import CONF_ROOT
 
 if __name__ == "__main__":
 	try:
@@ -13,10 +13,11 @@ if __name__ == "__main__":
 		print "NO CONF?"
 		exit(1)
 	
+	dc_ask = True
 	if 'documentcloud_no_ask' in config.keys() and config['documentcloud_no_ask']:
-		exit(0)
+		dc_ask = False
 	
-	if 'documentcloud_auth_str' not in config.keys():
+	if dc_ask and 'documentcloud_auth_str' not in config.keys():
 		print "****************************"
 		print "Link DocumentCloud account?  y or n?"
 		use_dc = prompt("[DEFAULT: n]")
@@ -30,9 +31,7 @@ if __name__ == "__main__":
 	with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'wb+') as WEB:
 		WEB.write(json.dumps({
 			'web' : {
-				'BATCH_SALT' : generateNonce(),
-				'API_PORT' : API_PORT,
-				'REMOTE_HOST' : buildServerURL()
+				'BATCH_SALT' : generateNonce()
 			}
 		})
 	

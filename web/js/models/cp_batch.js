@@ -26,7 +26,7 @@ var CompassBatch = Backbone.Model.extend({
 		}
 	},
 	save: function() {
-		if(!window.CompassUserAdmin || !current_user) { return false; }
+		if(!window.UnveillanceUser || !current_user) { return false; }
 		
 		var batches;
 		try {

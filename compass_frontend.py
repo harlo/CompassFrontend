@@ -2,7 +2,6 @@ import json, os, tornado.web
 from sys import exit, argv
 from time import sleep
 
-from lib.Frontend.lib.Core.Utils.funcs import startDaemon, stopDaemon
 from lib.Frontend.unveillance_frontend import UnveillanceFrontend
 from lib.Frontend.lib.Core.vars import Result
 

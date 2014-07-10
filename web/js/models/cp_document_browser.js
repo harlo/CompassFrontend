@@ -48,7 +48,10 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		$.each($(this.root_el).find("input:checkbox"), function() {
 			$(this).prop('checked', false);
 			var _id = $($(this).parent()).attr('id').replace("cp_db_", "");
-			ctx.get('batch').removeItem(_id);
+			
+			try {
+				ctx.get('batch').removeItem(_id);
+			} catch(err) {}
 		});
 	},
 	
