@@ -22,7 +22,7 @@ function updateConf() {
 		{
 			name : "entities",
 			label : "View entities",
-			asset_tags : [UV.ASSET_TAGS.DOC_CLOUD_ENTITIES],
+			asset_tags : [UV.ASSET_TAGS.DOC_CLOUD_ENTITIES, UV.ASSET_TAGS.ADDRESSES_NLP],
 			_ids : []
 		},
 		{

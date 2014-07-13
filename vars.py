@@ -20,10 +20,16 @@ compass_mime_type_tasks = {
 	]
 }
 
-text_plain_tasks = [
+authenticated_tasks = [
 	"DocumentCloud.upload_doc.uploadDocument",
 	"DocumentCloud.get_assets.getAssets"
 ]
+
+text_plain_tasks = authenticated_tasks
+text_plain_tasks.extend([
+	"NLP.tokenizer.basicTokenizer",
+	"NLP.address_parser.addressParser"
+])
 
 compass_asset_tags = {
 	"TOKENS_NLP" : "stanford_core_nlp_tokenizer",
@@ -42,4 +48,4 @@ MIME_TYPE_TASKS["text/plain"].extend(text_plain_tasks)
 
 ASSET_TAGS.update(compass_asset_tags)
 
-MIME_TYPE_TASK_REQUIREMENTS.extend([{ tp : { "auth_string" : "documentcloud_auth_str"}} for tp in text_plain_tasks])
+MIME_TYPE_TASK_REQUIREMENTS.extend([{ tp : { "auth_string" : "documentcloud_auth_str"}} for tp in authenticated_tasks])
