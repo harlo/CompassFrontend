@@ -15,7 +15,8 @@ compass_mime_type_tasks = {
 		"PDF.ocr_pdf.OCRPDF", 
 		"PDF.extract_pdf_text.extractPDFText", 
 		"Text.preprocess_nlp.preprocessNLP",
-		"NLP.tokenizer.basicTokenizer"
+		"NLP.tokenizer.basicTokenizer",
+		"NLP.address_parser.addressParser"
 	]
 }
 
@@ -28,7 +29,8 @@ compass_asset_tags = {
 	"TOKENS_NLP" : "stanford_core_nlp_tokenizer",
 	"DOC_CLOUD_ENTITIES" : "document_cloud_entities",
 	"DOC_CLOUD_MANIFEST" : "document_cloud_manifest",
-	"DOC_CLOUD_DOC" : "document_cloud_document"
+	"DOC_CLOUD_DOC" : "document_cloud_document",
+	"ADDRESSES_NLP" : "addresses_nlp"
 }
 
 MIME_TYPES.update(compass_mime_types)
