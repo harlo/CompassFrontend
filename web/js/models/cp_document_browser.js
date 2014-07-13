@@ -18,10 +18,10 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		
 		$("#cp_doc_batch_toggle").change(function() {
 			if($(this).prop('checked')) {
-				window.location = "#analyze=" + ctx.buildBatch()
+				window.location = "/#analyze=" + ctx.buildBatch()
 			} else { 
 				ctx.clearBatch();
-				window.location = "#";
+				window.location = "/#";
 			}
 		});
 
@@ -100,7 +100,7 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		});
 		
 		if(is_real_batch) {
-			onViewerModeChanged("batch");
+			onViewerModeChanged("batch", force_reload=true);
 			
 			$("#cp_doc_batch_toggle").prop('checked', true);
 			$($(this.root_el).find("input:checkbox")).change(function() {
@@ -119,7 +119,6 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 		this.clearBatch();
 		
 		if(!dir) { dir = this.get('data'); }
-		
 		
 		var ctx = this;
 		_.each(dir, function(doc) {

@@ -1,8 +1,4 @@
-<h3>
-	Analyzing <span id="cp_batch_num">{{ batch_size }}</span> document(s)
-	<a class="cp_button" onclick="current_batch.save();">Save</a>
-</h3>
-
+<h3 ic="cp_module_header"><span id="cp_batch_num">{{ batch_size }}</span> document(s)</h3>
 
 <div id="cp_module_ctrl_holder">
 	<div class="cp_module">
@@ -13,3 +9,14 @@
 	</div>
 </div>
 <div id="cp_module_output_holder"></div>
+
+<script type="text/javascript">
+	if(window.UnveillanceUser && current_user) {
+		$("#cp_module_header").append(
+			$(document.createElement('a'))
+				.addClass('cp_button')
+				.click(current_batch.save)
+				.html("Save")
+		);
+	}
+</script>

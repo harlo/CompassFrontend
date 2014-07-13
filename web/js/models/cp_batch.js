@@ -59,7 +59,8 @@ var CompassBatch = Backbone.Model.extend({
 		_.each(file_names, function(name) {
 			$("#cp_batch_doc_list").append($(document.createElement('span'))
 				.addClass('cp_file_name cp_inactive')
-				.html(name));
+				.html(name)
+			);
 		});
 		
 		getTemplate("module_ctrl.html", function(res) {

@@ -56,10 +56,8 @@ var CompassVisualSearch = Backbone.Model.extend({
 						
 						if(ids != null && ids.result == 200) {
 							filter_func = function(doc) {
-								return _.findWhere(ids.data.documents, {
-									_id : doc._id
-								});
-							}
+								return _.findWhere(ids.data.documents, { _id : doc._id });
+							};
 						}
 						break;
 				}
@@ -76,8 +74,18 @@ var CompassVisualSearch = Backbone.Model.extend({
 			console.warn(err);
 		}
 		
-		if(filter_result && filter_result.length != document_browser.get('data').length) { 
+		if(filter_result && filter_result.length != document_browser.get('data').length) {
 			document_browser.buildDocumentTree(filter_result);
+			
+			if(document_browser.get('data').length > 0) {
+				// throw into analysis mode by making a batch
+				
+				document_browser.selectAllVisible();
+				window.location = "/#analyze=" + document_browser.buildBatch();
+			} else {
+				$("#cp_document_browser_holder")
+					.html("<p>There are no documents matching your search.</p>");
+			}
 		}
 	},
 	facetMatches: function(callback) { callback(UV.SEARCH_FACETS); },

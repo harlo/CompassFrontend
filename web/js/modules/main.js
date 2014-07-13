@@ -177,7 +177,7 @@ function onConfLoaded() {
 
 (function($) {
 	var content_sammy = $.sammy("#content", function() {
-		this.get('#analyze=:analyze', function() {
+		this.get('/#analyze=:analyze', function() {
 			console.info(this.params['analyze']);
 			try {
 				var batch = JSON.parse(
@@ -193,7 +193,7 @@ function onConfLoaded() {
 			
 		});
 		
-		this.get('#document/:_id', function() {
+		this.get('/#document/:_id', function() {
 			loadDocument(this.params['_id']);
 		});
 	});
