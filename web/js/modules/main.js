@@ -1,4 +1,4 @@
-var document_browser, visual_search, current_batch, current_mode;
+var document_browser, visual_search, current_batch, current_mode, current_viz;
 
 function initDocumentBrowser() {
 	doInnerAjax("documents", "post",
@@ -47,21 +47,24 @@ function loadModule(module_name) {
 		getTemplate(module_name + ".html", function(res) {
 			if(res.status != 200) { return; }
 			
-			$("#cp_module_output_holder").html(Mustache.to_html(res.responseText, data));
+			$("#cp_module_output_holder").append(
+				Mustache.to_html(res.responseText, data));
+				
 			if(on_data_handled) { on_data_handled.call(); }
 			current_batch.set({ data : data });
 			
 		}, "/web/layout/views/module/", this);
 	};
 	
+	if(_.contains(['word_stats','text_locations'], module_name)) {
+		on_data_handled = function() {
+			_.each(_.keys(data), function(id) {
+				data[id] = JSON.parse(data[id][0]);
+			});
+		};
+	}
+	
 	switch(module_name) {
-		case "word_stats":
-			on_data_handled = function() {
-				_.each(_.keys(data), function(id) {
-					data[id] = JSON.parse(data[id][0]);
-				});
-			};
-			break;
 		case "entities":
 			break;
 		case "forensic_metadata":
@@ -147,7 +150,33 @@ function onViewerModeChanged(mode, force_reload) {
 			} catch(err) { 
 				console.warn("COULD NOT UPDATE BATCH AT THIS TIME");
 				console.warn(err);
+				return;
 			}
+			
+			try {
+				if(current_batch.has('initial_query')) {
+					// get modules that should be loaded based off of the 'category' param
+					_.each(current_batch.get('initial_query'), function(iq) {
+						var asset_tag;
+	
+						if(_.contains(["text"], iq.category)) {
+							asset_tag = UV.ASSET_TAGS.TXT_JSON;
+						}
+	
+						if(!asset_tag) { return; }
+	
+						var load_mod = _.filter(current_batch.get('modules'),
+							function(mod) {
+								return _.contains(mod.asset_tags, asset_tag);
+							}
+						);
+	
+						if(load_mod) { 
+							_.each(load_mod, function(mod) { loadModule(mod.name); });
+						}
+					});
+				}
+			} catch(err) {}
 		};
 	} else if(current_mode == "document" && current_document) {
 		data = current_document.toJSON();

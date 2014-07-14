@@ -3,4 +3,11 @@
 	
 </div>
 <script type="text/javascript" src="/web/js/viz/cp_word_stats.js"></script>
-<script type="text/javascript" src="/web/js/modules/cp_word_stats.js"></script>
+<script type="text/javascript">
+if(!current_viz) { current_viz = []; }
+
+current_viz.push(new CompassWordStats({
+	root_el : $("#cp_mod_word_stats"),
+	data: current_batch.get('data')
+}));
+</script>

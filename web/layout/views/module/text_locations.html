@@ -1,0 +1,15 @@
+<h2>Text Locations Module</h2>
+<div class="cp_module" id="cp_mod_text_locations">
+	
+</div>
+<script type="text/javascript" src="/web/js/viz/cp_text_locations.js"></script>
+<script type="text/javascript">
+	if(current_batch) {
+		if(!current_viz) { current_viz = []; }
+		
+		current_viz.push(new CompassTextLocations({
+			root_el : $("#cp_mod_text_locations"),
+			data: current_batch.get('data')
+		}));
+	}
+</script>
