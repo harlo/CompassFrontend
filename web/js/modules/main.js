@@ -56,8 +56,7 @@ function loadModule(module_name) {
 			if(current_viz) {
 				try {
 					var viz = _.findWhere(current_viz, { id : module_name });					
-					if(viz) {
-						viz.build(data);
+					if(viz && viz.build(data)) {
 						_.each($("#cp_batch_common_funcs_list").children('li'),
 							function(li) {
 								var ctrl = $(li).find('a')[0];
@@ -68,6 +67,8 @@ function loadModule(module_name) {
 								}
 							}
 						);
+						
+						if(viz.invalid) { $(viz.root_el).remove(); }
 					}
 				} catch(err) {
 					console.warn(err);
