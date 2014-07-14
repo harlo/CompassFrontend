@@ -52,6 +52,27 @@ function loadModule(module_name) {
 				
 			if(on_data_handled) { on_data_handled.call(); }
 			current_batch.set({ data : data });
+
+			if(current_viz) {
+				try {
+					var viz = _.findWhere(current_viz, { id : module_name });					
+					if(viz) {
+						viz.build(data);
+						_.each($("#cp_batch_common_funcs_list").children('li'),
+							function(li) {
+								var ctrl = $(li).find('a')[0];
+								if(!ctrl) { return; }
+								
+								if(ctrl.onclick.toString().match(module_name)) {
+									$(li).remove();
+								}
+							}
+						);
+					}
+				} catch(err) {
+					console.warn(err);
+				}			
+			}
 			
 		}, "/web/layout/views/module/", this);
 	};

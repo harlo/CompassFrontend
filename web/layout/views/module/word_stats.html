@@ -4,10 +4,12 @@
 </div>
 <script type="text/javascript" src="/web/js/viz/cp_word_stats.js"></script>
 <script type="text/javascript">
-if(!current_viz) { current_viz = []; }
+	if(current_batch) {
+		if(!current_viz) { current_viz = []; }
 
-current_viz.push(new CompassWordStats({
-	root_el : $("#cp_mod_word_stats"),
-	data: current_batch.get('data')
-}));
+		current_viz.push(new CompassWordStats({
+			root_el : $("#cp_mod_word_stats"),
+			id : "word_stats"
+		}));
+	}
 </script>
