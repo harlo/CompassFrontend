@@ -1,5 +1,6 @@
 #! /bin/bash
 THIS_DIR=`pwd`
+mkdir conf
 
 if [ $# -eq 0 ]
 then
