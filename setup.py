@@ -7,7 +7,7 @@ from conf import CONF_ROOT
 
 if __name__ == "__main__":
 	try:
-		with open(os.path.join(CONF_ROOT, "unveillance.secrets.json", 'rb') as CONF:
+		with open(os.path.join(CONF_ROOT, "unveillance.secrets.json"), 'rb') as CONF:
 			config = json.loads(CONF.read())
 	except Exception as e:
 		print "NO CONF?"
