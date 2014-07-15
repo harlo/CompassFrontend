@@ -90,7 +90,7 @@ if __name__ == "__main__":
 					]
 				}
 			}
-		})
+		}))
 	
 	with open(os.path.join(CONF_ROOT, "unveillance.secrets.json"), 'wb+') as CONF:
 		CONF.write(json.dumps(config))
