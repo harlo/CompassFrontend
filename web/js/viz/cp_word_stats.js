@@ -10,8 +10,11 @@ var CompassWordStats = UnveillanceViz.extend({
 		if(data) { this.set('data', data); }
 		if(!this.has('data') || !this.get('data') || this.get('data').length == 0) {
 			this.invalid = true;
-			return;
+			return false;
 		}
+		
+		// word frequency
+		return true;
 	},
 	buildData: function() {
 		// first, calculate word frequency
