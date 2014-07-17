@@ -71,18 +71,14 @@ var CompassTextLocations = UnveillanceViz.extend({
 			return words_on_page.length > 0;
 		}, this);
 		
+		$(this.root_el).html($(document.createElement('ul')));
 		_.each(matched_pages, function(page) {
 			// find where on the page the words are
 			// take about 7 words before and after that
-
 			var words = page.split(' ');
 			var trimmed_highlights = _.map(this.get('highlight_words'), function(word) {
-				
 				var word_idx = _.indexOf(
-					_.map(words, function(w) { return w.toLowerCase(); }) , 
-					word.word
-				);
-				console.info(word_idx);
+					_.map(words, function(w) { return w.toLowerCase(); }), word.word);
 				
 				var highlighted_sentence = $(document.createElement('li')).html('...');
 				_.each(
@@ -105,13 +101,11 @@ var CompassTextLocations = UnveillanceViz.extend({
 				);
 				
 				highlighted_sentence.append("...");
-				console.info(highlighted_sentence);
 				return highlighted_sentence;
 			});
 			
-			console.info(this);
-			$(this.root_el).html(
-				$(document.createElement('ul')).append(trimmed_highlights));
+			$($(this.root_el).find('ul')[0]).append(trimmed_highlights);
+			
 		}, this);
 		
 		return true;
