@@ -15,8 +15,6 @@ var CompassVisualSearch = Backbone.Model.extend({
 		
 	},
 	search: function(query, search_collection) {
-		console.info(search_collection);
-
 		if(search_collection.length == 0) {
 			document_browser.buildDocumentTree();
 			return;
@@ -67,8 +65,6 @@ var CompassVisualSearch = Backbone.Model.extend({
 				if(!filter_result) { filter_result = document_browser.get('data'); }
 				filter_result = _.filter(filter_result, filter_func);
 			});
-				
-			console.info(filter_result);
 		} catch(err) {
 			console.warn("COULD NOT PERFORM SEARCH ON DOC BROWSER");
 			console.warn(err);

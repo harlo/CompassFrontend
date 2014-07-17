@@ -100,6 +100,11 @@ div.cp_module {
 	right:0;
 }
 
+.cp_text_highlight {
+	padding:0 0.5em;
+	color:#fff;
+}
+
 #cp_viewer_panel, #cp_document_panel {
 	position:absolute;
 }

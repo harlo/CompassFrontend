@@ -1,3 +1,4 @@
+from copy import deepcopy
 from lib.Frontend.vars import *
 
 compass_mime_types = {
@@ -25,7 +26,7 @@ authenticated_tasks = [
 	"DocumentCloud.get_assets.getAssets"
 ]
 
-text_plain_tasks = authenticated_tasks
+text_plain_tasks = deepcopy(authenticated_tasks)
 text_plain_tasks.extend([
 	"NLP.tokenizer.basicTokenizer",
 	"NLP.address_parser.addressParser"

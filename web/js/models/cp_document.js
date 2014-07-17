@@ -18,7 +18,7 @@ var CompassDocument = UnveillanceDocument.extend({
 		}
 	},
 	requestReindex: function(el, task_path) {
-		var req = { doc_id : this.get('_id') };
+		var req = { _id : this.get('_id') };
 		var waiter_span = $($(el).siblings('.cp_waiter')[0]);
 		
 		$(waiter_span)

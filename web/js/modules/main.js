@@ -54,8 +54,9 @@ function loadModule(module_name) {
 			current_batch.set({ data : data });
 
 			if(current_viz) {
+				var viz = _.findWhere(current_viz, { id : module_name });
+				
 				try {
-					var viz = _.findWhere(current_viz, { id : module_name });					
 					if(viz && viz.build(data)) {
 						_.each($("#cp_batch_common_funcs_list").children('li'),
 							function(li) {
@@ -67,12 +68,12 @@ function loadModule(module_name) {
 								}
 							}
 						);
-						
-						if(viz.invalid) { $(viz.root_el).remove(); }
 					}
 				} catch(err) {
 					console.warn(err);
-				}			
+				}
+				
+				if(viz.invalid) { $(viz.root_el).remove(); }			
 			}
 			
 		}, "/web/layout/views/module/", this);
@@ -229,7 +230,6 @@ function onConfLoaded() {
 (function($) {
 	var content_sammy = $.sammy("#content", function() {
 		this.get('/#analyze=:analyze', function() {
-			console.info(this.params['analyze']);
 			try {
 				var batch = JSON.parse(
 					"{ \"batch\" : " + 
