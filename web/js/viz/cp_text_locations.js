@@ -72,6 +72,7 @@ var CompassTextLocations = UnveillanceViz.extend({
 		}, this);
 		
 		$(this.root_el).html($(document.createElement('ul')));
+		
 		_.each(matched_pages, function(page) {
 			// find where on the page the words are
 			// take about 7 words before and after that
@@ -80,13 +81,16 @@ var CompassTextLocations = UnveillanceViz.extend({
 				var word_idx = _.indexOf(
 					_.map(words, function(w) { return w.toLowerCase(); }), word.word);
 				
-				var highlighted_sentence = $(document.createElement('li')).html('...');
-				
+				var highlighted_sentence = $(document.createElement('li'))
+					.html('...')
+					.click(function() {
+						// more content-- send to /document/?line&highlight_words=[]
+
+					});
+
 				_.each(
-					_.first(_.rest(words, 
-						_.max([word_idx - 7, 0])), 
-						_.min(word_idx + 7, words.length)
-					), 
+					_.first(_.rest(words, _.max([word_idx - 6, 0])), 
+						_.min([word_idx + 6, words.length])), 
 					function(segment) {
 						if(segment.toLowerCase() == word.word) {
 							segment = $(document.createElement('span'))
