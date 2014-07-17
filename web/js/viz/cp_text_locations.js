@@ -81,8 +81,12 @@ var CompassTextLocations = UnveillanceViz.extend({
 					_.map(words, function(w) { return w.toLowerCase(); }), word.word);
 				
 				var highlighted_sentence = $(document.createElement('li')).html('...');
+				
 				_.each(
-					_.first(_.rest(words, _.max([word_idx - 7, 0])), 15), 
+					_.first(_.rest(words, 
+						_.max([word_idx - 7, 0])), 
+						_.min(word_idx + 7, words.length)
+					), 
 					function(segment) {
 						if(segment.toLowerCase() == word.word) {
 							segment = $(document.createElement('span'))
