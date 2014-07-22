@@ -4,7 +4,8 @@ mkdir conf
 
 if [ $# -eq 0 ]
 then
-	WITH_CONFIG=$THIS_DIR/conf/compass.secrets.json
+	echo "{}" > $THIS_DIR/lib/Frontend/conf/compass.secrets.json
+	WITH_CONFIG=$THIS_DIR/lib/Frontend/conf/compass.secrets.json
 else
 	WITH_CONFIG=$1
 fi
