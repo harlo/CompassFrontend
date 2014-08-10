@@ -37,7 +37,7 @@ compass_asset_tags = {
 	"DOC_CLOUD_ENTITIES" : "document_cloud_entities",
 	"DOC_CLOUD_MANIFEST" : "document_cloud_manifest",
 	"DOC_CLOUD_DOC" : "document_cloud_document",
-	"ADDRESSES_NLP" : "addresses_nlp"
+	"ADDRESSES_NLP" : "addresses_everyblock_nlp"
 }
 
 MIME_TYPES.update(compass_mime_types)
