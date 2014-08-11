@@ -12,8 +12,37 @@ var CompassWordStats = UnveillanceViz.extend({
 			this.invalid = true;
 			return false;
 		}
-		
+
+		var stopwords = UV.DEFAULT_STOPWORDS[_.keys(UV.DEFAULT_STOPWORDS)[0]];
+		var page_map = _.map(this.get('data'), function(item) {
+			
+			var keywords = _.reject(_.uniq(item[1]), function(word) {
+				return word.length == 1 || _.contains(stopwords, word);
+			});
+			console.info(keywords.length);
+
+			return {
+				pages : item[0].length,
+				map : _.map(_.range(item[0].length), function(num) {
+					var match = _.intersection(keywords, item[0][num].toLowerCase().split(" "));
+
+					return {
+						index : num
+					};
+				})
+			};
+		});
+
+		console.info("DONE");
+		console.info(page_map);
+
 		// word frequency
+
+		// for each key, first is pages, second is b-o-w
+
+		// unique bow, sort by frequency
+
+		// graph 
 		return true;
 	},
 	buildData: function() {

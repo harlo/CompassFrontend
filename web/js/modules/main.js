@@ -78,10 +78,18 @@ function loadModule(module_name) {
 		}, "/web/layout/views/module/", this);
 	};
 	
-	if(_.contains(['word_stats','text_locations'], module_name)) {
+	if(_.contains(['text_locations'], module_name)) {
 		on_data_handled = function() {
 			_.each(_.keys(data), function(id) {
 				data[id] = JSON.parse(data[id][0]);
+			});
+		};
+	} else if(_.contains(['word_stats'], module_name)) {
+		on_data_handled = function() {
+			_.each(_.keys(data), function(id) {				
+				data[id] = _.map(data[id], function(entity) {
+					return JSON.parse(entity);
+				});
 			});
 		};
 	}
@@ -89,47 +97,52 @@ function loadModule(module_name) {
 	_.each(module._ids, function(_id) {
 		var doc = new UnveillanceDocument(
 			_.findWhere(document_browser.get('data'), { _id : _id }));
+		
 		if(!doc) { return; }
 		
 		_.each(module.asset_tags, function(tag) {
-			try {
-				var md_file = doc.getAssetsByTagName(tag)[0].file_name;
-				md_file = doc.get('base_path') + "/" + md_file;
-			} catch(err) {
-				console.error(err);
-				return;
-			}
-			
-			try {
-				getFileContent(data, md_file, function(res) {
-					try {
-						// if we can't get the file, we'll throw a 404 and nothing else.
-						var uv_res = JSON.parse(res.responseText);
-						if(_.keys(uv_res).length == 1 && uv_res.result) {
-							console.error(res.responseText);
-							delete uv_res;
+			_.each(doc.getAssetsByTagName(tag), function(a) {
+				try {
+					var md_file = a.file_name;
+					md_file = doc.get('base_path') + "/" + md_file;
+				} catch(err) {
+					console.warn("can't find asset for tag " + tag);
+					console.warn(err);
+					return;
+				}
+
+				try {
+					getFileContent(data, md_file, function(res) {
+						console.info("DATA FOR " + md_file);
+						try {
+							// if we can't get the file, we'll throw a 404 and nothing else.
+							var uv_res = JSON.parse(res.responseText);
+							if(_.keys(uv_res).length == 1 && uv_res.result) {
+								console.error(res.responseText);
+								delete uv_res;
+								return;
+							}
+						} catch(err) {}
+						
+						if(uv_res) { delete uv_res; }
+					
+						try {
+							if(!this[doc.get('_id')]) {
+								this[doc.get('_id')] = [];
+							}
+							
+							this[doc.get('_id')].push(res.responseText);
+						} catch(err) {
+							console.error(err);
 							return;
 						}
-					} catch(err) {}
 					
-					if(uv_res) { delete uv_res; }
-				
-					try {
-						if(!this[doc.get('_id')]) {
-							this[doc.get('_id')] = [];
-						}
-						
-						this[doc.get('_id')].push(res.responseText);
-					} catch(err) {
-						console.error(err);
-						return;
-					}
-				
-				}, data);
-			} catch(err) {
-				console.error(err);
-				return;
-			}
+					}, data);
+				} catch(err) {
+					console.error(err);
+					return;
+				}
+			});			
 		});
 		
 		data_handled++;

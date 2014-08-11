@@ -10,7 +10,7 @@ function updateConf() {
 		{
 			name : "word_stats",
 			label : "View word stats",
-			asset_tags : [UV.ASSET_TAGS.TXT_JSON],
+			asset_tags : [UV.ASSET_TAGS.TXT_JSON, UV.ASSET_TAGS.BOW],
 			_ids : [],
 			default : true
 		},
@@ -21,7 +21,7 @@ function updateConf() {
 			_ids : []
 		},
 		{
-			name : "entities",
+			name : "entity_browser",
 			label : "View entities",
 			asset_tags : [UV.ASSET_TAGS.DOC_CLOUD_ENTITIES, UV.ASSET_TAGS.ADDRESSES_NLP],
 			_ids : [],
