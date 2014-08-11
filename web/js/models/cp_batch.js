@@ -84,7 +84,7 @@ var CompassBatch = Backbone.Model.extend({
 		_.each(this.get('batch'), function(item) {
 			var document = _.findWhere(document_browser.get('data'), { _id : item._id });
 			if(!document) { return; }
-			
+
 			var document_modules = _.filter(ctx.get('modules'), function(mod) {
 				var doc_tags = _.flatten(_.pluck(document.assets, 'tags'));
 				var common_tags = _.intersection(doc_tags, mod.asset_tags);

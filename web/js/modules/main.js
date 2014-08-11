@@ -33,7 +33,6 @@ function initVisualSearch() {
 }
 
 function loadModule(module_name) {
-	$("#cp_module_output_holder").empty();
 	var module = _.findWhere(
 		current_batch.get('modules'), { name : module_name });
 	
@@ -85,13 +84,6 @@ function loadModule(module_name) {
 				data[id] = JSON.parse(data[id][0]);
 			});
 		};
-	}
-	
-	switch(module_name) {
-		case "entities":
-			break;
-		case "forensic_metadata":
-			break;
 	}
 	
 	_.each(module._ids, function(_id) {
@@ -152,6 +144,7 @@ function buildDocumentBatch(batch) {
 	
 	try {
 		document_browser.applyBatch();
+		console.info("OK APPLYING BATCH");
 	} catch(err) {
 		console.warn("COULD NOT APPLY BATCH AT THIS TIME");
 		console.warn(err);
@@ -175,7 +168,11 @@ function onViewerModeChanged(mode, force_reload) {
 				console.warn(err);
 				return;
 			}
-			
+
+			var load_mod = _.filter(current_batch.get('modules'), function(mod) { 
+				return mod.default === true;
+			});
+
 			try {
 				if(current_batch.has('initial_query')) {
 					// get modules that should be loaded based off of the 'category' param
@@ -188,18 +185,16 @@ function onViewerModeChanged(mode, force_reload) {
 	
 						if(!asset_tag) { return; }
 	
-						var load_mod = _.filter(current_batch.get('modules'),
+						load_mod = _.union(load_mod, _.filter(current_batch.get('modules'),
 							function(mod) {
-								return _.contains(mod.asset_tags, asset_tag);
+								return mod.dependent == "initial_query" && _.contains(mod.asset_tags, asset_tag);
 							}
-						);
-	
-						if(load_mod) { 
-							_.each(load_mod, function(mod) { loadModule(mod.name); });
-						}
+						));
 					});
 				}
 			} catch(err) {}
+
+			_.each(load_mod, function(mod) { loadModule(mod.name); });
 		};
 	} else if(current_mode == "document" && current_document) {
 		data = current_document.toJSON();

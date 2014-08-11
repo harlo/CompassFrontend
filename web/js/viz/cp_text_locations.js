@@ -53,7 +53,7 @@ var CompassTextLocations = UnveillanceViz.extend({
 				_.pluck(this.get('highlight_words'), 'word'), 
 				page.toLowerCase().split(' ')
 			);
-						
+
 			_.each(words_on_page, function(word) {
 				try {
 					var word = _.findWhere(this.get('highlight_words'), { word : word });
@@ -77,7 +77,9 @@ var CompassTextLocations = UnveillanceViz.extend({
 			// find where on the page the words are
 			// take about 7 words before and after that
 			var words = page.split(' ');
-			var trimmed_highlights = _.map(this.get('highlight_words'), function(word) {
+			var highlight_words = this.get('highlight_words');
+
+			var trimmed_highlights = _.map(highlight_words, function(word) {
 				var word_idx = _.indexOf(
 					_.map(words, function(w) { return w.toLowerCase(); }), word.word);
 				
@@ -88,16 +90,19 @@ var CompassTextLocations = UnveillanceViz.extend({
 
 					});
 
+				var start_words = _.rest(words, _.max([word_idx - 6, 0]));
+				var s_stop = _.min([7, start_words.length - 7]);
+
 				_.each(
-					_.first(_.rest(words, _.max([word_idx - 6, 0])), 
-						_.min([word_idx + 6, words.length])), 
+					_.first(start_words, 7 + s_stop), 
 					function(segment) {
-						if(segment.toLowerCase() == word.word) {
+						var is_highlighted = _.findWhere(highlight_words, { word : segment.toLowerCase()});
+						if(is_highlighted) {
 							segment = $(document.createElement('span'))
 								.addClass('cp_text_highlight')
 								.html(segment)
 								.css({
-									'background-color' : word.color
+									'background-color' : is_highlighted.color
 								});
 						}
 						
@@ -111,7 +116,7 @@ var CompassTextLocations = UnveillanceViz.extend({
 				highlighted_sentence.append("...");
 				return highlighted_sentence;
 			});
-			
+
 			$($(this.root_el).find('ul')[0]).append(trimmed_highlights);
 			
 		}, this);
