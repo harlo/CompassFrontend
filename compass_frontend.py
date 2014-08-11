@@ -107,13 +107,9 @@ if __name__ == "__main__":
 		openurl = True
 		argv.pop()
 		
-	if len(argv) != 2: exit("Usage: compass_frontend.py [-start, -stop, -restart]")
+	if len(argv) != 2: exit("Usage: compass_frontend.py [-start, -stop]")
 	
 	if argv[1] == "-start" or argv[1] == "-firstuse":
 		compass_frontend.startup(openurl)
 	elif argv[1] == "-stop":
 		compass_frontend.shutdown()
-	elif argv[1] == "-restart":
-		compass_frontend.shutdown()
-		sleep(5)
-		compass_frontend.startup(openurl)

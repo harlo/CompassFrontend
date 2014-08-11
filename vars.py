@@ -1,6 +1,8 @@
 from copy import deepcopy
 from lib.Frontend.vars import *
 
+IMPORTER_SOURCES.extend(['google_drive'])
+
 compass_mime_types = {
 	'pdf' : "application/pdf"
 }
