@@ -13,66 +13,69 @@ var CompassWordStats = UnveillanceViz.extend({
 			return false;
 		}
 
-		var stopwords = UV.DEFAULT_STOPWORDS[_.keys(UV.DEFAULT_STOPWORDS)[0]];
-		var page_map = _.map(this.get('data'), function(item) {
-			
-			var keywords = _.reject(_.uniq(item[1]), function(word) {
-				return word.length == 1 || _.contains(stopwords, word);
-			});
-			console.info(keywords.length);
+		this.set('max_pages', _.max(
+			_.map(this.get('data'), function(doc) {
+				return doc[0].length;
+			})
+		));
 
-			return {
-				pages : item[0].length,
-				map : _.map(_.range(item[0].length), function(num) {
-					var match = _.intersection(keywords, item[0][num].toLowerCase().split(" "));
-
-					return {
-						index : num
-					};
+		if(this.get('data').length > 1) {
+			this.set('global_keywords', _.intersection(
+				_.map(this.get('data'), function(vals, key) {
+					return vals[0];
 				})
-			};
-		});
+			));
+		}
 
-		console.info("DONE");
-		console.info(page_map);
+		_.each(this.get('data'), function(vals, key) {
+			// add a crossfilter object for quicker parsing
+			vals[2] = vals[1].uv_page_map;
+			delete vals[1].uv_page_map;
 
-		// word frequency
+			vals[1] = crossfilter(_.map(vals[1], function(v, k) {
+				return { word : k, count: v};
+			}));
 
-		// for each key, first is pages, second is b-o-w
+			$(this.root_el).append(
+				$(document.createElement('div'))
+					.attr('id', "cp_word_graph_" + key)
+					.addClass("cp_word_graph")
+			);
 
-		// unique bow, sort by frequency
+			// split into max_pages slices
 
-		// graph 
+			// bubble up any globally common words
+
+			//this.setDimension(null, true);
+
+		}, this);
+
+		this.setDimension(null, true);
+
+
+		// for all the docs, sort by the most prominent words unless we have an initial query
+		
 		return true;
 	},
-	buildData: function() {
-		// first, calculate word frequency
-		// data is corpus btw
-		var langs = _.keys(UV.DEFAULT_STOPWORDS);
-		var lang = langs[0];
+	setDimension: function(words, redraw) {
+		var d_func;
+
+		if(!words) {
+			d_func = function(d) { return d.count; };
+		} else {
+			d_func = function(d) { return d.word; };
+		}
+
+		_.each(this.get('data'), function(vals, key) {
+			var dimension = vals[1].dimension(d_func);
+			console.info(dimension.top(10));
+
+			if(redraw) {
+				console.info("redraw");
+			}
+		}, this);
 		
-		this.set({
-			words : _.map(this.get('data'), function(corpus) {
-				corpus = _.map(
-					_.reject(corpus, 
-						function(line) {
-							return line.match(/^\s*$/) != null;
-						}
-					),
-					function(line) {
-						return _.reject(line.split(" "), function(word) {
-							return _.contains(UV.DEFAULT_STOPWORDS[lang], word);
-						});
-					}
-				);
-				
-				corpus = _.flatten(corpus);
-				//console.info(corpus);
-				return { corpus : corpus };
-			})
-		});
-		
-		//console.info(this.get('words'));
+
 		
 	}
 });
