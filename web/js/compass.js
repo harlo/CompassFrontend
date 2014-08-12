@@ -10,7 +10,7 @@ function updateConf() {
 		{
 			name : "word_stats",
 			label : "View word stats",
-			asset_tags : [UV.ASSET_TAGS.TXT_JSON, UV.ASSET_TAGS.BOW],
+			asset_tags : [UV.ASSET_TAGS.TXT_JSON, UV.ASSET_TAGS.PAGE_MAP],
 			_ids : [],
 			default : true
 		},

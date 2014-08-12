@@ -15,10 +15,9 @@ compass_mime_type_tasks = {
 	"application/pdf" : [
 		"PDF.process_metadata.processPDFMetadata", 
 		"PDF.split_pdf_pages.splitPDFPages",
-		"PDF.ocr_pdf.OCRPDF", 
 		"PDF.extract_pdf_text.extractPDFText", 
 		"Text.preprocess_nlp.preprocessNLP",
-		"NLP.tokenizer.basicTokenizer",
+		"NLP.page_map.generatePageMap",
 		"NLP.address_parser.addressParser"
 	]
 }
@@ -39,7 +38,8 @@ compass_asset_tags = {
 	"DOC_CLOUD_ENTITIES" : "document_cloud_entities",
 	"DOC_CLOUD_MANIFEST" : "document_cloud_manifest",
 	"DOC_CLOUD_DOC" : "document_cloud_document",
-	"ADDRESSES_NLP" : "addresses_everyblock_nlp"
+	"ADDRESSES_NLP" : "addresses_everyblock_nlp",
+	"PAGE_MAP" : "uv_page_map"
 }
 
 MIME_TYPES.update(compass_mime_types)
