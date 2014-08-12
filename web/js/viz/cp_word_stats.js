@@ -13,17 +13,13 @@ var CompassWordStats = UnveillanceViz.extend({
 			return false;
 		}
 
-		this.set('max_pages', _.max(
-			_.map(this.get('data'), function(doc) {
-				return doc[0].length;
-			})
-		));
+		this.set({
+			max_pages : _.max(_.map(this.get('data'), function(doc) { return doc[0].length; }))
+		});
 
 		if(this.get('data').length > 1) {
 			this.set('global_keywords', _.intersection(
-				_.map(this.get('data'), function(vals, key) {
-					return vals[0];
-				})
+				_.map(this.get('data'), function(vals, key) { return vals[0]; })
 			));
 		}
 
@@ -33,7 +29,7 @@ var CompassWordStats = UnveillanceViz.extend({
 			delete vals[1].uv_page_map;
 
 			vals[1] = crossfilter(_.map(vals[1], function(v, k) {
-				return { word : k, count: v};
+				return { word : k, count: v, color: getRandomColor() };
 			}));
 
 			$(this.root_el).append(
@@ -41,13 +37,6 @@ var CompassWordStats = UnveillanceViz.extend({
 					.attr('id', "cp_word_graph_" + key)
 					.addClass("cp_word_graph")
 			);
-
-			// split into max_pages slices
-
-			// bubble up any globally common words
-
-			//this.setDimension(null, true);
-
 		}, this);
 
 		this.setDimension(null, true);
@@ -73,9 +62,6 @@ var CompassWordStats = UnveillanceViz.extend({
 			if(redraw) {
 				console.info("redraw");
 			}
-		}, this);
-		
-
-		
+		}, this);		
 	}
 });
