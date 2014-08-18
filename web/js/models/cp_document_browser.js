@@ -148,5 +148,9 @@ var CompassDocumentBrowser = Backbone.Model.extend({
 			$($(dir_el).children('ul.cp_dir_list')[0])
 				.append(Mustache.to_html(ctx.item_tmpl, doc));
 		});
+
+		$.each($(this.root_el).find(".uv_translate"), function(idx, item) {
+			$(item).html(translate(item));
+		});
 	}
 });
