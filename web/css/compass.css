@@ -180,23 +180,23 @@ div.cp_word_graph svg {
 	position:absolute;
 }
 
-#cp_word_browser {
+#cp_word_browser, #cp_entity_browser {
 	width:90%;
-	height:16em;
+	height:9em;
 	overflow-y:auto;
 	border:1px solid #000;
 	margin-left:1em;
 }
 
-#cp_word_browser ul {
+#cp_word_browser ul, #cp_entity_browser ul {
 	margin:0;
 	padding:0;
 }
 
-#cp_word_browser ul li {
+#cp_word_browser ul li, #cp_entity_browser ul li ul li {
 	border-bottom:0.1em solid #000;
 }
 
-#cp_word_browser .cp_wb_entity td {
+#cp_word_browser .cp_wb_entity td, #cp_entity_browser .cp_wb_entity td {
 	padding:0.2em;
 }

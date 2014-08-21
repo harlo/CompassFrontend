@@ -85,6 +85,46 @@ var CompassWordStats = UnveillanceViz.extend({
 
 			vals[2] = crossfilter(vals[2]).dimension(function(d) { return d.index });
 
+			// the rest are entities...
+			// while has next,
+			var entity_browser, entity_browser_ul;
+			var entity_data = _.initial(_.rest(vals, 3));
+			if(_.size(entity_data) != 0) {
+				entity_browser_ul = $(document.createElement('ul'));
+				entity_browser = $(document.createElement('div'))
+					.attr('id', "cp_entity_browser")
+					.append(entity_browser_ul);
+			}
+
+			if(entity_browser) {
+				_.each(entity_data, function(val) {
+					if(!val.uv_page_map) { return; }
+
+					var uv_page_map = val.uv_page_map;
+					delete val.uv_page_map;
+
+					_.each(val, function(vals_, key_) {
+						var ctx = this;
+						
+						var eb_list = $(document.createElement('ul')).append(
+							_.map(vals_, function(val_) {
+								var hash = MD5(val_);
+								var count = _.findWhere(uv_page_map, { entity : val_ }).count;
+								var entity = { label : val_, count: count, color: getRandomColor(), hash: hash };
+
+								return $(document.createElement('li')).html(
+									Mustache.to_html(ctx.get('entity_li_tmpl'), entity));
+							})
+						);
+
+						$(entity_browser_ul).append($(document.createElement('li')).append(eb_list));
+					}, this);
+
+				}, this);
+
+				$(this.root_el).append(entity_browser);
+			}
+
 			var wg_id = "cp_word_graph_" + key;
 			var word_graph = $(document.createElement('div'))
 				.attr('id', wg_id)
@@ -108,10 +148,7 @@ var CompassWordStats = UnveillanceViz.extend({
 				bar_width : width/this.get('max_pages')
 			};
 
-			// the rest are entities...
-			// while has next,
-			// if it doesn't have a page_map, toss at this point.
-
+			
 			var wg = d3.select(wg_d3.root_el)
 				.append("svg")
 				.attr({
@@ -151,7 +188,6 @@ var CompassWordStats = UnveillanceViz.extend({
 		return true;
 	},
 	highlightWord: function(hash) {
-		console.info("HIGHLIGHTING WORD: " + hash);
 		$.each($("div.cp_word_graph").children('svg'), function(idx, item) {
 			if($(item).hasClass("cp_word_stuck")) { return; }
 
@@ -215,13 +251,14 @@ var CompassWordStats = UnveillanceViz.extend({
 				dim_data = _.union(dim_data, vals[1].top(words_per_doc));
 			}, this);
 		} else {
+			// HERE IS WHERE WE START AGAIN TOMORROW...
 			_.each(words, function(m) {
 				_.each(this.get('data'), function(vals, key) {
 					dim_data.push(vals[1].filterExact(m))
 				}, this);
 			}, this);
 
-			// HERE IS WHERE WE START AGAIN TOMORROW...
+
 			console.info(dim_data);
 		}
 
