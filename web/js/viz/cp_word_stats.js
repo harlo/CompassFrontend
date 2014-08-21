@@ -15,8 +15,6 @@ var CompassWordStats = UnveillanceViz.extend({
 			return false;
 		}
 
-		var first_mode = null;
-
 		getTemplate("entity_li.html", function(html) {
 			this.set('entity_li_tmpl', html.responseText);
 		}, null, this);
@@ -140,27 +138,49 @@ var CompassWordStats = UnveillanceViz.extend({
 		sorted_li = $($(word_browser).children('ul')[0]).children('li').sort(function(a, b) {
 			return Number($($(b).find('span.wb_count')[0]).html()) - Number($($(a).find('span.wb_count')[0]).html());
 		});
-
-		if(this.has('global_keywords')) {
-			// if we're privileging the iq words, push them to the top of the list
-			_.each(this.get('global_keywords'), function(gk) {
-				var gk_el = $(sorted_li).find("li[rel='" + MD5(gk) + "']")[0];
-				if(gk_el) {
-					sorted_li.prepend(gk_el);
-				}
-			});
-
-			first_mode = this.get('global_keywords');
-		}
 		
 		$($($(word_browser).children('ul')[0]).children('li')).remove();
 		$($(word_browser).children('ul')[0]).append(sorted_li);
 
 		$(this.root_el).prepend(word_browser);
-		this.setWordDimension(first_mode, true);		
+		this.setWordDimension(this.has('global_keywords') ? this.get('global_keywords') : null, true);		
 		return true;
 	},
-	setWordDimension: function(mode, redraw) {
+	highlightWord: function(hash) {
+		console.info("HIGHLIGHTING " + hash);
+		$.each($("div.cp_word_graph").children('svg'), function(idx, item) {
+			var z_index = 1;
+			var opacity = 0.2;
+
+			if($(item).attr('class') == "cp_word_graph_" + hash + "_svg") {
+				z_index = 200;
+				opacity = 1;
+			}
+			
+			$(item).css({
+				'z-index' : z_index,
+				'opacity' : opacity
+			})
+		});
+	},
+	removeWord: function(word) {
+		var hash = MD5(word);
+		// unbind mouse events, add onchecked event
+		// put its entry to the bottom of word browser
+		// remove its svgs
+	},
+	toggleWord: function(el, word) {
+		if($(el).is(':not(:checked)')) {
+			this.addWord(word);
+		} else {
+			this.removeWord(word);
+		}
+	},
+	addWord: function(word) { this.setWordDimension([word], false); },
+	restoreWordHighlightDefaults: function() {
+		console.info("RESTORING");
+	},
+	setWordDimension: function(words, redraw) {
 		var max_default_words = 10;
 		var data_len = _.size(this.get('data'));
 
@@ -169,23 +189,39 @@ var CompassWordStats = UnveillanceViz.extend({
 		}
 
 		var dim_data = [];
-		if(!mode) {
+		if(!words) {
 			var words_per_doc = Math.ceil(max_default_words/data_len);			
 			_.each(this.get('data'), function(vals, key) {
 				dim_data = _.union(dim_data, vals[1].top(words_per_doc));
 			}, this);
-
 		} else {
-			_.each(mode, function(m) {
+			_.each(words, function(m) {
 				_.each(this.get('data'), function(vals, key) {
 					dim_data.push(vals[1].filterExact(m))
 				}, this);
 			}, this);
 		}
 
-		_.each(dim_data, function(entity) {
+		var ctx = this;
+		_.each(dim_data.sort(function(a, b) { return b.count + a.count; }), function(entity) {
 			// highlight on the display
-			$("#cp_wb_toggle_" + entity.hash).attr('checked', true);
+			
+			var entity_li = $($("li[rel='" + entity.hash + "']")[0]);
+			var entity_toggle = $("#cp_wb_toggle_" + entity.hash);
+
+			$(entity_toggle).attr('checked', true);
+			$(entity_toggle).on()
+
+			$(entity_li)
+				.mouseenter(function() {
+					ctx.highlightWord(entity.hash);
+				})
+				.mouseout(function() {
+					ctx.restoreWordHighlightDefaults()
+				});
+
+			$($("#cp_word_browser").children('ul')[0]).prepend(entity_li);
+
 			_.each(this.get('data'), function(vals, key) {
 				var indexes = _.map(
 					_.filter(vals[2].bottom(Infinity), function(e) {

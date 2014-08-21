@@ -108,6 +108,7 @@ function loadModule(module_name) {
 			_.each(doc.getAssetsByTagName(tag), function(a) {
 				try {
 					var md_file = a.file_name;
+					console.info(a);
 					md_file = doc.get('base_path') + "/" + md_file;
 				} catch(err) {
 					console.warn("can't find asset for tag " + tag);
