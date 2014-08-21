@@ -108,6 +108,10 @@ var CompassWordStats = UnveillanceViz.extend({
 				bar_width : width/this.get('max_pages')
 			};
 
+			// the rest are entities...
+			// while has next,
+			// if it doesn't have a page_map, toss at this point.
+
 			var wg = d3.select(wg_d3.root_el)
 				.append("svg")
 				.attr({
@@ -147,8 +151,10 @@ var CompassWordStats = UnveillanceViz.extend({
 		return true;
 	},
 	highlightWord: function(hash) {
-		console.info("HIGHLIGHTING " + hash);
+		console.info("HIGHLIGHTING WORD: " + hash);
 		$.each($("div.cp_word_graph").children('svg'), function(idx, item) {
+			if($(item).hasClass("cp_word_stuck")) { return; }
+
 			var z_index = 1;
 			var opacity = 0.2;
 
@@ -165,18 +171,32 @@ var CompassWordStats = UnveillanceViz.extend({
 	},
 	removeWord: function(word) {
 		var hash = MD5(word);
+		console.info("REMOVING WORD " + word);
 		// unbind mouse events, add onchecked event
 		// put its entry to the bottom of word browser
 		// remove its svgs
 	},
 	toggleWord: function(el, word) {
-		if($(el).is(':not(:checked)')) {
+		if($(el).is(':checked')) {
 			this.addWord(word);
 		} else {
 			this.removeWord(word);
 		}
 	},
-	addWord: function(word) { this.setWordDimension([word], false); },
+	stickWord: function(hash) {
+		console.info("STICKING WORD AT " + hash);
+		$(".cp_word_graph_" + hash + "_svg").addClass("cp_word_stuck");
+		$("li[rel='" + hash + '"]').addClass("cp_word_stuck");
+	},
+	unstickWord: function(hash) {
+		console.info("STICKING WORD AT " + hash);
+		$(".cp_word_graph_" + hash + "_svg").removeClass("cp_word_stuck");
+		$("li[rel='" + hash + '"]').removeClass("cp_word_stuck");
+	},
+	addWord: function(word) { 
+		console.info("ADDING WORD: " + word);
+		this.setWordDimension([word], false);
+	},
 	restoreWordHighlightDefaults: function() {
 		console.info("RESTORING");
 	},
@@ -200,6 +220,9 @@ var CompassWordStats = UnveillanceViz.extend({
 					dim_data.push(vals[1].filterExact(m))
 				}, this);
 			}, this);
+
+			// HERE IS WHERE WE START AGAIN TOMORROW...
+			console.info(dim_data);
 		}
 
 		var ctx = this;
@@ -215,9 +238,6 @@ var CompassWordStats = UnveillanceViz.extend({
 			$(entity_li)
 				.mouseenter(function() {
 					ctx.highlightWord(entity.hash);
-				})
-				.mouseout(function() {
-					ctx.restoreWordHighlightDefaults()
 				});
 
 			$($("#cp_word_browser").children('ul')[0]).prepend(entity_li);

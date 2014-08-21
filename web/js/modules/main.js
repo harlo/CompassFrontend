@@ -71,6 +71,8 @@ function loadModule(module_name) {
 								}
 							}
 						);
+
+						$($(viz.root_el).find('.uv_data_na')).remove();
 					}
 				} catch(err) {
 					console.warn(err);
