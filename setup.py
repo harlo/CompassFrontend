@@ -3,7 +3,7 @@ from sys import exit
 from fabric.operations import prompt
 
 from lib.Frontend.lib.Core.Utils.funcs import generateNonce
-from conf import CONF_ROOT, COMPASS_CONF_ROOT
+from conf import CONF_ROOT, COMPASS_CONF_ROOT, getConfig
 
 if __name__ == "__main__":
 	try:

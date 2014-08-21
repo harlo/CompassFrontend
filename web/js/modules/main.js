@@ -33,10 +33,14 @@ function initVisualSearch() {
 }
 
 function loadModule(module_name) {
+	console.info("LOADING MODULE: " + module_name);
+
 	var module = _.findWhere(
 		current_batch.get('modules'), { name : module_name });
 	
 	if(!module) { return; }
+
+	console.info(module);
 		
 	var data = {};
 	var data_handled = 0;

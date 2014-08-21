@@ -21,6 +21,7 @@ class CompassFrontend(UnveillanceFrontend):
 			'/web/js/lib/sammy.js',
 			'/web/js/lib/crossfilter.min.js',
 			'/web/js/lib/d3.min.js',
+			'/web/js/lib/md5.js',
 			'/web/js/viz/uv_viz.js',
 			'/web/js/models/cp_document.js',
 			'/web/js/models/cp_batch.js',
@@ -45,7 +46,7 @@ class CompassFrontend(UnveillanceFrontend):
 			'/web/js/modules/cp_logout.js',
 			'/web/js/models/cp_user.js',
 			'/web/js/models/cp_user_admin.js',
-			'/web/js/models/cp_console.js',
+			'/web/js/models/cp_console.js'
 		])
 
 		self.on_loads.update({

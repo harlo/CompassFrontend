@@ -175,3 +175,28 @@ div.cp_word_graph {
 	border:1px solid #000;
 	margin-left:1em;
 }
+
+div.cp_word_graph svg {
+	position:absolute;
+}
+
+#cp_word_browser {
+	width:90%;
+	height:16em;
+	overflow-y:auto;
+	border:1px solid #000;
+	margin-left:1em;
+}
+
+#cp_word_browser ul {
+	margin:0;
+	padding:0;
+}
+
+#cp_word_browser ul li {
+	border-bottom:0.1em solid #000;
+}
+
+#cp_word_browser .cp_wb_entity td {
+	padding:0.2em;
+}

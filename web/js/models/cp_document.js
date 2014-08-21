@@ -112,6 +112,7 @@ var CompassDocument = UnveillanceDocument.extend({
 			}
 		);
 		
+		/*
 		_.each(this.modules, function(mod) {
 			var build_func;
 			var root_el_id = mod.name + "_" + ctx.get('_id');
@@ -136,6 +137,7 @@ var CompassDocument = UnveillanceDocument.extend({
 			
 			console.info(mod);
 		});
+		*/
 	},
 	
 	getAssetDataForModule: function(asset_tags) {
@@ -174,6 +176,8 @@ var CompassDocument = UnveillanceDocument.extend({
 	},
 	
 	setInPanel: function(asset, panel) {
+		console.info("SET IN PANEL: " + asset);
+
 		var callback = null;
 		var asset_tmpl;
 		var ctx = this;
