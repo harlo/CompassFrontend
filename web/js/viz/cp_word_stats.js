@@ -86,44 +86,47 @@ var CompassWordStats = UnveillanceViz.extend({
 			vals[2] = crossfilter(vals[2]).dimension(function(d) { return d.index });
 
 			// the rest are entities...
-			// while has next,
-			var entity_browser, entity_browser_ul;
+			// while has next, add to the entity browser (initing it if non-existent)
 			var entity_data = _.initial(_.rest(vals, 3));
 			if(_.size(entity_data) != 0) {
-				entity_browser_ul = $(document.createElement('ul'));
-				entity_browser = $(document.createElement('div'))
-					.attr('id', "cp_entity_browser")
-					.append(entity_browser_ul);
+				var entity_browser = $("#cp_entity_browser");
+				var entity_browser_ul;
+
+				if(!(_.size(entity_browser))) {
+					entity_browser_ul = $(document.createElement('ul'));
+					entity_browser = $(document.createElement('div'))
+						.attr('id', "cp_entity_browser")
+						.append(entity_browser_ul);
+
+					$(this.root_el).append(entity_browser);
+				} else { entity_browser_ul = $(entity_browser).children('ul')[0]; }
 			}
 
-			if(entity_browser) {
-				_.each(entity_data, function(val) {
-					if(!val.uv_page_map) { return; }
+			_.each(entity_data, function(val) {
+				if(!val.uv_page_map) { return; }
 
-					var uv_page_map = val.uv_page_map;
-					delete val.uv_page_map;
+				var uv_page_map = val.uv_page_map;
+				delete val.uv_page_map;
 
-					_.each(val, function(vals_, key_) {
-						var ctx = this;
-						
-						var eb_list = $(document.createElement('ul')).append(
-							_.map(vals_, function(val_) {
-								var hash = MD5(val_);
-								var count = _.findWhere(uv_page_map, { entity : val_ }).count;
-								var entity = { label : val_, count: count, color: getRandomColor(), hash: hash };
+				_.each(val, function(vals_, key_) {
+					var ctx = this;
+					
+					var eb_list = $(document.createElement('ul')).append(
+						_.map(vals_, function(val_) {
+							var hash = MD5(val_);
+							var count = _.findWhere(uv_page_map, { entity : val_ }).count;
+							var entity = { label : val_, count: count, color: getRandomColor(), hash: hash };
 
-								return $(document.createElement('li')).html(
-									Mustache.to_html(ctx.get('entity_li_tmpl'), entity));
-							})
-						);
+							return $(document.createElement('li')).html(
+								Mustache.to_html(ctx.get('entity_li_tmpl'), entity));
+						})
+					);
 
-						$(entity_browser_ul).append($(document.createElement('li')).append(eb_list));
-					}, this);
-
+					$(entity_browser_ul).append($(document.createElement('li')).append(eb_list));
 				}, this);
 
-				$(this.root_el).append(entity_browser);
-			}
+			}, this);
+			
 
 			var wg_id = "cp_word_graph_" + key;
 			var word_graph = $(document.createElement('div'))
