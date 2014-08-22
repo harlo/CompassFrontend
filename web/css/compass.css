@@ -32,6 +32,10 @@
 	font-weight:normal !important;
 }
 
+.cp_button:hover, .uv_button:hover {
+	text-decoration:none;
+}
+
 .cp_active {
 	border:1px solid #ccc;
 }
@@ -96,6 +100,11 @@ div.cp_module {
 	right:0;
 }
 
+.cp_text_highlight {
+	padding:0 0.5em;
+	color:#fff;
+}
+
 #cp_viewer_panel, #cp_document_panel {
 	position:absolute;
 }
@@ -158,4 +167,36 @@ div.cp_module {
 #cp_console #cp_console_opts ul li {
 	float:left;
 	padding:0.1em 0.2em;
+}
+
+div.cp_word_graph {
+	width:90%;
+	height:100px;
+	border:1px solid #000;
+	margin-left:1em;
+}
+
+div.cp_word_graph svg {
+	position:absolute;
+}
+
+#cp_word_browser, #cp_entity_browser {
+	width:90%;
+	height:9em;
+	overflow-y:auto;
+	border:1px solid #000;
+	margin-left:1em;
+}
+
+#cp_word_browser ul, #cp_entity_browser ul {
+	margin:0;
+	padding:0;
+}
+
+#cp_word_browser ul li, #cp_entity_browser ul li ul li {
+	border-bottom:0.1em solid #000;
+}
+
+#cp_word_browser .cp_wb_entity td, #cp_entity_browser .cp_wb_entity td {
+	padding:0.2em;
 }

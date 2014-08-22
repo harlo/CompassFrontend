@@ -1,0 +1,13 @@
+<h2>Entity Module</h2>
+<div class="cp_module" id="cp_mod_entity_browser"></div>
+<script type="text/javascript" src="/web/js/viz/cp_entity_browser.js"></script>
+<script type="text/javascript">
+	if(current_batch) {
+		if(!current_viz) { current_viz = []; }
+		
+		current_viz.push(new CompassEntityBrowser({
+			root_el : $("#cp_mod_entity_browser"),
+			id : "entity_browser"
+		}));
+	}
+</script>

@@ -5,6 +5,22 @@ function updateConf() {
 		"text/plain",
 		"application/pdf"
 	];
+	
+	UV.ASSET_MODULES = [
+		{
+			name : "word_stats",
+			label : "View word stats",
+			asset_tags : [UV.ASSET_TAGS.TXT_JSON, UV.ASSET_TAGS.PAGE_MAP, UV.ASSET_TAGS.CP_ENTITIES],
+			_ids : [],
+			default : true
+		},
+		{
+			name : "forensic_metadata",
+			label : "Compare metadata",
+			asset_tags : [UV.ASSET_TAGS.F_MD],
+			_ids : []
+		}
+	];
 }
 
 function loadDocument(_id) {
@@ -34,13 +50,5 @@ function loadDocument(_id) {
 				document.getElementsByTagName("head")[0].appendChild(css.get(0));
 			}
 		);
-		
-		var conf = $(document.createElement('script'))
-			.attr({
-				'type' : "text/javascript",
-				'src' : "/web/js/conf.js?t=" + new Date().getTime()
-			});
-		
-		document.getElementsByTagName("head")[0].appendChild(conf.get(0));
 	});
 })(jQuery);

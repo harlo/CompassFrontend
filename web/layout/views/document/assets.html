@@ -7,3 +7,16 @@
 	{{ /assets }}
 </ol>
 <div id="cp_document_asset_viewer"></div>
+<script type="text/javascript">
+	if(window.CompassUserAdmin && current_user) {
+		$($("#cp_document_asset_viewer").parent()).append(
+			$(document.createElement('a'))
+				.html("save changes.")
+				.addClass('ic_button ic_inactive')
+				.click(function() {
+					current_document.saveAsset();
+				})
+			
+		);
+	}
+</script>

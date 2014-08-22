@@ -26,7 +26,7 @@ var CompassBatch = Backbone.Model.extend({
 		}
 	},
 	save: function() {
-		if(!window.CompassUserAdmin || !current_user) { return false; }
+		if(!window.UnveillanceUser || !current_user) { return false; }
 		
 		var batches;
 		try {
@@ -59,7 +59,8 @@ var CompassBatch = Backbone.Model.extend({
 		_.each(file_names, function(name) {
 			$("#cp_batch_doc_list").append($(document.createElement('span'))
 				.addClass('cp_file_name cp_inactive')
-				.html(name));
+				.html(name)
+			);
 		});
 		
 		getTemplate("module_ctrl.html", function(res) {
@@ -76,33 +77,14 @@ var CompassBatch = Backbone.Model.extend({
 		
 	},
 	updateCommonModules: function() {
-		this.set('modules', _.clone([
-			{
-				name : "word_stats",
-				label : "View word stats",
-				asset_tags : [UV.ASSET_TAGS.TXT_JSON],
-				_ids : []
-			},
-			{
-				name : "forensic_metadata",
-				label : "Compare metadata",
-				asset_tags : [UV.ASSET_TAGS.F_MD],
-				_ids : []
-			},
-			{
-				name : "entities",
-				label : "View entities",
-				asset_tags : [UV.ASSET_TAGS.DOC_CLOUD_ENTITIES],
-				_ids : []
-			}
-		]));
+		this.set('modules', _.clone(UV.ASSET_MODULES));
 		
 		var ctx = this;
 		
 		_.each(this.get('batch'), function(item) {
 			var document = _.findWhere(document_browser.get('data'), { _id : item._id });
 			if(!document) { return; }
-			
+
 			var document_modules = _.filter(ctx.get('modules'), function(mod) {
 				var doc_tags = _.flatten(_.pluck(document.assets, 'tags'));
 				var common_tags = _.intersection(doc_tags, mod.asset_tags);
