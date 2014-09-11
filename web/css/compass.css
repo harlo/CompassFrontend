@@ -1,3 +1,7 @@
+table tr {
+	vertical-align: top;
+}
+
 #content ul, #header #cp_nav_options, #cp_document_browser_holder {
 	list-style-type:none;
 }
@@ -180,7 +184,7 @@ div.cp_word_graph svg {
 	position:absolute;
 }
 
-#cp_word_browser, #cp_entity_browser {
+#cp_word_browser {
 	width:90%;
 	height:9em;
 	overflow-y:auto;
@@ -193,7 +197,7 @@ div.cp_word_graph svg {
 	padding:0;
 }
 
-#cp_word_browser ul li, #cp_entity_browser ul li ul li {
+#cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li {
 	border-bottom:0.1em solid #000;
 }
 
@@ -203,4 +207,10 @@ div.cp_word_graph svg {
 
 #cp_results_browser .cp_page_text_info {
 	z-index: 100;
+}
+
+#cp_entity_browser div.cp_entity_browser_sublist {
+	max-height:300px;
+	overflow-y:auto;
+	overflow-x:hidden;
 }
