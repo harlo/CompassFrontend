@@ -29,7 +29,7 @@ var CompassResultBrowser = Backbone.Model.extend({
 			this.get('current_results').data = doInnerAjax("documents", "post", {
 				_ids : "[" + _.pluck(this.get('data').slice(min, max), "_id").join() + "]",
 				doc_type : "cp_page_text"
-			}, null, false).data.documents;
+			}, null, false).data.documents.reverse();
 		} catch(err) {
 			console.warn(err);
 			return;
@@ -48,8 +48,6 @@ var CompassResultBrowser = Backbone.Model.extend({
 					var sentence = _.map(sentence.toLowerCase().split(' '), function(fragment) {
 						if(_.contains(words, fragment)) {
 							var word_match = _.findWhere(this.get('search_terms'), { label : fragment });
-							console.info(word_match);
-
 							if(word_match) {
 								return '<span style="color:#fff;background-color:' + word_match.color + ';">' + fragment + "</span>";
 							}
@@ -58,12 +56,18 @@ var CompassResultBrowser = Backbone.Model.extend({
 						return fragment;
 					}, this);
 
-					return $(document.createElement('li')).html(sentence.join(' '));
+					return $(document.createElement('li'))
+						.append($(document.createElement('a'))
+							.attr('href', "/document/" + result.media_id + "/?search_terms=" + words.join(","))
+							.html(sentence.join(' ')));
 				}, this);
 
 			if(_.size(highlights) > 0) {
 				var result_li = $(document.createElement('li'))
-					.append($(document.createElement('ul')).append(highlights));
+					.append($(document.createElement('ul')).append(highlights))
+					.append($(document.createElement('span'))
+						.html(result.media_id + ", page " + (result.index_in_parent + 1))
+						.addClass("cp_page_text_info"));
 				
 				$(this.get('result_holder')).append(result_li);
 			}

@@ -200,3 +200,7 @@ div.cp_word_graph svg {
 #cp_word_browser .cp_wb_entity td, #cp_entity_browser .cp_wb_entity td {
 	padding:0.2em;
 }
+
+#cp_results_browser .cp_page_text_info {
+	z-index: 100;
+}
