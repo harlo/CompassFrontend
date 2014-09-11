@@ -5,10 +5,6 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		// load up entities
 		this.loadPageMap();
 		this.loadEntities();
-
-		if(this.has('entities') || this.has('page_map')) {
-			this.loadWordStats();
-		}
 	},
 	getAssetByTagName: function(tag_name) {
 		try {
@@ -22,12 +18,59 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	addTag: function() {
 
 	},
-	loadWordStats: function() {
-		// consolidate entities and pagemap for frequencies
+	loadWordViz: function() {
+		$("#cp_document_viewer").prepend($(document.createElement('h3')).html("Word Stats"));
+		
+		// create an svg...
+		var viz_div = $("#cp_word_stats");
+		var frequency_max = crossfilter(this.get('page_map').uv_page_map)
+			.dimension(function(d) { return d.frequency_max})
+			.top(1)[0].frequency_max;
 
-		//$("#cp_document_viewer").prepend($(document.createElement('h3')).html("Word Stats"));
+		this.set('word_viz', {
+			d3 : d3.select("#cp_word_stats")
+				.append("svg:svg")
+				.attr({
+					"width" : viz_div.width(),
+					"height" : viz_div.height(),
+					"class" : "uv_viz_main"
+				}),
+			dims : {
+				width : viz_div.width(),
+				height : viz_div.height(),
+				frequency_max : frequency_max,
+				x : d3.scale.linear()
+					.domain([0, this.get('data').total_pages])
+					.range([0, viz_div.width()]),
+				y : d3.scale.linear()
+					.domain([0, frequency_max])
+					.range([0, viz_div.height()]),
+				bar_width : viz_div.width()/this.get('data').total_pages
+			},
+			data : crossfilter(this.get('page_map').uv_page_map)
+				.dimension(function(d) { return d.index; })
+		});
 
-		// create the svg element that shows top frequencies
+		var ctx = this.get('word_viz');
+
+		var bar = ctx.d3.selectAll("g")
+			.data(ctx.data.bottom(Infinity))
+			.enter().append("g").attr({
+				"transform" : function(d, i) {
+					return "translate(" + (i * ctx.dims.bar_width) + ", 0)";
+				}
+			});
+
+		bar.append("rect")
+			.attr({
+				"width" : ctx.dims.bar_width,
+				"y" : function(d) {
+					return ctx.dims.height - ctx.dims.frequency_max; 
+				},
+				"height" : function(d) {
+					return ctx.dims.y(d.frequency_max);
+				}
+			});
 	},
 	loadPageMap: function() {
 		var page_map_asset = this.getAssetByTagName(UV.ASSET_TAGS.PAGE_MAP);
@@ -58,6 +101,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			$(keyword_holder).append($(document.createElement('li')).html(
 				Mustache.to_html(word_tmpl, word)));
 		});
+
+		this.loadWordViz();
 	},
 	loadEntities: function() {
 		var entity_asset = this.getAssetByTagName(UV.ASSET_TAGS.CP_ENTITIES);
