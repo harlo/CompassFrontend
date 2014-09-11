@@ -59,23 +59,19 @@ function loadModule(module_name) {
 			if(current_viz) {
 				var viz = _.findWhere(current_viz, { id : module_name });
 				
-				try {
-					if(viz && viz.build(data)) {
-						_.each($("#cp_batch_common_funcs_list").children('li'),
-							function(li) {
-								var ctrl = $(li).find('a')[0];
-								if(!ctrl) { return; }
-								
-								if(ctrl.onclick.toString().match(module_name)) {
-									$(li).remove();
-								}
+				if(viz && viz.build(data)) {
+					_.each($("#cp_batch_common_funcs_list").children('li'),
+						function(li) {
+							var ctrl = $(li).find('a')[0];
+							if(!ctrl) { return; }
+							
+							if(ctrl.onclick.toString().match(module_name)) {
+								$(li).remove();
 							}
-						);
+						}
+					);
 
-						$($(viz.root_el).find('.uv_data_na')).remove();
-					}
-				} catch(err) {
-					console.warn(err);
+					$($(viz.root_el).find('.uv_data_na')).remove();
 				}
 				
 				if(viz.invalid) { $(viz.root_el).remove(); }			
@@ -192,27 +188,6 @@ function onViewerModeChanged(mode, force_reload) {
 			var load_mod = _.filter(current_batch.get('modules'), function(mod) { 
 				return mod.default === true;
 			});
-
-			try {
-				if(current_batch.has('initial_query')) {
-					// get modules that should be loaded based off of the 'category' param
-					_.each(current_batch.get('initial_query'), function(iq) {
-						var asset_tag;
-	
-						if(_.contains(["text"], iq.category)) {
-							asset_tag = UV.ASSET_TAGS.TXT_JSON;
-						}
-	
-						if(!asset_tag) { return; }
-	
-						load_mod = _.union(load_mod, _.filter(current_batch.get('modules'),
-							function(mod) {
-								return mod.dependent == "initial_query" && _.contains(mod.asset_tags, asset_tag);
-							}
-						));
-					});
-				}
-			} catch(err) {}
 
 			_.each(load_mod, function(mod) { loadModule(mod.name); });
 		};

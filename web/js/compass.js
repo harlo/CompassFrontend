@@ -21,6 +21,8 @@ function updateConf() {
 			_ids : []
 		}
 	];
+
+	UV.DEFAULT_PAGINATION = 16;
 }
 
 function loadDocument(_id) {

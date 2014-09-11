@@ -61,7 +61,18 @@ class CompassFrontend(UnveillanceFrontend):
 				'/web/js/viz/uv_csv.js',
 				'/web/js/models/cp_visual_search.js',
 				'/web/js/models/cp_document_browser.js',
-				'/web/js/modules/main.js']
+				'/web/js/modules/main.js'],
+			'simple' : [
+				'/web/js/lib/visualsearch.js',
+				'/web/js/lib/jquery.ui.core.js',
+				'/web/js/lib/jquery.ui.position.js',
+				'/web/js/lib/jquery.ui.widget.js',
+				'/web/js/lib/jquery.ui.menu.js',
+				'/web/js/lib/jquery.ui.autocomplete.js',
+				'/web/js/models/cp_keyword_search.js',
+				'/web/js/models/cp_result_browser.js',
+				'/web/js/modules/simple.js'
+			]
 		})
 		
 		viz_root = os.path.join(COMPASS_BASE_DIR, "web", "js", "viz")		

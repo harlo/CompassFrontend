@@ -39,9 +39,12 @@ var CompassWordStats = UnveillanceViz.extend({
 			}
 		}
 
+		var wb_label = $(document.createElement('h3')).html("words");
 		var word_browser = $(document.createElement('div'))
 			.attr('id', "cp_word_browser")
-			.append($(document.createElement('ul')));
+			.append([wb_label, $(document.createElement('ul'))]);
+
+		var entity_browser;
 
 		_.each(this.get('data'), function(vals, key) {
 			// add a crossfilter object for quicker parsing			
@@ -49,7 +52,7 @@ var CompassWordStats = UnveillanceViz.extend({
 			delete vals[1].uv_page_map;
 
 			vals[1] = crossfilter(_.map(vals[1], function(v, k) {
-				var hash = MD5(k);
+				var hash = MD5(String(k));
 				var entity = { label : k, count: v, color: getRandomColor(), hash: hash };
 
 				if(v >= 10) {
@@ -89,7 +92,7 @@ var CompassWordStats = UnveillanceViz.extend({
 			// while has next, add to the entity browser (initing it if non-existent)
 			var entity_data = _.initial(_.rest(vals, 3));
 			if(_.size(entity_data) != 0) {
-				var entity_browser = $("#cp_entity_browser");
+				entity_browser = $("#cp_entity_browser");
 				var entity_browser_ul;
 
 				if(!(_.size(entity_browser))) {
@@ -97,8 +100,6 @@ var CompassWordStats = UnveillanceViz.extend({
 					entity_browser = $(document.createElement('div'))
 						.attr('id', "cp_entity_browser")
 						.append(entity_browser_ul);
-
-					$(this.root_el).append(entity_browser);
 				} else { entity_browser_ul = $(entity_browser).children('ul')[0]; }
 			}
 
@@ -111,18 +112,38 @@ var CompassWordStats = UnveillanceViz.extend({
 				_.each(val, function(vals_, key_) {
 					var ctx = this;
 					
+					var eb_label = $(document.createElement('h3')).html(key_);
 					var eb_list = $(document.createElement('ul')).append(
 						_.map(vals_, function(val_) {
 							var hash = MD5(val_);
 							var count = _.findWhere(uv_page_map, { entity : val_ }).count;
 							var entity = { label : val_, count: count, color: getRandomColor(), hash: hash };
 
-							return $(document.createElement('li')).html(
-								Mustache.to_html(ctx.get('entity_li_tmpl'), entity));
+							var eb_el = $(entity_browser).find("li[rel='" + hash + "']")[0];
+							if(!eb_el) {
+								return $(document.createElement('li')).html(
+									Mustache.to_html(ctx.get('entity_li_tmpl'), entity));
+							} else {
+								if(!ctx.has('global_entities')) {
+									ctx.set('global_entities', []);
+								}
+								
+								ctx.get('global_entities').push(val_);
+								var eb_count = $(eb_el).children('span.wb_count')[0];
+
+								try {
+									$(eb_count).html(Number($(eb_count).html()) + count);
+								} catch(err) {
+									console.warn(err);
+								}
+							}
+
+							return;
+							
 						})
 					);
 
-					$(entity_browser_ul).append($(document.createElement('li')).append(eb_list));
+					$(entity_browser_ul).append($(document.createElement('li')).append([eb_label, eb_list]));
 				}, this);
 
 			}, this);
@@ -179,13 +200,26 @@ var CompassWordStats = UnveillanceViz.extend({
 				});				
 		}, this);
 
-		sorted_li = $($(word_browser).children('ul')[0]).children('li').sort(function(a, b) {
-			return Number($($(b).find('span.wb_count')[0]).html()) - Number($($(a).find('span.wb_count')[0]).html());
-		});
-		
-		$($($(word_browser).children('ul')[0]).children('li')).remove();
-		$($(word_browser).children('ul')[0]).append(sorted_li);
+		var lists_to_sort = [word_browser];
+		if(entity_browser) {
+			var eb_lists = $($($(entity_browser).children('ul')[0]).children('li'));
+			lists_to_sort = _.union(lists_to_sort, _.flatten(eb_lists));
+		}
 
+		_.each(lists_to_sort, function(el) {
+			var sorted_li = $($(el).children('ul')[0]).children('li').sort(function(a, b) {
+				return Number($($(b).find('span.wb_count')[0]).html()) - Number($($(a).find('span.wb_count')[0]).html()); 
+			});
+
+			$($($(el).children('ul')[0]).children('li')).remove();
+			$($(el).children('ul')[0]).append(sorted_li);
+		}, this);
+
+		if(entity_browser) {
+			$(this.root_el).prepend(entity_browser);
+			this.setEntityDimension(this.has('global_entities') ? this.get('global_entities') : null, true);
+		}
+		
 		$(this.root_el).prepend(word_browser);
 		this.setWordDimension(this.has('global_keywords') ? this.get('global_keywords') : null, true);		
 		return true;
@@ -238,6 +272,9 @@ var CompassWordStats = UnveillanceViz.extend({
 	},
 	restoreWordHighlightDefaults: function() {
 		console.info("RESTORING");
+	},
+	setEntityDimension: function(entities, redraw) {
+
 	},
 	setWordDimension: function(words, redraw) {
 		var max_default_words = 10;
