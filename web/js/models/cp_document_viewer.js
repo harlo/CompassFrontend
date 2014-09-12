@@ -2,7 +2,6 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	constructor: function() {
 		Backbone.Model.apply(this, arguments);
 
-		// load up entities
 		this.loadPageMap();
 		this.loadEntities();
 	},
@@ -16,6 +15,9 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		return null;
 	},
 	addTag: function() {
+
+	},
+	removeTag: function() {
 
 	},
 	revealSVG: function(svg) {
@@ -160,7 +162,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		});
 		console.info(this.get('entity_viz'));
 	},
-	loadWordViz: function() {		
+	loadWordViz: function() {
 		var viz_div = $("#cp_word_stats");
 		var frequency_max = crossfilter(this.get('page_map').uv_page_map)
 			.dimension(function(d) { return d.frequency_max})
@@ -198,7 +200,15 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			 );
 			delete page_map.uv_page_map;
 
+			page_map = _.map(_.pairs(page_map), function(p) { return _.object([p]); });
+			page_map = crossfilter(page_map)
+				.dimension(function(d) { return _.values(d)[0]; })
+				.top(Infinity);
+
+			page_map = _.reduce(page_map, function(m, n) { return _.extend(m, n); });
+
 			this.get('page_map').words = page_map;
+			console.info(this.get('page_map').words);
 		} catch(err) { console.warn(err); }
 		if(!this.has('page_map') || !this.get('page_map')) { return; }
 
@@ -232,6 +242,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			var entities = JSON.parse(getFileContent(this, [".data", this.get('data')._id, entity_asset.file_name].join("/")));
 			this.set('entities', { uv_page_map : entities.uv_page_map });
 			delete entities.uv_page_map;
+			
 			this.get('entities').words = entities;
 		} catch(err) { console.warn(err); }
 		if(!this.has('entities') || !this.get('entities')) { return; }
@@ -245,7 +256,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		
 		_.each(_.keys(this.get('entities').words), function(key) {
 			var entities = {
-				entities: _.map(this.get('entities').words[key],
+				entities: crossfilter(_.map(this.get('entities').words[key],
 					function(entity) {
 						return {
 							label : entity,
@@ -253,10 +264,14 @@ var CompassDocumentViewer = Backbone.Model.extend({
 							id : MD5(String(entity)),
 							frequency_max : _.findWhere(this.get('entities').uv_page_map, { entity : entity}).count
 						}
-					}, this),
+					}, this)).dimension(function(d) {
+						return d.frequency_max;
+					}).top(Infinity),
 				group_name : key,
 				group_hash : MD5(String(key))
 			};
+
+
 
 			$(entity_holder)
 				.append($(document.createElement('li')).html(
