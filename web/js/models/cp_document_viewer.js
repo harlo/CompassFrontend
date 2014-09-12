@@ -8,19 +8,16 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			if(this.loadEntities()) {
 				this.loadEntityViz();
 			}
+
+			if(this.get('highlight_terms')) {
+				window.setTimeout(_.bind(this.setHighlightTerms, this), 300);
+			}
 		}
-
-		if(this.get('highlight_terms')) {
-			_.each(this.get('highlight_terms'), function(term) {
-				var el;
-				var type = "keyword";
-				
-				el = $("#cp_keyword_handle_" + MD5(String(term)));
-				if(!el) {
-					el = $("#cp_entity_handle_" + MD5(String(term)));
-					type = "entity";
-				}
-
+	},
+	setHighlightTerms: function() {
+		_.each(this.get('highlight_terms'), function(term) {
+			_.each(["keyword", "entity"], function(type) {					
+				var el = $("#cp_" + type + "_handle_" + MD5(String(term)));
 				if(el) {
 					var i = $(el.find('input')[0]);
 
@@ -28,8 +25,10 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					this.sendToViz(i, term, type);
 					$($(el.parent()).parent()).prepend($(el));
 				}
+
+				delete el;
 			}, this);
-		}
+		}, this);
 	},
 	getAssetByTagName: function(tag_name) {
 		try {
@@ -66,7 +65,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		_.each(words, function(word) {
 			var data;
 			
-			var hash = "uv_svg_" + MD5(word);
+			var hash = "uv_svg_" + type + "_" + MD5(word);
 			var has_svg = $("svg." + hash)[0];
 
 			if(has_svg) {
