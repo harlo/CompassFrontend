@@ -1,1 +1,6 @@
-<li id="cp_handle_{{ id }}"><span style="background-color:{{ color }}">&nbsp;&nbsp;<input type="checkbox" />&nbsp;&nbsp;</span>{{ label }}</li>
+<li id="cp_handle_{{ id }}">
+	<span style="background-color:{{ color }}">&nbsp;&nbsp;
+		<input onchange="document_viewer.sendToViz(this, '{{ label }}', 'keyword', '{{ color }}')" type="checkbox" />
+		&nbsp;&nbsp;
+	</span>{{ label }} (<span class="frequency_max">{{ frequency_max }}</span>)
+</li>

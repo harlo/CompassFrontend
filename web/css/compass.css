@@ -215,8 +215,12 @@ div.cp_word_graph svg {
 	overflow-x:hidden;
 }
 
-#cp_word_stats {
-	height:20em;
+#cp_word_stats, #cp_entity_stats {
+	height:16em;
 	width:98%;
-	border:1px solid #000	;
+	margin-left:1em;
+}
+
+#cp_word_stats svg, #cp_entity_stats svg {
+	position:fixed;
 }
