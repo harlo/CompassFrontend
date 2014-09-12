@@ -45,6 +45,10 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	removeTag: function() {
 
 	},
+	clearAllSVGS: function() {
+		_.each($("#cp_entity_browser").find('input'), function(el) { $(el).prop('checked', false); });
+		_.each($("svg[class^='uv_svg_']"), function(svg) { this.hideSVG(svg); }, this);
+	},
 	revealSVG: function(svg) {
 		$("svg[class^='uv_svg_']").css('z-index', 3);
 		$(svg).css({
@@ -225,7 +229,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 			this.set('page_map', {
 				'uv_page_map' : crossfilter(page_map.uv_page_map)
-					.dimension(function(d) { return d.index; }).top(Infinity)
+					.dimension(function(d) { return d.index; }).bottom(Infinity)
 			 	}
 			 );
 			delete page_map.uv_page_map;
