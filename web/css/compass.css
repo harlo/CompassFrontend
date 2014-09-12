@@ -221,6 +221,12 @@ div.cp_word_graph svg {
 	margin-left:1em;
 }
 
-#cp_word_stats svg, #cp_entity_stats svg {
+#cp_word_stats svg, #cp_entity_stats svg, #cp_document_viewer_control {
 	position:fixed;
+}
+
+#cp_document_viewer_control {
+	margin-top:1em;
+	margin-left: 1em;
+	z-index:101;
 }

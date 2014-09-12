@@ -1,6 +1,6 @@
 <h4>{{ group_name }} <a onclick="">+</a></h4>
 <div class="cp_entity_browser_sublist" id="{{ group_hash }}">
-	<ul>
+	<ul id="cp_sortable_list_{{ group_hash }}">
 		{{ #entities }}
 		<li id="cp_entity_handle_{{ id }}">
 			<span style="background-color:{{ color }};">
@@ -8,7 +8,7 @@
 				<input onchange="document_viewer.sendToViz(this, '{{ label}}','entity', '{{ color }}');" type="checkbox" />
 				&nbsp;&nbsp;
 			</span>
-			{{ label }} (<span class="frequency_max">{{ frequency_max }})</span>
+			<span class="cp_label">{{ label }}</span>&nbsp;(<span class="frequency_max">{{ frequency_max }})</span>
 		</li>
 		{{ /entities }}
 	</ul>

@@ -2,6 +2,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	constructor: function() {
 		Backbone.Model.apply(this, arguments);
 
+		this.set('sort_tmpl', getTemplate("document_viewer_sort.html"));
+
 		if(this.loadPageMap()) {
 			this.loadWordViz();
 			
@@ -23,7 +25,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 					i.prop('checked', true);
 					this.sendToViz(i, term, type);
-					$($(el.parent()).parent()).prepend($(el));
+					$(el.parent()).prepend($(el));
 				}
 
 				delete el;
@@ -45,6 +47,43 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	removeTag: function() {
 
 	},
+	sortList: function(list, facet) {
+		var sort_func;
+
+		switch(facet) {
+			case "checked":
+				sort_func = function(a, b) {
+					var b_ = $($(b).find('input')[0]).prop('checked');
+					var a_ = $($(a).find('input')[0]).prop('checked');
+					
+					return b_ - a_;
+				}
+				break;
+			case "word":
+				sort_func = function(a, b) {
+					var b_ = $($(b).find('span.cp_label')[0]).html();
+					var a_ = $($(a).find('span.cp_label')[0]).html();
+
+					if(a_ < b_) { return -1; }
+					else if(a_ > b_) { return 1; }
+					else { return 0; }
+				}
+				break;
+			case "frequency_max":
+				sort_func = function(a, b) {
+					var b_ = Number($($(b).find('span.frequency_max')[0]).html());
+					var a_ = Number($($(a).find('span.frequency_max')[0]).html());
+
+					return b_ - a_;
+				}
+				break;
+		}
+
+		if(sort_func) {
+			var sorted_li = $(list).children('li').sort(sort_func);
+			$(list).html(sorted_li);
+		}
+	},
 	clearAllSVGS: function() {
 		_.each($("#cp_entity_browser").find('input'), function(el) { $(el).prop('checked', false); });
 		_.each($("svg[class^='uv_svg_']"), function(svg) { this.hideSVG(svg); }, this);
@@ -52,7 +91,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	revealSVG: function(svg) {
 		$("svg[class^='uv_svg_']").css('z-index', 3);
 		$(svg).css({
-			'opacity' : 1,
+			'opacity' : 0.7,
 			'z-index' : 100
 		});
 	},
@@ -151,7 +190,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		bar.append("rect")
 			.style(style ? style : {
 				"fill" : "#000000",
-				"opacity" : 0.2
+				"opacity" : 0.15
 			})
 			.attr({
 				"width" : ctx.dims.bar_width,
@@ -246,10 +285,12 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		if(!this.has('page_map') || !this.get('page_map')) { return false; }
 
 		var word_tmpl = getTemplate("word_li.html");
-		var keyword_holder = $(document.createElement('ul'));
+		var keyword_holder = $(document.createElement('ul')).attr('id', "cp_sortable_list_keywords");
 
 		$("#cp_entity_browser")
-			.append($(document.createElement('h3')).html("Keywords <a>+</a>"))
+			.append($(document.createElement('h4')).html("Keywords <a>+</a>"))
+			.append($(document.createElement('div'))
+				.html(Mustache.to_html(this.get('sort_tmpl'), { list_id : "#cp_sortable_list_keywords"})))
 			.append($(document.createElement('div'))
 				.addClass("cp_entity_browser_sublist")
 				.append(keyword_holder));
@@ -262,7 +303,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				frequency_max: this.get('page_map').words[word]
 			};
 
-			$(keyword_holder).append($(document.createElement('li')).html(Mustache.to_html(word_tmpl, word)));
+			$(keyword_holder).append(Mustache.to_html(word_tmpl, word));
 		}, this);
 
 		return true;
@@ -283,9 +324,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		var entity_group_tmpl = getTemplate("entity_group.html");
 		var entity_holder = $(document.createElement('ul'));
 
-		$("#cp_entity_browser")
-			.append($(document.createElement('h3')).html("Entities"))
-			.append(entity_holder);
+		$("#cp_entity_browser").append(entity_holder);
 		
 		_.each(_.keys(this.get('entities').words), function(key) {
 			var entities = {
@@ -305,8 +344,13 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			};
 
 			$(entity_holder)
-				.append($(document.createElement('li')).html(
-					Mustache.to_html(entity_group_tmpl, entities)));
+				.append($(document.createElement('li'))
+					.html(Mustache.to_html(entity_group_tmpl, entities)));
+
+			$("#" + entities.group_hash).before($(document.createElement('div'))
+				.html(Mustache.to_html(this.get('sort_tmpl'), 
+					{ list_id : "#cp_sortable_list_" + entities.group_hash})));
+
 		}, this);
 
 		return true;
