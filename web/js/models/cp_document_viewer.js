@@ -65,7 +65,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		}, this);
 	},
 	setEntityViz: function(class_name, data, style) {
-		var ctx = this.get('entity_viz');		
+		var ctx = this.get('entity_viz');
+		var frequency_max = _.size($(ctx.root_el).children("svg")) + 1;		
 		var viz = d3.select(ctx.root_el)
 			.append("svg:svg")
 			.attr({
@@ -82,16 +83,13 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				}
 			});
 
-		var frequency_max = _.size($(ctx.root_el).children("svg"));
-		var bar_height = ctx.dims.height * .15;
-
 		bar.append("rect")
 			.style(style)
 			.attr({
 				"width" : ctx.dims.bar_width,
 				"y" : 0,
 				"height" : function(d) {
-					return ctx.dims.y(_.contains(data.pages, d.index) ? frequency_max * bar_height : 0);
+					return ctx.dims.y(_.contains(data.pages, d.index) ? frequency_max * ctx.dims.bar_height : 0);
 				}
 			});
 	},
@@ -148,7 +146,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				y : d3.scale.linear()
 					.domain([0, frequency_max])
 					.range([0, viz_div.height()]),
-				bar_width: viz_div.width()/this.get('data').total_pages
+				bar_width: viz_div.width()/this.get('data').total_pages,
+				bar_height: viz_div.height() * 0.15
 			},
 			data : crossfilter(
 				_.map(
