@@ -6,7 +6,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 		if(this.loadPageMap()) {
 			this.loadWordViz();
-			
+
 			if(this.loadEntities()) {
 				this.loadEntityViz();
 			}
@@ -55,7 +55,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				sort_func = function(a, b) {
 					var b_ = $($(b).find('input')[0]).prop('checked');
 					var a_ = $($(a).find('input')[0]).prop('checked');
-					
+
 					return b_ - a_;
 				}
 				break;
@@ -117,7 +117,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				return;
 			}
 
-			if(!show_svg) { return;}
+			if(!show_svg) { return; }
 
 			if(!color) {
 				try {
@@ -171,12 +171,71 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	},
 	setWordViz: function(class_name, data, style) {
 		var ctx = this.get('word_viz');
+		var setPageWindow = _.bind(this.setPageWindow, this);
+		
 		var viz = d3.select(ctx.root_el)
 				.append("svg:svg")
 				.attr({
-					"width" : ctx.dims.width,
-					"height" : ctx.dims.height,
-					"class" : class_name
+					width : ctx.dims.width,
+					height : ctx.dims.height,
+					class : class_name
+				})
+				.on({
+					"mousedown" : function() {
+						var m = d3.mouse(this);
+
+						viz.append("rect")
+							.attr({
+								rx : 6,
+								ry : 6,
+								class : "page_window",
+								x : m[0],
+								y : m[1],
+								width : 0,
+								height : 0
+							});
+					},
+					"mousemove" : function() {
+						var s = d3.select("rect.page_window");
+						if(!s.empty()) {
+							var m = d3.mouse(this);
+							var d = {
+								x : parseInt(s.attr('x'), 10),
+								y : parseInt(s.attr('y'), 10),
+								width : parseInt(s.attr('width'), 10),
+								height : parseInt(s.attr('height'), 10)
+							};
+							var move = {
+								x : m[0] - d.x,
+								y : m[1] - d.y
+							};
+
+							if(move.x < 1 || (move.x * 2 < d.width)) {
+								d.x = m[0];
+								d.width -= move.x;
+							} else { d.width = move.x; }
+
+							if(move.y < 1 || (move.y * 2 < d.height)) {
+								d.y = m[1];
+								d.height -= move.y;
+							} else { d.height = move.y; }
+
+							s.attr(d);
+						}
+					},
+					"mouseup" : function() {
+						d3.selectAll("rect.page_window").remove();
+
+						var in_page_window = d3.selectAll(".in_page_window");
+						if(!in_page_window.empty()) {
+							setPageWindow(
+								_.map(_.flatten(in_page_window), function(s) {
+									return $($(s).parent()).index();
+								})
+							);
+							in_page_window.classed("in_page_window", false);
+						}						
+					}
 				});
 
 		var bar = viz.selectAll("g")
@@ -189,8 +248,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 		bar.append("rect")
 			.style(style ? style : {
-				"fill" : "#000000",
-				"opacity" : 0.15
+				"fill" : "#cccccc",
+				"opacity" : 0.25
 			})
 			.attr({
 				"width" : ctx.dims.bar_width,
@@ -200,7 +259,35 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				"height" : function(d) {
 					return ctx.dims.y(d.frequency_max);
 				}
+			})
+			.on({
+				"mouseover": function() {
+					if(!viz.selectAll("rect.page_window").empty()) {
+						d3.select(this).classed("in_page_window", true);
+					}
+				}
 			});
+
+	},
+	setPageWindow: function(pages) {
+		if(_.isNumber(pages)) {
+			pages = [pages];
+		} else if (_.size(pages) > 1) {
+			pages = _.range(_.min(pages), _.max(pages));
+		}
+
+		window.page_window = new CompassPageWindow({
+			pages : pages,
+			highlight_terms : _.unique(_.map($('input:checked'), 
+				function(i) {
+					console.info(i);
+					return {
+						term : $($($(i).parent()).siblings('.cp_label')[0]).html(),
+						color : $($(i).parent()).css('background-color')
+					};
+				}))
+			}
+		);
 	},
 	loadEntityViz: function() {
 		var viz_div = $("#cp_entity_stats");

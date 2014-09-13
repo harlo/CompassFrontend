@@ -209,6 +209,10 @@ div.cp_word_graph svg {
 	z-index: 100;
 }
 
+#cp_entity_browser, #cp_document_viewer {
+	margin-top:5em;
+}
+
 #cp_entity_browser div.cp_entity_browser_sublist {
 	max-height:300px;
 	overflow-y:auto;
@@ -221,12 +225,36 @@ div.cp_word_graph svg {
 	margin-left:1em;
 }
 
-#cp_word_stats svg, #cp_entity_stats svg, #cp_document_viewer_control {
+#cp_document_header_holder, #cp_word_stats svg, #cp_entity_stats svg, #cp_document_viewer_control {
 	position:fixed;
+}
+
+#cp_word_stats svg rect.page_window {
+	stroke: #000000;
+	stroke-dasharray: 2px;
+	stroke-opacity: 0.7;
+	fill: transparent;
+}
+
+#cp_document_header_holder {
+	background-color:#fff;
+	margin:0;
+	top:30px;
 }
 
 #cp_document_viewer_control {
 	margin-top:1em;
 	margin-left: 1em;
 	z-index:101;
+}
+
+#cp_page_window {
+	position:fixed;
+	z-index:1000;
+	top:2em;
+	left:2em;
+	width:50%;
+	min-height:30em;
+	background-color: #fff;
+	border:2px solid #000;
 }
