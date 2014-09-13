@@ -20,6 +20,8 @@ var CompassPageWindow = Backbone.Model.extend({
 		$('#content').append($(root_el));
 		this.set('root_el', root_el);
 
+		this.set('page_window_repl_tmpl', getTemplate("page_window_repl.html"));
+
 		this.setPageSlider();
 	},
 	setPageSlider: function() {
@@ -62,12 +64,33 @@ var CompassPageWindow = Backbone.Model.extend({
 					}
 				});
 
+		var terms = _.values(_.pluck(this.get('highlight_terms'), 'term'));
 		var ticks = s.append('rect')
 			.attr({
 				y : ctx.dims.height - ctx.dims.tick_height,
 				height: ctx.dims.tick_height,
 				width: ctx.dims.tick_width,
-				class: "cp_page_window_slider_tick"
+				class: "cp_page_window_slider_tick",
+			})
+			.style('opacity', function(d) {
+				if(_.isEmpty(terms)) { return 0.5; }
+
+				var has_words;
+
+				var page_map = _.findWhere(document_viewer.get('page_map').uv_page_map, { index : pages[d] });
+				if(page_map) {
+					has_words = _.intersection(terms,  _.pluck(page_map.map, 'word'));
+				}
+
+				if(!has_words) {
+					has_words = _.filter(document_viewer.get('entities').uv_page_map, function(p) {
+						return (_.contains(terms, p.entity) && _.contains(p.pages, pages[d]));
+					});
+				}
+
+				if(has_words && !(_.isEmpty(has_words))) { return 1; }
+
+				return 0.5;
 			})
 			.on({
 				mouseenter : function() {
@@ -98,6 +121,7 @@ var CompassPageWindow = Backbone.Model.extend({
 		console.info(this);
 	},
 	setPage: function(page) {
+		$("#cp_page_window_anchors").empty();
 		this.set('current_page', page);
 
 		var page_data;
@@ -117,8 +141,25 @@ var CompassPageWindow = Backbone.Model.extend({
 			if(this.get('highlight_terms')) {
 				_.each(this.get('highlight_terms'), function(term) {
 					var rx = new RegExp(term.term, 'gi');
-					var repl = "<span style='background-color:" + term.color + "; color:#fff;'>" + term.term + "</span>"
-				
+
+					if(page_data.match(rx)) {
+						$("#cp_page_window_anchors").append(
+							$(document.createElement('a'))
+								.html(term.term)
+								.click(function() {
+									console.info("NEXT TERM...");
+								})
+								.css({
+									"background-color" : term.color,
+									"color" : "#ffffff"
+								}));
+					}
+
+					var repl = Mustache.to_html(
+						this.get('page_window_repl_tmpl'), 
+						_.extend(term, { hash : MD5(String(term.term)) })
+					);
+					
 					page_data = page_data.replace(rx, repl);
 				}, this);
 			}

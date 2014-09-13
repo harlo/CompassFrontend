@@ -303,15 +303,19 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			pages = _.range(_.min(pages), _.max(pages));
 		}
 
-		window.page_window = new CompassPageWindow({
-			pages : pages,
-			highlight_terms : _.unique(_.map($('input:checked'), 
+		var highlight_terms = _.map($('input:checked'), 
 			function(i) {
 				return {
-					term : $($($(i).parent()).siblings('.cp_label')[0]).html(),
+					term : $($($(i).parent()).siblings('.cp_label')[0]).html().toLowerCase(),
 					color : $($(i).parent()).css('background-color')
 				};
-			})),
+			});
+
+		window.page_window = new CompassPageWindow({
+			pages : pages,
+			highlight_terms : _.map(_.unique(_.values(_.pluck(highlight_terms, 'term'))), function(term) {
+				return _.findWhere(highlight_terms, { term : term });
+			}),
 			initial_position: position
 		});
 	},

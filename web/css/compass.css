@@ -279,7 +279,6 @@ div.cp_word_graph svg {
 #cp_page_window #cp_page_window_expanded #cp_page_window_slider rect.cp_page_window_slider_tick {
 	fill:#cccccc;
 	cursor:pointer;
-	opacity:0.6;
 }
 
 #cp_page_window #cp_page_window_expanded #cp_page_window_slider text.cp_page_window_slider_tick_label {
@@ -294,6 +293,14 @@ div.cp_word_graph svg {
 	overflow-y:auto;
 	overflow-x:hidden;
 	max-height:23em;
+}
+
+#cp_page_window #cp_page_window_anchors {
+	display:inline;
+}
+
+#cp_page_window #cp_page_window_anchors a {
+	width:auto;
 }
 
 #cp_legend {
