@@ -11,10 +11,24 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				this.loadEntityViz();
 			}
 
-			if(this.get('highlight_terms')) {
-				window.setTimeout(_.bind(this.setHighlightTerms, this), 300);
-			}
+			if(this.get('highlight_terms')) { this.setHighlightTerms(); }
+
+			window.setTimeout(_.bind(this.setLegend, this), 300);
 		}
+	},
+	setLegend: function() {
+		var ctx = this.get('word_viz');
+		var legend = $(document.createElement('div'))
+			.attr('id', "cp_legend")
+			.html(Mustache.to_html(getTemplate("word_viz_legend.html"), {
+				frequency_max : ctx.dims.frequency_max,
+				total_pages : this.get('data').total_pages
+			}))
+			.css({
+				left: $(ctx.root_el).position().left + ctx.dims.width,
+				height: ctx.dims.height
+			});
+		$("#cp_word_stats").append(legend);
 	},
 	setHighlightTerms: function() {
 		_.each(this.get('highlight_terms'), function(term) {
@@ -92,7 +106,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		$("svg[class^='uv_svg_']").css('z-index', 3);
 		$(svg).css({
 			'opacity' : 0.7,
-			'z-index' : 100
+			'z-index' : 4
 		});
 	},
 	hideSVG: function(svg) {
@@ -130,7 +144,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					var word_match = _.findWhere(d.map, { word : word });
 					var frequency_max = word_match ? word_match.count : 0;
 
-					return { frequency_max: frequency_max };
+					return { frequency_max: frequency_max, index :  d.index };
 				}, this);
 
 				if(data) { this.setWordViz(hash, data, { "fill" : color }); }
@@ -179,77 +193,91 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					width : ctx.dims.width,
 					height : ctx.dims.height,
 					class : class_name
-				})
-				.on({
-					"mousedown" : function() {
+				});
+
+		if(class_name == "uv_viz_selector") {
+			$("svg.uv_viz_selector").css('z-index', 5);
+			viz.on({
+				"mousedown" : function() {
+					var m = d3.mouse(this);
+
+					viz.append("rect")
+						.attr({
+							rx : 6,
+							ry : 6,
+							class : "page_window",
+							x : m[0],
+							y : m[1],
+							width : 0,
+							height : 0
+						});
+				},
+				"mousemove" : function() {
+					var s = d3.select("rect.page_window");
+					if(!s.empty()) {
+						var m = d3.mouse(this);
+						var d = {
+							x : parseInt(s.attr('x'), 10),
+							y : parseInt(s.attr('y'), 10),
+							width : parseInt(s.attr('width'), 10),
+							height : parseInt(s.attr('height'), 10)
+						};
+						var move = {
+							x : m[0] - d.x,
+							y : m[1] - d.y
+						};
+
+						if(move.x < 1 || (move.x * 2 < d.width)) {
+							d.x = m[0];
+							d.width -= move.x;
+						} else { d.width = move.x; }
+
+						if(move.y < 1 || (move.y * 2 < d.height)) {
+							d.y = m[1];
+							d.height -= move.y;
+						} else { d.height = move.y; }
+
+						s.attr(d);
+					}
+				},
+				"mouseup" : function() {
+					var in_page_window = d3.selectAll(".in_page_window");
+					var page_window_stub = d3.selectAll("rect.page_window");
+
+					if(!window.page_window && !in_page_window.empty()) {
 						var m = d3.mouse(this);
 
-						viz.append("rect")
-							.attr({
-								rx : 6,
-								ry : 6,
-								class : "page_window",
-								x : m[0],
-								y : m[1],
-								width : 0,
-								height : 0
-							});
-					},
-					"mousemove" : function() {
-						var s = d3.select("rect.page_window");
-						if(!s.empty()) {
-							var m = d3.mouse(this);
-							var d = {
-								x : parseInt(s.attr('x'), 10),
-								y : parseInt(s.attr('y'), 10),
-								width : parseInt(s.attr('width'), 10),
-								height : parseInt(s.attr('height'), 10)
-							};
-							var move = {
-								x : m[0] - d.x,
-								y : m[1] - d.y
-							};
-
-							if(move.x < 1 || (move.x * 2 < d.width)) {
-								d.x = m[0];
-								d.width -= move.x;
-							} else { d.width = move.x; }
-
-							if(move.y < 1 || (move.y * 2 < d.height)) {
-								d.y = m[1];
-								d.height -= move.y;
-							} else { d.height = move.y; }
-
-							s.attr(d);
-						}
-					},
-					"mouseup" : function() {
-						d3.selectAll("rect.page_window").remove();
-
-						var in_page_window = d3.selectAll(".in_page_window");
-						if(!in_page_window.empty()) {
-							setPageWindow(
-								_.map(_.flatten(in_page_window), function(s) {
-									return $($(s).parent()).index();
-								})
-							);
-							in_page_window.classed("in_page_window", false);
-						}						
+						setPageWindow(
+							_.map(_.flatten(in_page_window), function(s) {
+								return $($(s).parent()).index();
+							}),
+							{
+								x : m[0] + $("#cp_entity_browser").width(),
+								y : m[1] + $(ctx.root_el).position().top
+							}
+						);
+						in_page_window.classed("in_page_window", false);
 					}
-				});
+
+					page_window_stub.remove();				
+				}
+			});
+		} else if(class_name == "uv_viz_main") {
+			$("svg.uv_viz_main").css('z-index', 2);
+		}
 
 		var bar = viz.selectAll("g")
 			.data(data)
 			.enter().append("g").attr({
 				"transform" : function(d, i) {
-					return "translate(" + (i * ctx.dims.bar_width) + ", 0)";
+					return "translate(" + (d.index * ctx.dims.bar_width) + ", 0)";
 				}
 			});
 
 		bar.append("rect")
 			.style(style ? style : {
 				"fill" : "#cccccc",
-				"opacity" : 0.25
+				"opacity" : 0.33
 			})
 			.attr({
 				"width" : ctx.dims.bar_width,
@@ -267,9 +295,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					}
 				}
 			});
-
 	},
-	setPageWindow: function(pages) {
+	setPageWindow: function(pages, position) {
 		if(_.isNumber(pages)) {
 			pages = [pages];
 		} else if (_.size(pages) > 1) {
@@ -279,15 +306,14 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		window.page_window = new CompassPageWindow({
 			pages : pages,
 			highlight_terms : _.unique(_.map($('input:checked'), 
-				function(i) {
-					console.info(i);
-					return {
-						term : $($($(i).parent()).siblings('.cp_label')[0]).html(),
-						color : $($(i).parent()).css('background-color')
-					};
-				}))
-			}
-		);
+			function(i) {
+				return {
+					term : $($($(i).parent()).siblings('.cp_label')[0]).html(),
+					color : $($(i).parent()).css('background-color')
+				};
+			})),
+			initial_position: position
+		});
 	},
 	loadEntityViz: function() {
 		var viz_div = $("#cp_entity_stats");
@@ -345,6 +371,12 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		});
 		
 		this.setWordViz("uv_viz_main", this.get('page_map').uv_page_map);
+		this.setWordViz("uv_viz_selector", 
+			_.map(_.range(this.get('data').total_pages), function(index) {
+				return { frequency_max : frequency_max, index : index };
+			}),
+			{ fill : "transparent", opacity: 0 }
+		);
 	},
 	loadPageMap: function() {
 		var page_map_asset = this.getAssetByTagName(UV.ASSET_TAGS.PAGE_MAP);

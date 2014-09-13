@@ -1,10 +1,16 @@
-<div id="cp_page_window_control">
-	<a onclick="page_window.destroy();">[ close ]</a>
+<div id="cp_page_window_stats">
+	<a onclick="page_window.destroy();">[ close ]</a>&nbsp;&nbsp;
 	<span>Pages {{ min }}-{{ max}}</span>&nbsp;&nbsp;
-	<span>
-		<a onclick="page_window.previousPage();">&lt;</a>&nbsp;
-		page <span class="cp_page_index"></span>&nbsp;
-		<a onclick="page_window.nextPage();">&gt;</a>
-	</span>
+	<a onclick="page_window.setPage(page_window.get('pages')[0]);">[ browse ]</a>
 </div>
-<p class="cp_searchable_text"></p>
+<div id="cp_page_window_expanded">
+	<div id="cp_page_window_control">
+		<span>
+			<a onclick="page_window.previousPage();">&lt;</a>&nbsp;
+			page <span class="cp_page_index"></span>&nbsp;
+			<a onclick="page_window.nextPage();">&gt;</a>
+		</span>
+	</div>
+	<p class="cp_searchable_text cp_page_window_text"></p>
+	<div id="cp_page_window_slider"></div>
+</div>
