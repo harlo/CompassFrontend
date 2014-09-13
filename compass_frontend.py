@@ -18,6 +18,12 @@ class CompassFrontend(UnveillanceFrontend):
 		])
 		
 		self.default_on_loads.extend([
+			'/web/js/lib/visualsearch.js',
+			'/web/js/lib/jquery.ui.core.js',
+			'/web/js/lib/jquery.ui.position.js',
+			'/web/js/lib/jquery.ui.widget.js',
+			'/web/js/lib/jquery.ui.menu.js',
+			'/web/js/lib/jquery.ui.autocomplete.js',
 			'/web/js/lib/sammy.js',
 			'/web/js/lib/crossfilter.min.js',
 			'/web/js/lib/d3.min.js',
@@ -61,7 +67,17 @@ class CompassFrontend(UnveillanceFrontend):
 				'/web/js/viz/uv_csv.js',
 				'/web/js/models/cp_visual_search.js',
 				'/web/js/models/cp_document_browser.js',
-				'/web/js/modules/main.js']
+				'/web/js/modules/main.js'],
+			'search' : [
+				'/web/js/models/cp_keyword_search.js',
+				'/web/js/models/cp_result_browser.js',
+				'/web/js/modules/simple_search.js'
+			],
+			'document' : [
+				'/web/js/models/cp_document_viewer.js',
+				'/web/js/models/cp_page_window.js',
+				'/web/js/modules/cp_document_viewer.js'
+			]
 		})
 		
 		viz_root = os.path.join(COMPASS_BASE_DIR, "web", "js", "viz")		

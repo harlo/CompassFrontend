@@ -1,3 +1,7 @@
+table tr {
+	vertical-align: top;
+}
+
 #content ul, #header #cp_nav_options, #cp_document_browser_holder {
 	list-style-type:none;
 }
@@ -180,7 +184,7 @@ div.cp_word_graph svg {
 	position:absolute;
 }
 
-#cp_word_browser, #cp_entity_browser {
+#cp_word_browser {
 	width:90%;
 	height:9em;
 	overflow-y:auto;
@@ -193,10 +197,64 @@ div.cp_word_graph svg {
 	padding:0;
 }
 
-#cp_word_browser ul li, #cp_entity_browser ul li ul li {
+#cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li {
 	border-bottom:0.1em solid #000;
 }
 
 #cp_word_browser .cp_wb_entity td, #cp_entity_browser .cp_wb_entity td {
 	padding:0.2em;
+}
+
+#cp_results_browser .cp_page_text_info {
+	z-index: 100;
+}
+
+#cp_entity_browser, #cp_document_viewer {
+	margin-top:5em;
+}
+
+#cp_entity_browser div.cp_entity_browser_sublist {
+	max-height:300px;
+	overflow-y:auto;
+	overflow-x:hidden;
+}
+
+#cp_word_stats, #cp_entity_stats {
+	height:16em;
+	width:98%;
+	margin-left:1em;
+}
+
+#cp_document_header_holder, #cp_word_stats svg, #cp_entity_stats svg, #cp_document_viewer_control {
+	position:fixed;
+}
+
+#cp_word_stats svg rect.page_window {
+	stroke: #000000;
+	stroke-dasharray: 2px;
+	stroke-opacity: 0.7;
+	fill: transparent;
+}
+
+#cp_document_header_holder {
+	background-color:#fff;
+	margin:0;
+	top:30px;
+}
+
+#cp_document_viewer_control {
+	margin-top:1em;
+	margin-left: 1em;
+	z-index:101;
+}
+
+#cp_page_window {
+	position:fixed;
+	z-index:1000;
+	top:2em;
+	left:2em;
+	width:50%;
+	min-height:30em;
+	background-color: #fff;
+	border:2px solid #000;
 }
