@@ -24,9 +24,30 @@ var CompassPageWindow = Backbone.Model.extend({
 
 		this.setPageSlider();
 	},
+	getNumWords: function(d, terms, index) {
+		if(!terms || _.isEmpty(terms)) { return 0; }
+
+		var has_words = [];
+
+		var page_map = _.findWhere(document_viewer.get('page_map').uv_page_map, { index : index });
+		if(page_map) {
+			has_words = _.union(has_words, _.intersection(terms,  _.pluck(page_map.map, 'word')));
+		}
+
+		var e_words = _.filter(document_viewer.get('entities').uv_page_map, function(p) {
+				return (_.contains(terms, p.entity) && _.contains(p.pages, index));
+			}, 'entity');
+
+		if(!(_.isEmpty(e_words))) {
+			has_words = _.union(has_words, _.pluck(e_words, 'entity'));
+		}
+
+		return _.size(has_words);
+	},
 	setPageSlider: function() {
 		var pages = this.get('pages');
 		var setPage = _.bind(this.setPage, this);
+		var getNumWords = _.bind(this.getNumWords, this);
 
 		var width = 640;
 		var height = 16;
@@ -40,11 +61,19 @@ var CompassPageWindow = Backbone.Model.extend({
 				width : width,
 				height : height,
 				tick_width : width * (1/_.size(this.get('pages'))),
-				tick_height : height * 0.4
+				tick_height : height * 0.4,
+				o_off : 0.2
 			}
 		});
 
 		var ctx = this.get('slider');
+
+		var terms = _.values(_.pluck(this.get('highlight_terms'), 'term'));
+		if(terms && !(_.isEmpty(terms))) {
+			ctx.dims.o_on = d3.scale.linear()
+				.domain([0, _.size(terms)])
+				.range([ctx.dims.o_off, 1]);
+		}
 
 		var slider = d3.select("#cp_page_window_slider").append("svg:svg")
 			.attr({
@@ -62,35 +91,26 @@ var CompassPageWindow = Backbone.Model.extend({
 					transform : function(d, i) {
 						return "translate(" + (i * ctx.dims.tick_width) + ", 0)";
 					}
-				});
+				})
+				.on('click', function(d) { setPage(pages[d]); });
 
-		var terms = _.values(_.pluck(this.get('highlight_terms'), 'term'));
 		var ticks = s.append('rect')
 			.attr({
-				y : ctx.dims.height - ctx.dims.tick_height,
-				height: ctx.dims.tick_height,
+				y : 0,
+				height: ctx.dims.height,
 				width: ctx.dims.tick_width,
 				class: "cp_page_window_slider_tick",
 			})
-			.style('opacity', function(d) {
-				if(_.isEmpty(terms)) { return 0.5; }
+			.style({
+				opacity:  function(d) {
+					if(!ctx.dims.o_on) { return ctx.dims.o_off; }
 
-				var has_words;
-
-				var page_map = _.findWhere(document_viewer.get('page_map').uv_page_map, { index : pages[d] });
-				if(page_map) {
-					has_words = _.intersection(terms,  _.pluck(page_map.map, 'word'));
+					var num_words = getNumWords(d, terms, pages[d]);
+					return num_words > 0 ? ctx.dims.o_on(num_words) : ctx.dims.o_off;
+				},
+				fill: function(d) {
+					return getNumWords(d, terms, pages[d]) > 0 ? "#000000" : "#cccccc";
 				}
-
-				if(!has_words) {
-					has_words = _.filter(document_viewer.get('entities').uv_page_map, function(p) {
-						return (_.contains(terms, p.entity) && _.contains(p.pages, pages[d]));
-					});
-				}
-
-				if(has_words && !(_.isEmpty(has_words))) { return 1; }
-
-				return 0.5;
 			})
 			.on({
 				mouseenter : function() {
@@ -104,8 +124,7 @@ var CompassPageWindow = Backbone.Model.extend({
 						$($(d3.select(this).node())
 							.siblings('text')[0]).css('opacity', 0);
 					} catch(err) { console.warn(err); }
-				},
-				click: function(d) { setPage(pages[d]); }
+				}
 			});
 
 		var labels = s.append('text')
@@ -113,6 +132,9 @@ var CompassPageWindow = Backbone.Model.extend({
 				y : 2,
 				dy : "0.5em",
 				class : "cp_page_window_slider_tick_label"
+			})
+			.style('fill', function(d) {
+				return getNumWords(d, terms, pages[d]) > 0 ? "#ffffff" : "#000000";
 			})
 			.text(function(d) { return pages[d + 1]; });
 	},

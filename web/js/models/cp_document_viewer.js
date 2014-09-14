@@ -14,6 +14,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			if(this.get('highlight_terms')) { this.setHighlightTerms(); }
 
 			window.setTimeout(_.bind(this.setLegend, this), 300);
+			$("#cp_document_viewer_control").css('display', 'block');
 		}
 	},
 	setLegend: function() {
@@ -25,7 +26,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				total_pages : this.get('data').total_pages
 			}))
 			.css({
-				left: $(ctx.root_el).position().left + ctx.dims.width,
+				left: $(ctx.root_el).position().left + ctx.dims.width + $("#cp_entity_browser").width(),
 				height: ctx.dims.height
 			});
 		$("#cp_word_stats").append(legend);
@@ -114,6 +115,13 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			'opacity' : 0,
 			'z-index' : 3
 		});
+	},
+	toggleEntityList: function(el) {
+		var status = _.unique(_.map($($(el).parent()).siblings('div'), function(div) {
+			return toggleElement($(div));
+		}));
+
+		$(el).html(status[0] ? "-" : "+");
 	},
 	sendToViz: function(el, words, type, color) {
 		if(_.isString(words)) { words = [words]; }
@@ -244,7 +252,9 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					var in_page_window = d3.selectAll(".in_page_window");
 					var page_window_stub = d3.selectAll("rect.page_window");
 
-					if(!window.page_window && !in_page_window.empty()) {
+					if(!in_page_window.empty()) {
+						if(window.page_window) { page_window.destroy(); }
+
 						var m = d3.mouse(this);
 
 						setPageWindow(
@@ -411,7 +421,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		var keyword_holder = $(document.createElement('ul')).attr('id', "cp_sortable_list_keywords");
 
 		$("#cp_entity_browser")
-			.append($(document.createElement('h4')).html("Keywords <a>+</a>"))
+			.append($(document.createElement('h4')).html("Keywords <a onclick='document_viewer.toggleEntityList(this);'>-</a>"))
 			.append($(document.createElement('div'))
 				.html(Mustache.to_html(this.get('sort_tmpl'), { list_id : "#cp_sortable_list_keywords"})))
 			.append($(document.createElement('div'))
