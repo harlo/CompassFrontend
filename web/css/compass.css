@@ -284,6 +284,13 @@ div.cp_word_graph svg {
 	bottom:0;
 }
 
+rect.cp_page_window_indicator {
+	opacity: 0.2;
+	fill: #ccc;
+	stroke-opacity: 0.8;
+	stroke: #666666;
+}
+
 #cp_page_window #cp_page_window_expanded #cp_page_window_slider text.cp_page_window_slider_tick_label {
 	dy: 0.35em;
 	font-size: 0.75em;
@@ -293,11 +300,32 @@ div.cp_word_graph svg {
 #cp_page_window .cp_page_window_text {
 	overflow-y:auto;
 	overflow-x:hidden;
-	max-height:23em;
+	max-height:20em;
+}
+
+#cp_page_window #cp_page_window_control {
+	height:4em;
+	position:relative;
 }
 
 #cp_page_window #cp_page_window_anchors {
-	display:inline;
+	position: absolute;
+	width:100%;
+	overflow-x:auto;
+	overflow-y:hidden;
+}
+
+#cp_page_window #cp_page_window_suggestions ul {
+	margin:0;
+	padding:0;
+	position:relative;
+}
+
+#cp_page_window #cp_page_window_suggestions ul li {
+	float:left;
+	margin:2px;
+	color:#fff;
+	background-color: #666;
 }
 
 #cp_page_window #cp_page_window_anchors a {

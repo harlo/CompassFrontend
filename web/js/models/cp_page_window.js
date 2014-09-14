@@ -5,6 +5,9 @@ var CompassPageWindow = Backbone.Model.extend({
 		if(!document_viewer) { return; }
 
 		var pos = this.get('initial_position');
+		var min = _.first(this.get('pages'));
+		var max = _.last(this.get('pages'));
+
 		var root_el = $(document.createElement('div'))
 			.attr({'id' : "cp_page_window" })
 			.css({
@@ -12,10 +15,31 @@ var CompassPageWindow = Backbone.Model.extend({
 				left : pos.x
 			})
 			.html(Mustache.to_html(getTemplate("page_window.html", null, "/web/layout/views/popup/"), {
-				min : _.first(this.get('pages')) + 1,
-				max : _.last(this.get('pages')) + 1
+				min : min + 1,
+				max : max + 1
 			}));
 		$(root_el).drags();
+
+		var parent = document_viewer.get('word_viz');
+
+		var indicator = d3.select("svg.uv_viz_selector")
+			.selectAll("g.indicator")
+			.data([{ min : min, max : max }])
+			.enter().append('g').attr({
+				transform : function(d) {
+					return "translate(" + (d.min * parent.dims.bar_width + ", 0)");
+				}
+			});
+
+		indicator.append("rect")
+			.attr({
+				width : function(d) { return parent.dims.bar_width * (d.max - d.min); },
+				height: parent.dims.height,
+				y : 0,
+				class: "cp_page_window_indicator"
+			});
+
+		this.set('indicator', indicator);
 
 		$('#content').append($(root_el));
 		this.set('root_el', root_el);
@@ -48,6 +72,7 @@ var CompassPageWindow = Backbone.Model.extend({
 		var pages = this.get('pages');
 		var setPage = _.bind(this.setPage, this);
 		var getNumWords = _.bind(this.getNumWords, this);
+		var setWordNeighbors = _.bind(this.setWordNeighbors, this);
 
 		var width = 640;
 		var height = 16;
@@ -106,7 +131,13 @@ var CompassPageWindow = Backbone.Model.extend({
 					if(!ctx.dims.o_on) { return ctx.dims.o_off; }
 
 					var num_words = getNumWords(d, terms, pages[d]);
-					return num_words > 0 ? ctx.dims.o_on(num_words) : ctx.dims.o_off;
+					// also, let's use this to set word neighbors...
+					if(num_words > 0) {
+						setWordNeighbors(d);
+						return ctx.dims.o_on(num_words);
+					}
+
+					return ctx.dims.o_off;
 				},
 				fill: function(d) {
 					return getNumWords(d, terms, pages[d]) > 0 ? "#000000" : "#cccccc";
@@ -138,9 +169,53 @@ var CompassPageWindow = Backbone.Model.extend({
 			})
 			.text(function(d) { return pages[d + 1]; });
 	},
-	onHandleUp: function(d) {
-		console.info(arguments);
-		console.info(this);
+	setSuggested: function() {
+		if(!this.get('highlight_terms') || _.isEmpty(this.get('highlight_terms'))) { return; }
+
+		var suggested_tmpl = getTemplate("suggested_add.html");
+
+		_.each(_.filter(this.get('highlight_terms'), function(term) { return term.suggested; }), 
+			function(term) {
+				$($("#cp_page_window_suggestions ul")[0]).append(
+					$(document.createElement('li')).html(
+						Mustache.to_html(suggested_tmpl, { term : term.term })))
+			}, this);
+	},
+	setWordNeighbors: function(page) {
+		var w_neighbors = _.findWhere(document_viewer.get('page_map').uv_page_map, { 'index' : page });
+		
+		if(w_neighbors) {
+			var threshold = Math.floor(w_neighbors.frequency_max * 0.33);
+
+			w_neighbors = _.pluck(_.reject(w_neighbors.map, function(map) {
+				return map.count <= threshold;
+			}), "word");
+		}
+
+		var e_neighbors = _.pluck(_.filter(document_viewer.get('entities').uv_page_map, function(item) {
+			return _.contains(item.pages, page);
+		}), "entity");
+
+		_.each([w_neighbors, e_neighbors], function(neighbors) {
+			if(!this.get('highlight_terms')) { this.set('highlight_terms', [])};
+
+			neighbors = _.reject(neighbors, function(n) {
+				return _.contains(_.pluck(this.get('highlight_terms'), 'term'), n);
+			}, this);
+			
+			this.set('highlight_terms', _.union(this.get('highlight_terms'), _.map(neighbors, function(n) {
+				return {
+					term : n,
+					color : "#cccccc",
+					suggested : true
+				};
+			})));
+		}, this);
+
+		// look through page_map and entities to find other words in page.
+		// there will have to be a threshold...
+		// ...based of the page's word freq (get all words that are within n dist of freq_max)
+		// ...and what other entities on same pages as entites in highlights?
 	},
 	setPage: function(page) {
 		$("#cp_page_window_anchors").empty();
@@ -211,6 +286,8 @@ var CompassPageWindow = Backbone.Model.extend({
 		if(previous_page) { this.setPage(previous_page); }
 	},
 	destroy: function() {
+		this.get('indicator').remove();
+
 		$("#cp_page_window").remove();
 		delete window.page_window;
 	}
