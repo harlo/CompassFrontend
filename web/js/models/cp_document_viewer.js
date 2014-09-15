@@ -73,23 +73,17 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	},
 	getColorForEntity: function(entity) {
 		var li;
-		try {
-			li = $("li[class$='_handle_" + MD5(entity) + "']")[0];
-		} catch(err) { console.warn(err); }
+		
+		try { li = $("li[class$='_handle_" + MD5(entity) + "']")[0];}
+		catch(err) { console.warn(err); }
 
-		if(li) {
-			return $($(li).children("span")[0]).css('background-color');
-		}
+		if(li) { return $($(li).children("span")[0]).css('background-color'); }
 
 		return "#cccccc";
 	},
-	getColorForInput: function(input) {
-		return $($(input).parent()).css('background-color');
-	},
-	getWordNeighbors: function(page, separated) {
-		if(!separated) { separated = false; }
-
-		var word_neighbors = this.getCurrentHighlightTerms;
+	getColorForInput: function(input) { return $($(input).parent()).css('background-color'); },
+	getWordNeighbors: function(page) {
+		var word_neighbors = this.getCurrentHighlightTerms();
 		var w_neighbors = _.findWhere(document_viewer.get('page_map').uv_page_map, { 'index' : page });
 		
 		if(w_neighbors) {
@@ -106,7 +100,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 		_.each([w_neighbors, e_neighbors], function(neighbors) {
 			neighbors = _.reject(neighbors, function(n) {
-				return _.contains(_.pluck(current_highlight_terms, 'term'), n);
+				return _.contains(_.pluck(word_neighbors, 'term'), n);
 			}, this);
 
 			word_neighbors = _.union(word_neighbors, _.map(neighbors, function(n) {
@@ -175,9 +169,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			'z-index' : 3
 		});
 	},
-	removeEntityDot: function(rects) {
-		$(rects).remove();
-	},
+	removeEntityDot: function(rects) { $(rects).remove(); },
 	toggleEntityList: function(el) {
 		var status = _.unique(_.map($($(el).parent()).siblings('div'), function(div) {
 			return toggleElement($(div));
@@ -244,9 +236,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					height: ctx.dims.height,
 					class : class_name
 				});
-		} else {
-			viz = viz.selectAll("svg");
-		}
+		} else { viz = viz.selectAll("svg"); }
 
 		viz = viz.selectAll("g").data(ctx.data);
 
@@ -389,11 +379,12 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				}
 			})
 			.on({
-				"mouseover": function(d) {
+				"mouseover": function(d, i) {
 					if(!viz.selectAll("rect.page_window").empty()) {
 						d3.select(this).classed("in_page_window", true);
 					} else {
-
+						var highlight_terms = getWordNeighbors(i);
+						console.info(highlight_terms);
 					}
 				}
 			});
