@@ -62,6 +62,64 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	removeTag: function() {
 
 	},
+	getCurrentHighlightTerms: function() {
+		return _.map($('input:checked'), 
+			function(i) {
+				return {
+					term : $($($(i).parent()).siblings('.cp_label')[0]).html().toLowerCase(),
+					color : this.getColorForInput(i)
+				};
+			}, this);
+	},
+	getColorForEntity: function(entity) {
+		var li;
+		try {
+			li = $("li[class$='_handle_" + MD5(entity) + "']")[0];
+		} catch(err) { console.warn(err); }
+
+		if(li) {
+			return $($(li).children("span")[0]).css('background-color');
+		}
+
+		return "#cccccc";
+	},
+	getColorForInput: function(input) {
+		return $($(input).parent()).css('background-color');
+	},
+	getWordNeighbors: function(page, separated) {
+		if(!separated) { separated = false; }
+
+		var word_neighbors = this.getCurrentHighlightTerms;
+		var w_neighbors = _.findWhere(document_viewer.get('page_map').uv_page_map, { 'index' : page });
+		
+		if(w_neighbors) {
+			var threshold = Math.floor(w_neighbors.frequency_max * 0.33);
+
+			w_neighbors = _.pluck(_.reject(w_neighbors.map, function(map) {
+				return map.count <= threshold;
+			}), "word");
+		}
+
+		var e_neighbors = _.pluck(_.filter(document_viewer.get('entities').uv_page_map, function(item) {
+			return _.contains(item.pages, page);
+		}), "entity");
+
+		_.each([w_neighbors, e_neighbors], function(neighbors) {
+			neighbors = _.reject(neighbors, function(n) {
+				return _.contains(_.pluck(current_highlight_terms, 'term'), n);
+			}, this);
+
+			word_neighbors = _.union(word_neighbors, _.map(neighbors, function(n) {
+				return {
+					term : n,
+					color : this.getColorForEntity(n),
+					suggested : true
+				};
+			}, this));
+		}, this);
+
+		return word_neighbors;
+	},
 	sortList: function(list, facet) {
 		var sort_func;
 
@@ -143,7 +201,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 			if(!color) {
 				try {
-					color = $($(el).parent()).css('background-color');
+					color = this.getColorForInput($(el));
 				} catch(err) { console.warn(err); }
 			}
 
@@ -173,7 +231,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				"class" : class_name
 			});
 
-		var bar = viz.selectAll("g")
+		var b = viz.selectAll("g")
 			.data(ctx.data)
 			.enter().append("g").attr({
 				"transform" : function(d, i) {
@@ -181,7 +239,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				}
 			});
 
-		bar.append("rect")
+		var bar = b.append("rect")
 			.style(style)
 			.attr({
 				"width" : ctx.dims.bar_width,
@@ -194,6 +252,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	setWordViz: function(class_name, data, style) {
 		var ctx = this.get('word_viz');
 		var setPageWindow = _.bind(this.setPageWindow, this);
+		var getWordNeighbors = _.bind(this.getWordNeighbors, this);
 		
 		var viz = d3.select(ctx.root_el)
 				.append("svg:svg")
@@ -299,9 +358,11 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				}
 			})
 			.on({
-				"mouseover": function() {
+				"mouseover": function(d) {
 					if(!viz.selectAll("rect.page_window").empty()) {
 						d3.select(this).classed("in_page_window", true);
+					} else {
+
 					}
 				}
 			});
@@ -313,13 +374,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			pages = _.range(_.min(pages), _.max(pages));
 		}
 
-		var highlight_terms = _.map($('input:checked'), 
-			function(i) {
-				return {
-					term : $($($(i).parent()).siblings('.cp_label')[0]).html().toLowerCase(),
-					color : $($(i).parent()).css('background-color')
-				};
-			});
+		var highlight_terms = this.getCurrentHighlightTerms();
 
 		window.page_window = new CompassPageWindow({
 			pages : pages,

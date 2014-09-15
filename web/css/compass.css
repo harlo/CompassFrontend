@@ -12,6 +12,7 @@ table tr {
     padding-bottom: 50px;
     position: fixed;
     width: 100%;
+    z-index:2;
 }
 
 #header #cp_nav_options {
@@ -103,6 +104,11 @@ div.cp_module {
 
 #cp_document_browser_holder li.cp_in_annex_false {
 	background-color:#ccc;
+}
+
+#cp_document_viewer_holder {
+	margin-top: 5em;
+	position: absolute;
 }
 
 #cp_viewer_panel {
@@ -205,9 +211,17 @@ div.cp_word_graph svg {
 	padding:0;
 }
 
-#cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li {
+#cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li.cp_in_browser {
 	border-bottom:0.1em solid #000;
 	width:100%;
+}
+
+#cp_entity_browser ul li {
+	width:100%;
+}
+
+#cp_entity_browser ul li h4 {
+	text-transform: capitalize;
 }
 
 #cp_word_browser .cp_wb_entity td, #cp_entity_browser .cp_wb_entity td {
@@ -251,6 +265,7 @@ div.cp_word_graph svg {
 	background-color:#fff;
 	margin:0;
 	top:30px;
+	z-index:2;
 }
 
 #cp_document_viewer_control {
