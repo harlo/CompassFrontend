@@ -83,7 +83,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	},
 	getColorForInput: function(input) { return $($(input).parent()).css('background-color'); },
 	getWordNeighbors: function(page) {
-		var word_neighbors = this.getCurrentHighlightTerms();
+
 		var w_neighbors = _.findWhere(document_viewer.get('page_map').uv_page_map, { 'index' : page });
 		
 		if(w_neighbors) {
@@ -98,6 +98,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			return _.contains(item.pages, page);
 		}), "entity");
 
+		var word_neighbors = [];
 		_.each([w_neighbors, e_neighbors], function(neighbors) {
 			neighbors = _.reject(neighbors, function(n) {
 				return _.contains(_.pluck(word_neighbors, 'term'), n);
@@ -274,6 +275,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		var ctx = this.get('word_viz');
 		var setPageWindow = _.bind(this.setPageWindow, this);
 		var getWordNeighbors = _.bind(this.getWordNeighbors, this);
+		var getCurrentHighlightTerms = _.bind(this.getCurrentHighlightTerms, this);
 		
 		var viz = d3.select(ctx.root_el)
 				.append("svg:svg")
@@ -285,6 +287,9 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 		if(class_name == "uv_viz_selector") {
 			$("svg.uv_viz_selector").css('z-index', 5);
+			$('body').append(ctx.tooltip);
+			console.info(ctx.tooltip);
+
 			viz.on({
 				"mousedown" : function() {
 					var m = d3.mouse(this);
@@ -379,12 +384,57 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				}
 			})
 			.on({
-				"mouseover": function(d, i) {
+				mouseover: function(d, i) {
 					if(!viz.selectAll("rect.page_window").empty()) {
 						d3.select(this).classed("in_page_window", true);
 					} else {
-						var highlight_terms = getWordNeighbors(i);
-						console.info(highlight_terms);
+						if($(ctx.tooltip).hasClass("cp_sticky")) { return; }
+
+						var highlight_terms = getCurrentHighlightTerms();
+						var word_neighbors = getWordNeighbors(i);
+
+						var intersection = _.intersection(
+							_.pluck(word_neighbors, 'term'),
+							_.pluck(highlight_terms, 'term')
+						);
+
+						if(!(_.isEmpty(intersection))) {
+							var m = d3.mouse(this);
+							$(ctx.tooltip)
+								.css({
+									left : d3.event.pageX,
+									top : d3.event.pageY,
+									display: "block"
+								})
+								.html(_.pluck(word_neighbors, 'term').join(" "));
+
+							d3.select(this).classed("has_word_selections", true);
+							
+
+						} else {
+							d3.select(this).classed("has_word_selections", false);
+							$(ctx.tooltip).css('display', 'none');
+						}					
+					}
+				},
+				mouseout: function(d) {
+					if(!viz.selectAll("rect.page_window").empty()) { return; }
+					if($(ctx.tooltip).hasClass("cp_sticky")) { return; }
+
+					if(d3.select(this).classed("has_word_selections", true)) {
+						$(ctx.tooltip).css('display', 'none');
+					}
+				},
+				click: function(d) {
+					if(!viz.selectAll("rect.page_window").empty()) { return; }
+
+					if(d3.select(this).classed("has_word_selections", true)) {
+						console.info("SETTING STICKY BAR: ");
+						console.info(d);
+
+						$(ctx.tooltip)
+							.addClass("cp_sticky")
+							.css('display', 'block');
 					}
 				}
 			});
@@ -447,6 +497,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			.dimension(function(d) { return d.frequency_max})
 			.top(1)[0].frequency_max;
 
+		var tooltip = $(document.createElement('div')).attr('id', "cp_word_stats_tooltip");
+
 		this.set('word_viz', {
 			root_el : "#cp_word_stats",
 			dims : {
@@ -460,7 +512,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					.domain([0, frequency_max])
 					.range([0, viz_div.height()]),
 				bar_width : viz_div.width()/this.get('data').total_pages
-			}
+			},
+			tooltip : tooltip
 		});
 		
 		this.setWordViz("uv_viz_main", this.get('page_map').uv_page_map);

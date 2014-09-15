@@ -250,6 +250,11 @@ div.cp_word_graph svg {
 	margin-left:1em;
 }
 
+#cp_word_stats_tooltip {
+	position:absolute;
+	z-index:6;
+}
+
 #cp_document_header_holder, #cp_word_stats svg, #cp_entity_stats svg, #cp_document_viewer_control, #cp_legend {
 	position:fixed;
 }
