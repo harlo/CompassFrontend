@@ -130,9 +130,7 @@ var CompassPageWindow = Backbone.Model.extend({
 					if(!ctx.dims.o_on) { return ctx.dims.o_off; }
 
 					var num_words = getNumWords(d, terms, pages[d]);
-					// also, this would be the perfect place to set word neighbors...
 					if(num_words > 0) {
-						//setWordNeighbors(d);
 						return ctx.dims.o_on(num_words);
 					}
 

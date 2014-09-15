@@ -160,6 +160,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	clearAllSVGS: function() {
 		_.each($("#cp_entity_browser").find('input'), function(el) { $(el).prop('checked', false); });
 		_.each($("svg[class^='uv_svg_']"), function(svg) { this.hideSVG(svg); }, this);
+		$("rect[class^='uv_svg_']").remove();
 	},
 	revealSVG: function(svg) {
 		$("svg[class^='uv_svg_']").css('z-index', 3);
@@ -174,6 +175,9 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			'z-index' : 3
 		});
 	},
+	removeEntityDot: function(rects) {
+		$(rects).remove();
+	},
 	toggleEntityList: function(el) {
 		var status = _.unique(_.map($($(el).parent()).siblings('div'), function(div) {
 			return toggleElement($(div));
@@ -187,14 +191,23 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 		_.each(words, function(word) {
 			var data;
-			
 			var hash = "uv_svg_" + type + "_" + MD5(word);
-			var has_svg = $("svg." + hash)[0];
 
-			if(has_svg) {
-				if(show_svg) { this.revealSVG(has_svg); }
-				else { this.hideSVG(has_svg); }
-				return;
+			if(type == "keyword") {
+				var has_svg = $("svg." + hash)[0];
+
+				if(has_svg) {
+					if(show_svg) { this.revealSVG(has_svg); }
+					else { this.hideSVG(has_svg); }
+					return;
+				}
+			} else if(type == "entity") {
+				var has_svg = $("rect." + hash);
+
+				if(!(_.isEmpty(has_svg)) && !show_svg) {
+					this.removeEntityDot(has_svg);
+					return;
+				}
 			}
 
 			if(!show_svg) { return; }
@@ -222,32 +235,50 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	},
 	setEntityViz: function(class_name, data, style) {
 		var ctx = this.get('entity_viz');
-		var frequency_max = _.size($(ctx.root_el).children("svg")) + 1;		
-		var viz = d3.select(ctx.root_el)
-			.append("svg:svg")
-			.attr({
-				"width" : ctx.dims.width,
-				"height" : ctx.dims.height,
-				"class" : class_name
-			});
+		var viz = d3.select(ctx.root_el);
 
-		var b = viz.selectAll("g")
-			.data(ctx.data)
-			.enter().append("g").attr({
-				"transform" : function(d, i) {
-					return "translate(" + (i * ctx.dims.bar_width) + ", 0)";
-				}
-			});
+		if(class_name == "uv_viz_entity_holder") {
+			viz = viz.append("svg:svg")
+				.attr({
+					width : ctx.dims.width,
+					height: ctx.dims.height,
+					class : class_name
+				});
+		} else {
+			viz = viz.selectAll("svg");
+		}
 
-		var bar = b.append("rect")
-			.style(style)
-			.attr({
-				"width" : ctx.dims.bar_width,
-				"y" : 0,
-				"height" : function(d) {
-					return ctx.dims.y(_.contains(data.pages, d.index) ? frequency_max * ctx.dims.bar_height : 0);
-				}
-			});
+		viz = viz.selectAll("g").data(ctx.data);
+
+		if(class_name == "uv_viz_entity_holder") {
+			var g = viz.enter().append("g")
+				.attr({
+					"transform" : function(d, i) {
+						return "translate(" + (i * ctx.dims.bar_width) + ", 0)";
+					}
+				});
+
+			var bar = g.append("rect")
+				.style({ fill : "#999999", opacity : 0 })
+				.attr({
+					width : ctx.dims.bar_width,
+					y : 0,
+					height : 0
+				});
+		} else {
+			var frequency_max = _.size($("li[id^='cp_entity_handle_'] input:checked"));
+			
+			var bar = viz.filter(function(d) { return _.contains(data.pages, d.index); });
+			
+			var rect = bar.append("rect")
+				.attr({
+					width : ctx.dims.bar_width * 3,
+					y : (frequency_max - 1) * (ctx.dims.bar_width * 3),
+					height: ctx.dims.bar_width * 3,
+					class: class_name
+				})
+				.style(style);
+		}
 	},
 	setWordViz: function(class_name, data, style) {
 		var ctx = this.get('word_viz');
@@ -405,7 +436,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					.domain([0, frequency_max])
 					.range([0, viz_div.height()]),
 				bar_width: viz_div.width()/this.get('data').total_pages,
-				bar_height: viz_div.height() * 0.15
+				bar_height: viz_div.height() * 0.3
 			},
 			data : crossfilter(
 				_.map(
@@ -416,6 +447,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				)
 			).dimension(function(d) { return d.index; }).bottom(Infinity)
 		});
+
+		this.setEntityViz("uv_viz_entity_holder");
 	},
 	loadWordViz: function() {
 		var viz_div = $("#cp_word_stats");
