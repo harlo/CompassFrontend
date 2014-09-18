@@ -61,6 +61,11 @@ var CompassKeywordSearch = Backbone.Model.extend({
 			}, {}));
 		}
 
+
+		try {
+			onSearchTermsDetected(query.searchable_text);
+		} catch(err) { console.warn(err); }
+
 		if(!(_.isObject(query))) { return null; }
 		return doInnerAjax("documents", "post", query, null, false);
 	},

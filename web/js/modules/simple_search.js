@@ -1,4 +1,8 @@
-var doc_search, result_browser;
+var doc_search, result_browser, search_terms;
+
+function onSearchTermsDetected(search_terms) {
+	window.search_terms = search_terms.substr(1, search_terms.length - 2);
+}
 
 function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
@@ -14,13 +18,11 @@ function displaySearchResults(search_result) {
 		return;
 	}
 
-	// TODO: search_term from searchable_text
-
 	search_results = search_result.data;
 
 	var search_docs = _.unique(_.pluck(search_results.documents, "media_id"));
 	var result_data = {
-		search_terms : "",
+		search_terms : search_terms ? search_terms : "",
 		mention_count : search_results.count,
 		doc_count : _.size(search_docs),
 		data : _.sortBy(search_results.documents, function(res) { return res.index_in_page; }).reverse()
@@ -48,7 +50,6 @@ function displaySearchResults(search_result) {
 	
 	insertTemplate("results_match.html", result_data, 
 		$("#cp_keyword_results"), callback, "/web/layout/views/search/");
-
 }
 
 function onConfLoaded() {
