@@ -460,7 +460,9 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			.dimension(function(d) { return d.frequency_max})
 			.top(1)[0].frequency_max;
 
-		var tooltip = $(document.createElement('div')).attr('id', "cp_word_stats_tooltip");
+		var tooltip = $(document.createElement('div'))
+			.addClass("uv_toggle_none")
+			.attr('id', "cp_word_stats_tooltip");
 
 		this.set('word_viz', {
 			root_el : "#cp_word_stats",
