@@ -185,7 +185,7 @@ var CompassPageWindow = Backbone.Model.extend({
 		var page_data;
 		try {
 			page_data = doInnerAjax("documents", "post", {
-				media_id : document_viewer.get('data')._id,
+				media_id : document_browser.get('data')._id,
 				index_in_parent : page,
 				get_all : true,
 				doc_type : "cp_page_text"

@@ -2,6 +2,19 @@ function onConfLoaded() {
 	console.info("CONF LOADED...");	
 }
 
+function onTagsRefreshed() {
+	$("#cp_document_tags").html(
+		_.map(document_browser.get('tags'), function(tag) {
+			
+			return $(document.createElement('a'))
+				.html(tag.label)
+				.click(function() {
+					document_browser.removeTag(tag.label)
+				});
+		})
+	);
+}
+
 function onReindexRequested(el, task_path) {
 	var req = { _id : document_browser.get('data')._id };
 	var waiter_span = $($(el).siblings('.uv_waiter')[0]);
@@ -38,10 +51,6 @@ function onAssetRequested(file_name) {
 	);
 }
 
-function failOut() {
-	$("#cp_document_header").html("Sorry, could not find this document.");
-}
-
 (function($) {
 	var content_sammy = $.sammy("#content", function() {
 		this.get(/\/unveil\/[a-z0-9]{32}\/#(info|assets|reindexer)/, function() {
@@ -67,9 +76,21 @@ function failOut() {
 		if(initDocumentBrowser()) {
 			content_sammy.run();
 
-			$("#cp_document_header").html(document_browser.get('data').file_alias);
+			$("#cp_document_header").append(
+				$(document.createElement('a'))
+					.html(document_browser.get('data').file_alias)
+					.click(function() {
+						toggleElement("#cp_document_opts");
+					}));
+			
+			$("#cp_document_opts").append(
+				$(document.createElement('a'))
+					.prop('href', "/document/" + document_browser.get('data')._id + "/")
+					.html("Pretty Stuff..."));
+
+			document_browser.refreshTags();
 		} else {
-			failOut();
+			failOut($("#cp_document_header"), "Sorry, could not find this document.");
 		}
 	});
 })(jQuery);

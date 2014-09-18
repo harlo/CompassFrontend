@@ -76,12 +76,12 @@ class CompassFrontend(UnveillanceFrontend):
 			'document' : [
 				'/web/js/models/cp_document_viewer.js',
 				'/web/js/models/cp_page_window.js',
+				'/web/js/modules/uv_unveil.js',
 				'/web/js/modules/cp_document_viewer.js'
 			],
 			'unveil' : [
 				'/web/js/lib/jquery.csv.js',
 				'/web/js/viz/uv_csv.js',
-				'/web/js/models/cp_document.js',
 				'/web/js/modules/uv_unveil.js',
 				'/web/js/modules/cp_unveil.js'
 			]

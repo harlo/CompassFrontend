@@ -23,7 +23,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			.attr('id', "cp_legend")
 			.html(Mustache.to_html(getTemplate("word_viz_legend.html"), {
 				frequency_max : ctx.dims.frequency_max,
-				total_pages : this.get('data').total_pages
+				total_pages : document_browser.get('data').total_pages
 			}))
 			.css({
 				left: $(ctx.root_el).position().left + ctx.dims.width + $("#cp_entity_browser").width(),
@@ -49,18 +49,12 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	},
 	getAssetByTagName: function(tag_name) {
 		try {
-			return _.filter(this.get('data').assets, function(asset) {
+			return _.filter(document_browser.get('data').assets, function(asset) {
 				return _.contains(asset.tags, tag_name);
 			}, this)[0];
 		} catch(err) {console.warn(err); }
 
 		return null;
-	},
-	addTag: function() {
-
-	},
-	removeTag: function() {
-
 	},
 	getCurrentHighlightTerms: function() {
 		return _.map($('input:checked'), 
@@ -288,7 +282,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		if(class_name == "uv_viz_selector") {
 			$("svg.uv_viz_selector").css('z-index', 5);
 			$('body').append(ctx.tooltip);
-			console.info(ctx.tooltip);
+			ctx.tooltip.drags();
 
 			viz.on({
 				"mousedown" : function() {
@@ -386,54 +380,23 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			.on({
 				mouseover: function(d, i) {
 					if(!viz.selectAll("rect.page_window").empty()) {
-						d3.select(this).classed("in_page_window", true);
-					} else {
-						if($(ctx.tooltip).hasClass("cp_sticky")) { return; }
-
-						var highlight_terms = getCurrentHighlightTerms();
-						var word_neighbors = getWordNeighbors(i);
-
-						var intersection = _.intersection(
-							_.pluck(word_neighbors, 'term'),
-							_.pluck(highlight_terms, 'term')
-						);
-
-						if(!(_.isEmpty(intersection))) {
-							var m = d3.mouse(this);
-							$(ctx.tooltip)
-								.css({
-									left : d3.event.pageX,
-									top : d3.event.pageY,
-									display: "block"
-								})
-								.html(_.pluck(word_neighbors, 'term').join(" "));
-
-							d3.select(this).classed("has_word_selections", true);
-							
-
-						} else {
-							d3.select(this).classed("has_word_selections", false);
-							$(ctx.tooltip).css('display', 'none');
-						}					
+						d3.select(this).classed("in_page_window", true);	
 					}
 				},
-				mouseout: function(d) {
-					if(!viz.selectAll("rect.page_window").empty()) { return; }
-					if($(ctx.tooltip).hasClass("cp_sticky")) { return; }
-
-					if(d3.select(this).classed("has_word_selections", true)) {
-						$(ctx.tooltip).css('display', 'none');
-					}
-				},
-				click: function(d) {
+				click: function(d, i) {
 					if(!viz.selectAll("rect.page_window").empty()) { return; }
 
-					if(d3.select(this).classed("has_word_selections", true)) {
-						console.info("SETTING STICKY BAR: ");
-						console.info(d);
+					var word_neighbors = getWordNeighbors(i);
+					console.info("CLICK!");
 
+					if(!(_.isEmpty(word_neighbors))) {
 						$(ctx.tooltip)
-							.addClass("cp_sticky")
+							.css({
+								left : d3.event.pageX,
+								top : d3.event.pageY,
+								display: "block"
+							})
+							.html(Mustache.to_html(ctx.tooltip_tmpl, word_neighbors))
 							.css('display', 'block');
 					}
 				}
@@ -471,17 +434,17 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				height : viz_div.height(),
 				frequency_max : frequency_max,
 				x : d3.scale.linear()
-					.domain([0, this.get('data').total_pages])
+					.domain([0, document_browser.get('data').total_pages])
 					.range([0, viz_div.width()]),
 				y : d3.scale.linear()
 					.domain([0, frequency_max])
 					.range([0, viz_div.height()]),
-				bar_width: viz_div.width()/this.get('data').total_pages,
+				bar_width: viz_div.width()/document_browser.get('data').total_pages,
 				bar_height: viz_div.height() * 0.3
 			},
 			data : crossfilter(
 				_.map(
-					_.range(this.get('data').total_pages),
+					_.range(document_browser.get('data').total_pages),
 					function(num) {
 						return { index : num };
 					}, this
@@ -506,19 +469,20 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				height : viz_div.height(),
 				frequency_max : frequency_max,
 				x : d3.scale.linear()
-					.domain([0, this.get('data').total_pages])
+					.domain([0, document_browser.get('data').total_pages])
 					.range([0, viz_div.width()]),
 				y : d3.scale.linear()
 					.domain([0, frequency_max])
 					.range([0, viz_div.height()]),
-				bar_width : viz_div.width()/this.get('data').total_pages
+				bar_width : viz_div.width()/document_browser.get('data').total_pages
 			},
-			tooltip : tooltip
+			tooltip : tooltip,
+			tooltip_tmpl : getTemplate("tooltip_tmpl.html")
 		});
 		
 		this.setWordViz("uv_viz_main", this.get('page_map').uv_page_map);
 		this.setWordViz("uv_viz_selector", 
-			_.map(_.range(this.get('data').total_pages), function(index) {
+			_.map(_.range(document_browser.get('data').total_pages), function(index) {
 				return { frequency_max : frequency_max, index : index };
 			}),
 			{ fill : "transparent", opacity: 0 }
@@ -529,7 +493,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		if(!page_map_asset) { return false; }
 
 		try {
-			var page_map = JSON.parse(getFileContent(this, [".data", this.get('data')._id, page_map_asset.file_name].join("/")));
+			var page_map = JSON.parse(getFileContent(this, [".data", document_browser.get('data')._id, page_map_asset.file_name].join("/")));
 
 			this.set('page_map', {
 				'uv_page_map' : crossfilter(page_map.uv_page_map)
@@ -578,7 +542,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		if(!entity_asset) { return false; }
 
 		try {
-			var entities = JSON.parse(getFileContent(this, [".data", this.get('data')._id, entity_asset.file_name].join("/")));
+			var entities = JSON.parse(getFileContent(this, [".data", document_browser.get('data')._id, entity_asset.file_name].join("/")));
 			this.set('entities', { uv_page_map : entities.uv_page_map });
 			delete entities.uv_page_map;
 			

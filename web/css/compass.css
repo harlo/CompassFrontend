@@ -251,8 +251,17 @@ div.cp_word_graph svg {
 }
 
 #cp_word_stats_tooltip {
-	position:absolute;
 	z-index:6;
+	background-color: #fff;
+	border: 1px solid #000;
+	padding:1em;
+	max-width:40em;
+	position: absolute;
+	z-index: 7;
+}
+
+#cp_word_stats_tooltip span {
+	padding:2px 4px;
 }
 
 #cp_document_header_holder, #cp_word_stats svg, #cp_entity_stats svg, #cp_document_viewer_control, #cp_legend {
