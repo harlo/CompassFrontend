@@ -1,18 +1,15 @@
+var document_header;
+
 function onConfLoaded() {
 	console.info("CONF LOADED...");	
 }
 
-function onTagsRefreshed() {
-	$("#cp_document_tags").html(
-		_.map(document_browser.get('tags'), function(tag) {
-			
-			return $(document.createElement('a'))
-				.html(tag.label)
-				.click(function() {
-					document_browser.removeTag(tag.label)
-				});
-		})
-	);
+function initDocumentViewer() {
+	document_header = new CompassDocumentHeader();
+	document_header.addOption({
+		href: "/document/" + document_browser.get('data')._id + "/",
+		html: "Pretty Stuff..."
+	});
 }
 
 function onReindexRequested(el, task_path) {
@@ -75,22 +72,9 @@ function onAssetRequested(file_name) {
 
 		if(initDocumentBrowser()) {
 			content_sammy.run();
-
-			$("#cp_document_header").append(
-				$(document.createElement('a'))
-					.html(document_browser.get('data').file_alias)
-					.click(function() {
-						toggleElement("#cp_document_opts");
-					}));
-			
-			$("#cp_document_opts").append(
-				$(document.createElement('a'))
-					.prop('href', "/document/" + document_browser.get('data')._id + "/")
-					.html("Pretty Stuff..."));
-
-			document_browser.refreshTags();
+			initDocumentViewer();
 		} else {
-			failOut($("#cp_document_header"), "Sorry, could not find this document.");
+			failOut($("#content"), "Sorry, could not find this document.");
 		}
 	});
 })(jQuery);

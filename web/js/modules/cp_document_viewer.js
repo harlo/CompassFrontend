@@ -1,4 +1,4 @@
-var document_viewer, entity_browser, initial_query;
+var document_viewer, document_header, entity_browser, initial_query;
 
 function onTagsRefreshed() {
 	$("#cp_document_tags").html(
@@ -24,19 +24,15 @@ function initDocumentViewer() {
 	try {
 		document_viewer = new CompassDocumentViewer({ highlight_terms : search_terms });
 
-		$("#cp_document_header").append(
-			$(document.createElement('a'))
-				.html(document_browser.get('data').file_alias)
-				.click(function() {
-					toggleElement("#cp_document_opts");
-				}));
-		$("#cp_document_opts").append(
-			$(document.createElement('a'))
-				.prop('href', "/unveil/" + document_browser.get('data')._id + "/")
-				.html("Under the hood..."));
+		document_header = new CompassDocumentHeader();
+		document_header.addOption({
+			href: "/unveil/" + document_browser.get('data')._id + "/",
+			html: "Under the Hood..."
+		});
+
 	} catch(err) {
 		console.warn(err);
-		failOut($("#cp_document_header"), "Sorry, could not find this document.");
+		failOut($("#content"), "Sorry, could not find this document.");
 	}
 }
 
