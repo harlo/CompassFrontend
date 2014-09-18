@@ -1,10 +1,15 @@
-var current_document;
-
 function updateConf() {
 	UV.DEFAULT_MIME_TYPES = [
 		"text/plain",
 		"application/pdf"
 	];
+
+	UV.FACET_VALUES = _.union(UV.FACET_VALUES, [
+		{
+			category: "text",
+			uri_label : "searchable_text"
+		}
+	]);
 	
 	UV.ASSET_MODULES = [
 		{
@@ -23,17 +28,6 @@ function updateConf() {
 	];
 
 	UV.DEFAULT_PAGINATION = 16;
-}
-
-function loadDocument(_id) {
-	current_document = new CompassDocument({ _id : _id });
-	
-	try {
-		current_document.updateInfo();
-	} catch(err) {
-		console.warn("COULD NOT LOAD WHOLE DOCUMENT AT THIS TIME");
-		console.warn(err);
-	}
 }
 
 (function($) {

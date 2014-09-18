@@ -68,7 +68,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	getColorForEntity: function(entity) {
 		var li;
 		
-		try { li = $("li[class$='_handle_" + MD5(entity) + "']")[0];}
+		try { li = $("li[id$='_handle_" + MD5(String(entity)) + "']")[0];}
 		catch(err) { console.warn(err); }
 
 		if(li) { return $($(li).children("span")[0]).css('background-color'); }
@@ -83,14 +83,18 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		if(w_neighbors) {
 			var threshold = Math.floor(w_neighbors.frequency_max * 0.33);
 
-			w_neighbors = _.pluck(_.reject(w_neighbors.map, function(map) {
+			w_neighbors = _.map(_.reject(w_neighbors.map, function(map) {
 				return map.count <= threshold;
-			}), "word");
+			}), function(n) {
+				return { term : n.word, type: "keyword" };
+			});
 		}
 
-		var e_neighbors = _.pluck(_.filter(document_viewer.get('entities').uv_page_map, function(item) {
+		var e_neighbors = _.map(_.filter(document_viewer.get('entities').uv_page_map, function(item) {
 			return _.contains(item.pages, page);
-		}), "entity");
+		}), function(n) {
+			return { term : n.entity, type : "entity" };
+		});
 
 		var word_neighbors = [];
 		_.each([w_neighbors, e_neighbors], function(neighbors) {
@@ -99,11 +103,10 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			}, this);
 
 			word_neighbors = _.union(word_neighbors, _.map(neighbors, function(n) {
-				return {
-					term : n,
-					color : this.getColorForEntity(n),
+				return _.extend(n, {
+					color : this.getColorForEntity(n.term),
 					suggested : true
-				};
+				});
 			}, this));
 		}, this);
 
@@ -172,9 +175,24 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 		$(el).html(status[0] ? "-" : "+");
 	},
+	previewViz: function(direction, word, type, color) {
+		if(!direction && _.findWhere(this.getCurrentHighlightTerms(), { term : word })) { return; }
+
+		this.sendToViz(direction, word, type, color);
+	},
+	setPreview: function(word) {
+		this.get('highlight_terms').push(word);
+		this.setHighlightTerms();
+	},
 	sendToViz: function(el, words, type, color) {
+		var show_svg;
+
 		if(_.isString(words)) { words = [words]; }
-		var show_svg = $(el).prop('checked');
+		if(_.isBoolean(el)) {
+			show_svg = el;
+		} else {
+			show_svg = $(el).prop('checked');
+		}
 
 		_.each(words, function(word) {
 			var data;
@@ -197,7 +215,14 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				}
 			}
 
-			if(!show_svg) { return; }
+			if(!show_svg) {
+				// remove from highlight_terms if neccessary
+				if(_.contains(this.get('highlight_terms'), word)) {
+					this.set('highlight_terms', _.without(this.get('highlight_terms'), word));
+				}
+
+				return;
+			}
 
 			if(!color) {
 				try {

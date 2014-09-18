@@ -288,6 +288,10 @@ div.cp_word_graph svg {
 	padding:2em 1em;
 }
 
+#cp_document_tags_holder:nth-child(0) {
+	padding:0;
+}
+
 #cp_document_viewer_control {
 	margin-top:1em;
 	margin-left: 1em;

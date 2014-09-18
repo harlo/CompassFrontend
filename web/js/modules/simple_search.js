@@ -2,13 +2,25 @@ var doc_search, result_browser;
 
 function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
+	
+	if(window.location.search == "") { return; }
+
+	displaySearchResults(doc_search.perform(window.location.search));
 }
 
-function displaySearchResults(search_results, search_term) {
-	var search_docs = _.unique(_.pluck(search_results.documents, "media_id"));
+function displaySearchResults(search_result) {
+	if(search_result == null || search_result.result != 200) {
+		failOut($("#cp_keyword_results"), "No search results.");
+		return;
+	}
 
+	// TODO: search_term from searchable_text
+
+	search_results = search_result.data;
+
+	var search_docs = _.unique(_.pluck(search_results.documents, "media_id"));
 	var result_data = {
-		search_terms : search_term,
+		search_terms : "",
 		mention_count : search_results.count,
 		doc_count : _.size(search_docs),
 		data : _.sortBy(search_results.documents, function(res) { return res.index_in_page; }).reverse()
@@ -35,7 +47,8 @@ function displaySearchResults(search_results, search_term) {
 	}
 	
 	insertTemplate("results_match.html", result_data, 
-		$("#cp_keyword_results"), callback, "/web/layout/views/keyword/");
+		$("#cp_keyword_results"), callback, "/web/layout/views/search/");
+
 }
 
 function onConfLoaded() {
