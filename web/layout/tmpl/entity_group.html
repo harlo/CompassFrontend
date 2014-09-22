@@ -9,6 +9,10 @@
 				&nbsp;&nbsp;
 			</span>
 			<span class="cp_label">{{ label }}</span>&nbsp;(<span class="frequency_max">{{ frequency_max }})</span>
+			<span class="cp_entity_global_opts">
+				<a onclick="onKeywordAddGlobally('{{ label }}');">[ a! ]</a>
+				<a onclick="onKeywordRemoveGlobally('{{ label }}');">[ x ]</a>
+			</span>
 		</li>
 		{{ /entities }}
 	</ul>

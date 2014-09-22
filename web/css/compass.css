@@ -111,6 +111,10 @@ div.cp_module {
 	position: absolute;
 }
 
+#cp_keyword_results {
+	margin-top: 10em;
+}
+
 #cp_viewer_panel {
 	width:70%;
 	height:100%;
@@ -206,6 +210,10 @@ div.cp_word_graph svg {
 	margin-left:1em;
 }
 
+div.cp_entity_browser_sublist span.cp_entity_global_opts {
+	font-size:0.6em;
+}
+
 #cp_word_browser ul, #cp_entity_browser ul {
 	margin:0;
 	padding:0;
@@ -281,6 +289,16 @@ div.cp_word_graph svg {
 	z-index:2;
 	display:inline-flex;
 	height:8em;
+}
+
+#cp_document_tags {
+	padding-top:0.5em;
+}
+
+#cp_document_tags span {
+	padding:0.1em 0.4em;
+	margin:0 0.5em;
+	border:1px solid #ccc;
 }
 
 #cp_document_tags_holder {

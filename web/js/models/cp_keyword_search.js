@@ -29,7 +29,7 @@ var CompassKeywordSearch = Backbone.Model.extend({
 		}));
 	},
 	buildAndPerform: function() {
-		window.location = "/search/?" + this.build()[1];
+		window.location = "/?" + this.build()[1];
 	},
 	build: function() {
 		var params = this.get('params') || [];

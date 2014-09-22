@@ -15,7 +15,26 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 			window.setTimeout(_.bind(this.setLegend, this), 300);
 			$("#cp_document_viewer_control").css('display', 'block');
+
+			window.onKeywordAddGlobally = _.bind(this.addGlobalKeyword, this);
+			window.onKeywordRemoveGlobally = _.bind(this.removeGlobalKeyword, this);
 		}
+	},
+	addGlobalKeyword: function(entity) {
+		if(!current_user) { return; }
+
+		var global_keyword = new CompassGlobalKeyword({ label : entity });
+		this.onKeywordsEdited();
+	},
+	removeGlobalKeyword: function(entity) {
+		if(!current_user) { return; }
+
+		var global_keyword = new CompassGlobalKeyword({ label : entity });
+		global_keyword.remove();
+		this.onKeywordsEdited();
+	},
+	onKeywordsEdited: function() {
+
 	},
 	setLegend: function() {
 		var ctx = this.get('word_viz');
@@ -77,7 +96,6 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	},
 	getColorForInput: function(input) { return $($(input).parent()).css('background-color'); },
 	getWordNeighbors: function(page) {
-
 		var w_neighbors = _.findWhere(document_viewer.get('page_map').uv_page_map, { 'index' : page });
 		
 		if(w_neighbors) {

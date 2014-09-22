@@ -25,6 +25,7 @@ class CompassFrontend(UnveillanceFrontend):
 			'/web/js/lib/jquery.ui.menu.js',
 			'/web/js/lib/jquery.ui.autocomplete.js',
 			'/web/js/lib/sammy.js',
+			'/web/js/lib/oboe-browser.min.js',
 			'/web/js/lib/crossfilter.min.js',
 			'/web/js/lib/d3.min.js',
 			'/web/js/lib/md5.js',
@@ -57,21 +58,9 @@ class CompassFrontend(UnveillanceFrontend):
 
 		self.on_loads.update({
 			'main' : [
-				'/web/js/lib/visualsearch.js',
-				'/web/js/lib/jquery.ui.core.js',
-				'/web/js/lib/jquery.ui.position.js',
-				'/web/js/lib/jquery.ui.widget.js',
-				'/web/js/lib/jquery.ui.menu.js',
-				'/web/js/lib/jquery.ui.autocomplete.js',
-				'/web/js/lib/jquery.csv.js',
-				'/web/js/viz/uv_csv.js',
-				'/web/js/models/cp_visual_search.js',
-				'/web/js/models/cp_document_browser.js',
-				'/web/js/modules/main.js'],
-			'search' : [
 				'/web/js/models/cp_keyword_search.js',
 				'/web/js/models/cp_result_browser.js',
-				'/web/js/modules/simple_search.js'
+				'/web/js/modules/main.js'
 			],
 			'document' : [
 				'/web/js/models/cp_document_header.js',
@@ -88,15 +77,6 @@ class CompassFrontend(UnveillanceFrontend):
 				'/web/js/modules/cp_unveil.js'
 			]
 		})
-		
-		viz_root = os.path.join(COMPASS_BASE_DIR, "web", "js", "viz")		
-		for _, _, files in os.walk(viz_root):
-			viz_js = ["/%s" % os.path.join("web", "js", "viz", v) for v in files]
-
-			if DEBUG: print "adding all vizez:\n%s" % viz_js
-			
-			self.on_loads['main'].extend(viz_js)				
-			break
 		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
 			init_vars = json.loads(IV.read())['web']

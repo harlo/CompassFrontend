@@ -1,3 +1,24 @@
+var CompassGlobalKeyword = UnveillanceDirectiveItem.extend({
+	constructor: function() {
+		UnveillanceDirectiveItem.prototype.constructor.apply(this, arguments);
+		
+		this.set('d_name', "global_keywords");
+		this.update();
+	}
+});
+
+function getFileContentOboe(ctx, path) {
+	oboe("/files/" + path)
+		.done(function(json) {
+			console.info("HOORAY WE HAVE IT");
+			console.info(json);
+		})
+		.fail(function() {
+			console.error("NO JSON PARSED BY OBOE");
+			console.error(arguments)
+		});
+}
+
 function updateConf() {
 	UV.DEFAULT_MIME_TYPES = [
 		"text/plain",

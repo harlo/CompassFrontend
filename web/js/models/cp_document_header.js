@@ -8,9 +8,9 @@ var CompassDocumentHeader = Backbone.Model.extend({
 
 		this.set('tag_tmpl', getTemplate("tag_tmpl.html"));
 
-		$(this.get('root_el')).prepend(Mustache.to_html(
+		$(this.get('root_el')).prepend(translate(Mustache.to_html(
 			getTemplate("cp_document_header_holder_tmpl.html"), 
-			document_browser.get('data')));
+			document_browser.get('data'))));
 
 		$($("#cp_document_tag_editor").children('input'))
 			.keypress(function(key) {
