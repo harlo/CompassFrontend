@@ -25,7 +25,7 @@ function displaySearchResults(search_result) {
 	};
 
 	if(search_terms) {
-		result_data.set({
+		result_data = _.extend(result_data, {
 			search_terms : search_terms,
 			doc_count : _.size(_.unique(_.pluck(search_results.documents, "media_id"))) 
 		}); 
