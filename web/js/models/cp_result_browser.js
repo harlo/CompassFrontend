@@ -12,7 +12,16 @@ var CompassResultBrowser = Backbone.Model.extend({
 			}));
 		}
 	},
-	showWordStats: function() {
+	requestCluster: function() {
+		if(!this.has('search_terms') || (_.isEmpty(this.get('search_terms')))) {
+			return;
+		}
+
+		doInnerAjax("cluster", "post", {
+			query : "[" + _.pluck(this.get('search_terms'), 'label').join() + "]",
+			documents : "[" + _.pluck(this.get('current_results').data, '_id').join() + "]",
+			task_path : UV.AVAILABLE_CLUSTERS.map_similarities_gensim
+		});
 
 	},
 	setResultPage: function(page_num) {

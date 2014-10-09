@@ -39,8 +39,6 @@ function displaySearchResults(search_result) {
 		result_browser.set('result_holder', $($("#cp_results_browser").children('ul')[0]));
 
 		// TODO: threaded!
-		result_browser.showWordStats();
-
 		if(search_results.count > UV.DEFAULT_PAGINATION) {
 			insertTemplate("result_pagination.html", { max_pages : max_pages },
 				$("#cp_results_browser_pagination"), function() {
@@ -48,6 +46,14 @@ function displaySearchResults(search_result) {
 				});
 		} else {
 			result_browser.setResultPage(0);
+		}
+
+		if(result_browser.has('search_terms') && !(_.isEmpty(result_browser.get('search_terms')))) {
+			var request_cluster = $(getTemplate("result_cluster.html"));
+			$(request_cluster.find('#cp_result_cluster_ctrl')[0])
+				.click(_.bind(result_browser.requestCluster, result_browser));
+			
+			$("#cp_results_browser").before(request_cluster);
 		}
 	}
 	
