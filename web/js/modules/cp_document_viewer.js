@@ -42,7 +42,9 @@ function onConfLoaded() {
 
 (function($) {
 	doc_id = _.filter(window.location.pathname.split("/"), function(segment) {
-		return !_.contains(["", "document"], segment)})[0];
+		return !_.contains(["", "document"], segment)
+	})[0];
+	
 	try {
 		updateConf();
 	} catch(err) {
