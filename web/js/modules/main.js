@@ -21,13 +21,14 @@ function displaySearchResults(search_result) {
 	search_results = search_result.data;
 	var result_data = {
 		mention_count : search_results.count,
-		data : _.sortBy(search_results.documents, function(res) { return res.index_in_page; }).reverse()
+		data : _.sortBy(search_results.documents, function(res) { return res.index_in_page; }).reverse(),
+		unique_documents: _.unique(_.pluck(search_results.documents, "media_id"))
 	};
 
 	if(search_terms) {
 		result_data = _.extend(result_data, {
 			search_terms : search_terms,
-			doc_count : _.size(_.unique(_.pluck(search_results.documents, "media_id"))) 
+			doc_count : _.size(result_data.unique_documents) 
 		}); 
 	}
 
