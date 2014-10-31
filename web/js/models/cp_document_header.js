@@ -23,6 +23,7 @@ var CompassDocumentHeader = Backbone.Model.extend({
 		window.onTagsRefreshed = _.bind(this.onTagsRefreshed, this);
 		window.onTagEditorRequested = _.bind(this.onTagEditorRequested, this);
 		window.onTagRemoveRequested = _.bind(this.onTagRemoveRequested, this);
+
 		document_browser.refreshTags();
 	},
 	addOption: function(options) {

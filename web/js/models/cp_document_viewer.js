@@ -38,6 +38,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 	},
 	setLegend: function() {
 		var ctx = this.get('word_viz');
+		console.info(ctx);
+
 		var legend = $(document.createElement('div'))
 			.attr('id', "cp_legend")
 			.html(Mustache.to_html(getTemplate("word_viz_legend.html"), {

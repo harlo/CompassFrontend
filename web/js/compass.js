@@ -25,11 +25,9 @@ function updateConf() {
 		"application/pdf"
 	];
 
-	UV.AVAILABLE_CLUSTERS = _.extend(UV.AVAILABLE_CLUSTERS ? UV.AVAILABLE_CLUSTERS : {}, 
-		{ 
-			map_similarities_gensim : "Cluster.map_similarities_gensim.mapSimilaritiesGensim"
-		}
-	);
+	UV.AVAILABLE_CLUSTERS = _.union(UV.AVAILABLE_CLUSTERS ? UV.AVAILABLE_CLUSTERS : [], [{
+		map_similarities_gensim : "NLP.map_similarities_gensim.mapSimilaritiesGensim"
+	}]);
 
 	UV.FACET_VALUES = _.union(UV.FACET_VALUES, [
 		{
