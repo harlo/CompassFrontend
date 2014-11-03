@@ -1,7 +1,16 @@
-var document_viewer, entity_browser, doc_id, initial_query;
+var document_viewer, document_header, entity_browser, initial_query;
 
-function failOut() {
-	$("#cp_document_header").html("Sorry, could not find this document.");
+function onTagsRefreshed() {
+	$("#cp_document_tags").html(
+		_.map(document_browser.get('tags'), function(tag) {
+			
+			return $(document.createElement('a'))
+				.html(tag.label)
+				.click(function() {
+					document_browser.removeTag(tag.label)
+				});
+		})
+	);
 }
 
 function initDocumentViewer() {
@@ -13,34 +22,29 @@ function initDocumentViewer() {
 	);
 
 	try {
-		document_viewer = new CompassDocumentViewer(_.extend(doInnerAjax("documents", "post", 
-			{ _id : doc_id }, null, false), { highlight_terms : search_terms }));
+		document_viewer = new CompassDocumentViewer({ highlight_terms : search_terms });
 
-		if(document_viewer.get('result') != 200) {
-			failOut();
-			return;
-		}
+		document_header = new CompassDocumentHeader();
+		document_header.addOption({
+			href: "/unveil/" + document_browser.get('data')._id + "/",
+			html: "Under the Hood..."
+		});
 
-		document_viewer.unset('result');
-		$("#cp_document_header").html(document_viewer.get('data').file_alias);
 	} catch(err) {
 		console.warn(err);
-		failOut();
+		failOut($("#content"), "Sorry, could not find this document.");
 	}
 }
 
 function onConfLoaded() {
 	console.info("CONF LOADED...");
-
-	window.setTimeout(function() {
-		initDocumentViewer();
-		
-	}, 200);
 }
 
 (function($) {
 	doc_id = _.filter(window.location.pathname.split("/"), function(segment) {
-		return !_.contains(["", "document"], segment)})[0];
+		return !_.contains(["", "document"], segment)
+	})[0];
+	
 	try {
 		updateConf();
 	} catch(err) {
@@ -53,5 +57,11 @@ function onConfLoaded() {
 	} catch(err) {
 		console.warn(err);
 		console.warn("no onConfLoaded");
+	}
+
+	if(initDocumentBrowser()) {
+		window.setTimeout(function() {
+			initDocumentViewer();	
+		}, 200);
 	}
 })(jQuery);

@@ -1,0 +1,9 @@
+<a onclick="toggleElement('#cp_word_stats_tooltip');">[ close ]</a>
+{{ #. }}
+<a class="cp_word_viz_preview_label" 
+	onmouseover="document_viewer.previewViz(true, '{{ term }}', '{{ type }}', '{{ color }}')" 
+	onmouseout="document_viewer.previewViz(false, '{{ term }}', '{{ type }}', '{{ color }}');"
+	onclick="document_viewer.setPreview('{{ term }}');">
+	{{ term }}
+</a>
+{{ /. }}

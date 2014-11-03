@@ -1,10 +1,40 @@
-var current_document;
+var CompassGlobalKeyword = UnveillanceDirectiveItem.extend({
+	constructor: function() {
+		UnveillanceDirectiveItem.prototype.constructor.apply(this, arguments);
+		
+		this.set('d_name', "global_keywords");
+		this.update();
+	}
+});
+
+function getFileContentOboe(ctx, path) {
+	oboe("/files/" + path)
+		.done(function(json) {
+			console.info("HOORAY WE HAVE IT");
+			console.info(json);
+		})
+		.fail(function() {
+			console.error("NO JSON PARSED BY OBOE");
+			console.error(arguments)
+		});
+}
 
 function updateConf() {
 	UV.DEFAULT_MIME_TYPES = [
 		"text/plain",
 		"application/pdf"
 	];
+
+	UV.AVAILABLE_CLUSTERS = _.union(UV.AVAILABLE_CLUSTERS ? UV.AVAILABLE_CLUSTERS : [], [{
+		map_similarities_gensim : "NLP.map_similarities_gensim.mapSimilaritiesGensim"
+	}]);
+
+	UV.FACET_VALUES = _.union(UV.FACET_VALUES, [
+		{
+			category: "text",
+			uri_label : "searchable_text"
+		}
+	]);
 	
 	UV.ASSET_MODULES = [
 		{
@@ -23,17 +53,6 @@ function updateConf() {
 	];
 
 	UV.DEFAULT_PAGINATION = 16;
-}
-
-function loadDocument(_id) {
-	current_document = new CompassDocument({ _id : _id });
-	
-	try {
-		current_document.updateInfo();
-	} catch(err) {
-		console.warn("COULD NOT LOAD WHOLE DOCUMENT AT THIS TIME");
-		console.warn(err);
-	}
 }
 
 (function($) {

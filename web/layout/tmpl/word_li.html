@@ -1,6 +1,10 @@
-<li id="cp_keyword_handle_{{ id }}">
+<li id="cp_keyword_handle_{{ id }}" class="cp_in_browser">
 	<span style="background-color:{{ color }}">&nbsp;&nbsp;
 		<input onchange="document_viewer.sendToViz(this, '{{ label }}', 'keyword', '{{ color }}')" type="checkbox" />
 		&nbsp;&nbsp;
 	</span><span class="cp_label">{{ label }}</span>&nbsp;(<span class="frequency_max">{{ frequency_max }}</span>)
+	<span class="cp_entity_global_opts">
+		<a onclick="onKeywordAddGlobally('{{ label }}');">[ a! ]</a>
+		<a onclick="onKeywordRemoveGlobally('{{ label }}');">[ x ]</a>
+	</span>
 </li>
