@@ -1,3 +1,5 @@
+var annex_channel;
+
 var CompassGlobalKeyword = UnveillanceDirectiveItem.extend({
 	constructor: function() {
 		UnveillanceDirectiveItem.prototype.constructor.apply(this, arguments);
@@ -49,6 +51,7 @@ function updateConf() {
 	];
 
 	UV.DEFAULT_PAGINATION = 16;
+	annex_channel = new CompassNotifier();
 }
 
 (function($) {

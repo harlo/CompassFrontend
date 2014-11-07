@@ -32,6 +32,7 @@ class CompassFrontend(UnveillanceFrontend):
 			'/web/js/viz/uv_viz.js',
 			'/web/js/models/cp_document.js',
 			'/web/js/models/cp_batch.js',
+			'/web/js/models/cp_notifier.js',
 			'/web/js/compass.js'
 		])
 		
