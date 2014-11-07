@@ -6,7 +6,7 @@ from lib.Frontend.unveillance_frontend import UnveillanceFrontend
 from lib.Frontend.lib.Core.vars import Result
 
 from conf import COMPASS_BASE_DIR, COMPASS_CONF_ROOT, DEBUG, buildServerURL
-from vars import MIME_TYPE_TASK_REQUIREMENTS
+from vars import MIME_TYPE_TASK_REQUIREMENTS, AVAILABLE_CLUSTERS
 
 class CompassFrontend(UnveillanceFrontend):
 	def __init__(self):
@@ -81,6 +81,7 @@ class CompassFrontend(UnveillanceFrontend):
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
 			init_vars = json.loads(IV.read())['web']
 			init_vars['MIME_TYPE_TASK_REQUIREMENTS'] = MIME_TYPE_TASK_REQUIREMENTS
+			init_vars['AVAILABLE_CLUSTERS'] = AVAILABLE_CLUSTERS
 			
 			self.init_vars.update(init_vars)
 		

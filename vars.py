@@ -46,8 +46,13 @@ compass_asset_tags = {
 	"CP_TOPICS" : "compass_topic_model_document",
 	"GM_D" : "gensim_dict",
 	"GM_MM" : "gensim_corpus_mm",
-	"GM_LSI" : "gensim_lsi_model"
+	"GM_LSI" : "gensim_lsi_model",
+	"GM_TOPICS" : "gensim_lsi_topics"
 }
+
+AVAILABLE_CLUSTERS.update({
+		'map_similarities_gensim' : "Cluster.map_similarities_gensim.mapSimilaritiesGensim"
+})
 
 MIME_TYPES.update(compass_mime_types)
 MIME_TYPE_MAP.update(compass_mime_type_map)

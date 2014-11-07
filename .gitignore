@@ -1,4 +1,6 @@
 .DS_Store
+.Trash-1000
+
 *.pyc
 
 conf/
