@@ -82,10 +82,10 @@ var CompassResultBrowser = Backbone.Model.extend({
 
 				if(_.size(highlights) > 0) {
 					var result_li = $(document.createElement('li'))
-						.append($(document.createElement('ul')).append(highlights))
 						.append($(document.createElement('span'))
 							.html(result.media_id + ", page " + (result.index_in_parent + 1))
-							.addClass("cp_page_text_info"));
+							.addClass("cp_page_text_info"))
+						.append($(document.createElement('ul')).append(highlights));
 					
 					$(this.get('result_holder')).append(result_li);
 				}

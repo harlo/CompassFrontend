@@ -25,8 +25,30 @@ table tr {
 	padding:0 1em 0 0;
 }
 
+#header #cp_header_options {
+	position:relative;
+	float:left;
+	margin:0.5em;
+	width:100%;
+}
+
+#header #cp_annex_holder {
+	display:none;
+	background-color:#cccccc;
+	width:100%;
+	overflow-y:auto;
+	overflow-x:hidden;
+	height:40em;
+}
+
+#header #cp_annex_holder table {
+	width:inherit;
+	margin:0.5em;
+}
+
 #content {
-	padding-top:3em;
+	padding-top:5em;
+	margin:0 0.5em;
 }
 
 #cp_document_browser_holder .cp_dir_root {
@@ -43,6 +65,10 @@ table tr {
 	margin:0.1em;
 	font-size:14px !important;
 	font-weight:normal !important;
+}
+
+.cp_label {
+	font-weight:bold !important;
 }
 
 .cp_button:hover, .uv_button:hover {
@@ -112,7 +138,7 @@ div.cp_module {
 }
 
 #cp_keyword_results {
-	margin-top: 10em;
+	
 }
 
 #cp_viewer_panel {
@@ -236,8 +262,28 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	padding:0.2em;
 }
 
+#cp_results_browser ul, #cp_results_browser ul li ul {
+	margin:0;
+	padding:0;
+}
+
+#cp_results_browser ul li {
+	margin:0 0 1em 0;
+}
+
+#cp_results_browser ul li ul {
+	border:1px solid #999999;
+}
+
+#cp_results_browser ul li ul li {
+	margin:0;
+	padding:0 0.5em;
+}
+
 #cp_results_browser .cp_page_text_info {
-	z-index: 100;
+	background-color: #cccccc;
+	display:block;
+	padding:0 0.5em;
 }
 
 #cp_entity_browser, #cp_document_viewer {

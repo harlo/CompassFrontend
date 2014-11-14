@@ -19,7 +19,7 @@ var CompassKeywordSearch = Backbone.Model.extend({
 		window.buildAndPerform = _.bind(this.buildAndPerform, this);
 
 		this.set('searchBar', VS.init({
-			container: $("#cp_keyword_search"),
+			container: $("#cp_searchbar_holder"),
 			query: '',
 			callbacks: {
 				search : this.setParams,

@@ -54,6 +54,41 @@ function updateConf() {
 	annex_channel = new CompassNotifier();
 }
 
+function showAnnex() {
+	$("#cp_annex_holder").css('display', 'block');
+
+	var annex_button = $("#cp_annex_button").children('a')[0];
+	$(annex_button).unbind("click");
+	$(annex_button).bind("click", hideAnnex);
+	
+	var annex_documents = doInnerAjax("documents", "post", null, null, false);
+	
+	if(annex_documents.result != 200) {
+		$("#cp_annex_holder").html("No documents yet...");
+		return;
+	}
+
+	var annex_tmpl = getTemplate("annex_document_tr.html");
+
+	_.each(annex_documents.data.documents, function(doc) {
+		$($("#cp_annex_holder").children('table')[0])
+			.append(Mustache.to_html(annex_tmpl, doc));
+	});
+
+	
+}
+
+function hideAnnex() {
+	$("#cp_annex_holder").css('display', 'none');
+
+	var annex_button = $("#cp_annex_button").children('a')[0];
+	console.info(annex_button);
+
+	$(annex_button).unbind("click");
+	$(annex_button).bind("click", showAnnex);
+
+}
+
 (function($) {
 	$(function() {
 		var css_stub = $(document.createElement('link'))
@@ -70,5 +105,7 @@ function updateConf() {
 				document.getElementsByTagName("head")[0].appendChild(css.get(0));
 			}
 		);
+
+		hideAnnex();
 	});
 })(jQuery);

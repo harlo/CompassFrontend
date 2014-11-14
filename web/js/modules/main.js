@@ -6,9 +6,10 @@ function onSearchTermsDetected(search_terms) {
 
 function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
+	if(window.location.search == "") {
+		return;
+	}
 	
-	if(window.location.search == "") { return; }
-
 	displaySearchResults(doc_search.perform(window.location.search));
 }
 
