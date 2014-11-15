@@ -81,8 +81,13 @@ function showAnnex() {
 function hideAnnex() {
 	$("#cp_annex_holder").css('display', 'none');
 
+	$($($("#cp_annex_holder").children('table')[0]).find('tr')).each(function() {
+		if($(this).attr('id')) {
+			$(this).remove();
+		}
+	});
+
 	var annex_button = $("#cp_annex_button").children('a')[0];
-	console.info(annex_button);
 
 	$(annex_button).unbind("click");
 	$(annex_button).bind("click", showAnnex);
