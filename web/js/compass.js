@@ -73,7 +73,7 @@ function showAnnex() {
 	$(annex_button).unbind("click");
 	$(annex_button).bind("click", hideAnnex);
 	
-	var annex_documents = doInnerAjax("documents", "post", null, function() {
+	var annex_documents = doInnerAjax("documents", "post", { doc_type : "uv_document" }, function() {
 		toggleElement($("#cp_waiter"));
 	}, false);
 	
@@ -109,7 +109,7 @@ function sendToNotificationTray(message) {
 	if(!message._id) {
 		return;
 	}
-	
+
 	$("#cp_notification_ping").css({
 		'opacity' : '1.0',
 		'background-color' : UV.NOTIFICATION_MAP[message.status]

@@ -25,7 +25,7 @@ var CompassResultBrowser = Backbone.Model.extend({
 
 		if(cluster.result == 200 && annex_channel) {
 			this.set('current_cluster', cluster.data._id);
-			
+
 			annex_channel.get('message_map').push(
 				_.bind(this.parseClusterMessage, this));
 		}
@@ -34,7 +34,9 @@ var CompassResultBrowser = Backbone.Model.extend({
 
 	},
 	parseClusterMessage: function(message) {
-		console.info(message);
+		if(message._id == this.get('current_cluster')) {
+			sendToNotificationTray(message);
+		}
 	},
 	setResultPage: function(page_num) {
 		this.set('current_page', page_num);
