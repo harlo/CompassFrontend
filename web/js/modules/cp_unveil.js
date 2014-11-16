@@ -12,6 +12,23 @@ function initDocumentViewer() {
 	});
 }
 
+function initAnnexChannel() {
+	if(!annex_channel) {
+		return;
+	}
+
+	annex_channel.get('message_map').push(
+		_.bind(updateTaskMessage, document_browser));
+}
+
+function updateTaskMessage(message) {
+	console.info(message);
+
+	if(message.doc_id && message.doc_id == this.get('data')._id) {
+		sendToNotificationTray(message);
+	}
+}
+
 function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
 }
@@ -77,6 +94,7 @@ function onAssetRequested(file_name) {
 		if(initDocumentBrowser()) {
 			content_sammy.run();
 			initDocumentViewer();
+			initAnnexChannel();
 		} else {
 			failOut($("#content"), "Sorry, could not find this document.");
 		}

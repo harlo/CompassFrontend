@@ -1,4 +1,5 @@
 var annex_channel;
+var notification_tmpl = getTemplate('cp_notification_li.html');
 
 var CompassGlobalKeyword = UnveillanceDirectiveItem.extend({
 	constructor: function() {
@@ -51,6 +52,16 @@ function updateConf() {
 	];
 
 	UV.DEFAULT_PAGINATION = 16;
+	UV.NOTIFICATION_MAP = {
+		'200' : '#4AD513',
+		'410' : '#cccccc',
+		'404' : '#F3112C',
+		'412' : '#F3112C',
+		'201' : '#F3D011',
+		'302' : '#F3D011',
+		'205' : '#4AD513'
+	};
+
 	annex_channel = new CompassNotifier();
 }
 
@@ -92,6 +103,27 @@ function hideAnnex() {
 
 	$(annex_button).unbind("click");
 	$(annex_button).bind("click", showAnnex);
+}
+
+function sendToNotificationTray(message) {
+	if(!message._id) {
+		return;
+	}
+	
+	$("#cp_notification_ping").css({
+		'opacity' : '1.0',
+		'background-color' : UV.NOTIFICATION_MAP[message.status]
+	});
+
+	var message_li = $(document.createElement('li'))
+		.html(Mustache.to_html(notification_tmpl, message));
+	
+	$($("#cp_notifications_holder").children('ul')[0])
+		.append(message_li);
+
+	window.setTimeout(function() {
+		$("#cp_notification_ping").css('opacity', '0.2'); 
+	}, 5000);
 }
 
 (function($) {

@@ -49,9 +49,63 @@ table tr {
 	z-index: 100;
 }
 
+#header #cp_notifications_holder {
+	background-color:#cccccc;
+	width:100%;
+	overflow-y:auto;
+	overflow-x:hidden;
+	height: auto;
+	max-height:10em;
+	z-index: 100;
+}
+
+#header #cp_notifications_holder ul {
+	list-style-type: none;
+	margin:0;
+	padding:0;
+}
+
+#header #cp_notifications_holder ul li {
+	margin:0.5em;
+}
+
+#header #cp_notifications_holder ul li span {
+	border:1px solid #999;
+}
+
+.cp_notification_li_200, .cp_notification_li_205 {
+	background-color:#4AD513 !important;
+}
+
+.cp_notification_li_410 {
+	background-color:#cccccc !important;
+}
+
+.cp_notification_li_404, .cp_notification_li_412 {
+	background-color:#F3112C !important;
+}
+
+.cp_notification_li_302, .cp_notification_li_201 {
+	background-color:#F3D011 !important;
+}
+
 #header #cp_annex_holder table {
 	width:inherit;
 	margin:0.5em;
+}
+
+#header #cp_notification_ping {
+	position:absolute;
+	width:1em;
+	height:1em;
+	top:1;
+	left:auto;
+	margin:0.5em 0 0 2em;
+	z-index:4;
+	background-color: #ccc;
+	border:1px solid #999;
+	text-decoration: none !important;
+	opacity: 0.3;
 }
 
 #content {

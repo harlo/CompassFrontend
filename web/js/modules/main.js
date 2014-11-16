@@ -8,6 +8,13 @@ function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
 	if(window.location.search == "") {
 		showAnnex();
+		try {
+			annex_channel.get('message_map').push(
+				_.bind(sendToNotificationTray, this));
+		} catch(err) {
+			console.warn(err);
+		}
+
 		return;
 	}
 	

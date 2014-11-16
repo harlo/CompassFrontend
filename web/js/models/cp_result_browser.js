@@ -2,10 +2,6 @@ var CompassResultBrowser = Backbone.Model.extend({
 	constructor: function() {
 		Backbone.Model.apply(this, arguments);
 
-		if(annex_channel) {
-			annex_channel.get('message_map').push(this.get('cluster_channel'));
-		}
-
 		if(this.has('search_terms')) {
 			this.set('search_terms', _.map(this.get('search_terms').split(','), function(term) {
 				return {
@@ -27,7 +23,12 @@ var CompassResultBrowser = Backbone.Model.extend({
 			task_path : UV.AVAILABLE_CLUSTERS.map_similarities_gensim
 		}, null, false);
 
-		console.info(cluster);
+		if(cluster.result == 200 && annex_channel) {
+			this.set('current_cluster', cluster.data._id);
+			
+			annex_channel.get('message_map').push(
+				_.bind(this.parseClusterMessage, this));
+		}
 	},
 	setClusterResult: function() {
 
