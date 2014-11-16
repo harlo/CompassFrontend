@@ -110,7 +110,5 @@ function hideAnnex() {
 				document.getElementsByTagName("head")[0].appendChild(css.get(0));
 			}
 		);
-
-		hideAnnex();
 	});
 })(jQuery);

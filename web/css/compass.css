@@ -40,6 +40,7 @@ table tr {
 	overflow-x:hidden;
 	height: auto;
 	max-height:40em;
+	z-index: 100;
 }
 
 #header #cp_annex_holder table {
@@ -332,7 +333,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 #cp_document_header_holder {
 	background-color:#fff;
 	margin:0;
-	top:30px;
+	top:5em;
 	z-index:2;
 	display:inline-flex;
 	height:8em;

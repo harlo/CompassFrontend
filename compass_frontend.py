@@ -64,6 +64,7 @@ class CompassFrontend(UnveillanceFrontend):
 				'/web/js/modules/main.js'
 			],
 			'document' : [
+				'/web/js/models/cp_in_document_search.js',
 				'/web/js/models/cp_document_header.js',
 				'/web/js/models/cp_document_viewer.js',
 				'/web/js/models/cp_page_window.js',

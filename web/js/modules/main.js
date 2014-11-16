@@ -68,6 +68,7 @@ function onConfLoaded() {
 
 	window.setTimeout(function() {
 		initKeywordSearch();
+		showAnnex();
 	}, 200);
 }
 

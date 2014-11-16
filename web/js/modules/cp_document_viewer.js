@@ -13,6 +13,10 @@ function onTagsRefreshed() {
 	);
 }
 
+function initInDocumentSearch() {
+	doc_search = new CompassInDocumentSearch();
+}
+
 function initDocumentViewer() {
 	var search_terms = _.flatten(_.map(_.filter(window.location.search.substring(1).split("&"), function(s) {
 			return s.split("=")[0] == "search_terms";
