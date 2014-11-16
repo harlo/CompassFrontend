@@ -12,7 +12,13 @@ table tr {
     padding-bottom: 50px;
     position: fixed;
     width: 100%;
-    z-index:2;
+    z-index:3;
+}
+
+#header #cp_waiter, #content #cp_document_waiter {
+	display:none;
+	margin:1em;
+	text-align: center;
 }
 
 #header #cp_nav_options {
@@ -333,10 +339,11 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 #cp_document_header_holder {
 	background-color:#fff;
 	margin:0;
-	top:5em;
+	top:5.5em;
 	z-index:2;
 	display:inline-flex;
-	height:8em;
+	height:7.5em;
+	width: 100%;
 }
 
 #cp_document_tags {

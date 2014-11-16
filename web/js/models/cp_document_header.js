@@ -31,6 +31,7 @@ var CompassDocumentHeader = Backbone.Model.extend({
 		_.each(options, function(option) {
 			$("#cp_document_opts").append(
 				$(document.createElement('a'))
+					.addClass("uv_button")
 					.prop('href', option.href)
 					.html(option.html));
 		});

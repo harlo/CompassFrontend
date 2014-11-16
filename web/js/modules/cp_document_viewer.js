@@ -18,6 +18,8 @@ function initInDocumentSearch() {
 }
 
 function initDocumentViewer() {
+	toggleElement("#cp_document_waiter");
+
 	var search_terms = _.flatten(_.map(_.filter(window.location.search.substring(1).split("&"), function(s) {
 			return s.split("=")[0] == "search_terms";
 		}), function(s) {
@@ -38,10 +40,14 @@ function initDocumentViewer() {
 		console.warn(err);
 		failOut($("#content"), "Sorry, could not find this document.");
 	}
+
+	toggleElement("#cp_document_waiter");
 }
 
 function onConfLoaded() {
-	console.info("CONF LOADED...");
+	window.setTimeout(function() {
+		hideAnnex();
+	}, 200);
 }
 
 (function($) {
@@ -65,7 +71,8 @@ function onConfLoaded() {
 
 	if(initDocumentBrowser()) {
 		window.setTimeout(function() {
-			initDocumentViewer();	
+			initDocumentViewer();
+			initInDocumentSearch();
 		}, 200);
 	}
 })(jQuery);

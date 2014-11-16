@@ -56,12 +56,15 @@ function updateConf() {
 
 function showAnnex() {
 	$("#cp_annex_holder").css('display', 'block');
+	toggleElement($("#cp_waiter"));
 
 	var annex_button = $("#cp_annex_button").children('a')[0];
 	$(annex_button).unbind("click");
 	$(annex_button).bind("click", hideAnnex);
 	
-	var annex_documents = doInnerAjax("documents", "post", null, null, false);
+	var annex_documents = doInnerAjax("documents", "post", null, function() {
+		toggleElement($("#cp_waiter"));
+	}, false);
 	
 	if(annex_documents.result != 200) {
 		$("#cp_annex_holder").html("No documents yet...");
@@ -74,13 +77,11 @@ function showAnnex() {
 		$($("#cp_annex_holder").children('table')[0])
 			.append(Mustache.to_html(annex_tmpl, doc));
 	});
-
-	
 }
 
 function hideAnnex() {
 	$("#cp_annex_holder").css('display', 'none');
-
+	
 	$($($("#cp_annex_holder").children('table')[0]).find('tr')).each(function() {
 		if($(this).attr('id')) {
 			$(this).remove();
@@ -91,7 +92,6 @@ function hideAnnex() {
 
 	$(annex_button).unbind("click");
 	$(annex_button).bind("click", showAnnex);
-
 }
 
 (function($) {

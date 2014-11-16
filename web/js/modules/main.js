@@ -7,6 +7,7 @@ function onSearchTermsDetected(search_terms) {
 function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
 	if(window.location.search == "") {
+		showAnnex();
 		return;
 	}
 	
@@ -65,10 +66,10 @@ function displaySearchResults(search_result) {
 
 function onConfLoaded() {
 	console.info("CONF LOADED...");
+	hideAnnex();
 
 	window.setTimeout(function() {
 		initKeywordSearch();
-		showAnnex();
 	}, 200);
 }
 

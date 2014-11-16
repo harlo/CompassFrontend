@@ -74,6 +74,7 @@ class CompassFrontend(UnveillanceFrontend):
 			'unveil' : [
 				'/web/js/lib/jquery.csv.js',
 				'/web/js/viz/uv_csv.js',
+				'/web/js/models/cp_keyword_search.js',
 				'/web/js/models/cp_document_header.js',
 				'/web/js/modules/uv_unveil.js',
 				'/web/js/modules/cp_unveil.js'

@@ -1,4 +1,4 @@
-var document_header;
+var document_header, doc_search;
 
 function onConfLoaded() {
 	console.info("CONF LOADED...");	
@@ -10,6 +10,10 @@ function initDocumentViewer() {
 		href: "/document/" + document_browser.get('data')._id + "/",
 		html: "Pretty Stuff..."
 	});
+}
+
+function initKeywordSearch() {
+	doc_search = new CompassKeywordSearch();
 }
 
 function onReindexRequested(el, task_path) {
@@ -76,5 +80,8 @@ function onAssetRequested(file_name) {
 		} else {
 			failOut($("#content"), "Sorry, could not find this document.");
 		}
+
+		hideAnnex();
+		initKeywordSearch();
 	});
 })(jQuery);
