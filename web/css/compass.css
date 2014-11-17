@@ -198,6 +198,7 @@ div.cp_module {
 #cp_document_viewer_holder {
 	margin-top: 8em;
 	position: absolute;
+	width:100%;
 }
 
 #cp_keyword_results {
@@ -306,11 +307,22 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 #cp_word_browser ul, #cp_entity_browser ul {
 	margin:0;
 	padding:0;
+	overflow-x:auto;
+	height:inherit;
+	width:100%;
 }
 
 #cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li.cp_in_browser {
-	border-bottom:0.1em solid #000;
-	width:100%;
+	border:0.1em solid #000;
+	width:auto;
+	margin:0.2em;
+	height:2em;
+	display:inline-block;
+}
+
+#cp_word_browser ul li span, #cp_entity_browser ul li ul li span, #cp_entity_browser ul li.cp_in_browser span {
+	height:100%;
+	display:inline-block;
 }
 
 #cp_entity_browser ul li {
@@ -349,20 +361,28 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	padding:0 0.5em;
 }
 
-#cp_entity_browser, #cp_document_viewer {
-	width:16%;
-	position:absolute;
+#cp_entity_browser, #cp_document_viewer, #cp_topic_browser {
+	width:99%;
+}
+
+#cp_document_viewer {
+	height:34em;
+}
+
+#cp_entity_browser, #cp_topic_browser {
+	position:relative;
 }
 
 #cp_entity_browser div.cp_entity_browser_sublist {
-	max-height:300px;
-	overflow-y:auto;
-	overflow-x:hidden;
+	height:8em;
+	overflow-y:hidden;
+	overflow-x:auto;
+	border:1px solid #000;
 }
 
 #cp_word_stats, #cp_entity_stats {
 	height:16em;
-	width:60em;
+	width:inherit;
 	margin-left:1em;
 }
 

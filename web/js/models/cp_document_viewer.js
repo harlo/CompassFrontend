@@ -5,7 +5,13 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		this.set('sort_tmpl', getTemplate("document_viewer_sort.html"));
 
 		if(this.loadPageMap()) {
+			if(this.loadTopics()) {
+				this.loadTopicsViz();
+			}
+
 			this.loadWordViz();
+			$("#cp_document_viewer")
+				.before($(document.createElement('h4')).html("Histogram <a onclick='document_viewer.toggleDocumentModule(this, \"#cp_document_viewer\");'>-</a>"));
 
 			if(this.loadEntities()) {
 				this.loadEntityViz();
@@ -194,6 +200,10 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		}));
 
 		$(el).html(status[0] ? "-" : "+");
+	},
+	toggleDocumentModule: function(el, module) {
+		var status = toggleElement(module);
+		$(el).html(status ? "-" : "+");
 	},
 	previewViz: function(direction, word, type, color) {
 		if(!direction && _.findWhere(this.getCurrentHighlightTerms(), { term : word })) { return; }
@@ -464,6 +474,19 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			initial_position: position
 		});
 	},
+	loadTopicsViz: function() {
+		if(!this.has('topic_map')) { return; }
+
+		var topic_tmpl = getTemplate("topic_li.html");
+
+		$("#cp_topic_browser")
+			.before($(document.createElement('h4'))
+				.html("Topics <a onclick='document_viewer.toggleDocumentModule(this, \"#cp_topic_browser\");'>-</a>"))
+			.append($(document.createElement('ul'))
+				.append(_.map(this.get('topic_map'), function(topic) {
+					return Mustache.to_html(topic_tmpl, topic);
+				})));
+	},
 	loadEntityViz: function() {
 		var viz_div = $("#cp_entity_stats");
 		var frequency_max = _.reduce(
@@ -534,6 +557,20 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			}),
 			{ fill : "transparent", opacity: 0 }
 		);
+	},
+	loadTopics: function() {
+		var topic_asset = this.getAssetByTagName(UV.ASSET_TAGS.GM_TOPICS);
+		if(!topic_asset) { return false; }
+
+		try {
+			var topic_map = JSON.parse(getFileContent(this, [".data", document_browser.get('data')._id, topic_asset.file_name].join("/")));
+			this.set('topic_map', topic_map);
+			return true;
+		} catch(err) {
+			console.warn(err);
+		}
+
+		return false
 	},
 	loadPageMap: function() {
 		var page_map_asset = this.getAssetByTagName(UV.ASSET_TAGS.PAGE_MAP);
