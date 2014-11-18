@@ -365,12 +365,23 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	width:99%;
 }
 
+#cp_browser_list_holder {
+	margin-top:34em;
+}
+
 #cp_document_viewer {
 	height:34em;
+	position:fixed;
+	z-index: 2;
+	background-color: #ffffff;
 }
 
 #cp_entity_browser, #cp_topic_browser {
 	position:relative;
+}
+
+#cp_topic_browser {
+	display:none;
 }
 
 #cp_entity_browser div.cp_entity_browser_sublist {
@@ -441,7 +452,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 }
 
 #cp_document_viewer_control {
-	margin-top:1em;
+	margin-top:3em;
 	margin-left: 1em;
 	z-index:6;
 	display:none;

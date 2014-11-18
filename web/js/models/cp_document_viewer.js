@@ -5,13 +5,18 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		this.set('sort_tmpl', getTemplate("document_viewer_sort.html"));
 
 		if(this.loadPageMap()) {
+			$("#cp_document_viewer").before($(document.createElement('h4'))
+				.css({
+					'position' : 'fixed',
+					'z-index' : 4
+				})
+				.html("Histogram <a onclick='document_viewer.toggleDocumentModule(this, \"#cp_document_viewer\");'>-</a>"));
+
 			if(this.loadTopics()) {
 				this.loadTopicsViz();
 			}
 
 			this.loadWordViz();
-			$("#cp_document_viewer")
-				.before($(document.createElement('h4')).html("Histogram <a onclick='document_viewer.toggleDocumentModule(this, \"#cp_document_viewer\");'>-</a>"));
 
 			if(this.loadEntities()) {
 				this.loadEntityViz();
@@ -20,7 +25,9 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			if(this.get('highlight_terms')) { this.setHighlightTerms(); }
 
 			window.setTimeout(_.bind(this.setLegend, this), 300);
-			$("#cp_document_viewer_control").css('display', 'block');
+			_.each([$("#cp_document_viewer_control"), $("#cp_topic_browser")], function(el) {
+				$(el).css('display', 'block');
+			});
 
 			window.onKeywordAddGlobally = _.bind(this.addGlobalKeyword, this);
 			window.onKeywordRemoveGlobally = _.bind(this.removeGlobalKeyword, this);
@@ -228,7 +235,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			var data;
 			var hash = "uv_svg_" + type + "_" + MD5(word);
 
-			if(type == "keyword") {
+			if(_.contains(["keyword", "topic"], type)) {
 				var has_svg = $("svg." + hash)[0];
 
 				if(has_svg) {
@@ -247,7 +254,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 			if(!show_svg) {
 				// remove from highlight_terms if neccessary
-				if(_.contains(this.get('highlight_terms'), word)) {
+				if(type != "topic" && _.contains(this.get('highlight_terms'), word)) {
 					this.set('highlight_terms', _.without(this.get('highlight_terms'), word));
 				}
 
@@ -272,6 +279,25 @@ var CompassDocumentViewer = Backbone.Model.extend({
 			} else if(type == "entity") {
 				data = _.findWhere(this.get('entities').uv_page_map, { entity : word } );
 				if(data) { this.setEntityViz(hash, data, { "fill" : color }); }
+			} else if(type == "topic") {
+				console.info(el);
+				var topic_idx = data_idx = 0;
+
+				data = _.map(this.get('topic_map').doc_comprehension, function(d) {
+					d = {
+						index : data_idx,
+						topic : this.get('topic_map').topics[topic_idx],
+						color : "#999999",
+						frequency_max : this.get('word_viz').dims.frequency_max
+					};
+
+					data_idx++;
+					return d;
+				}, this);
+
+				console.info(data);
+				if(data) { this.setTopicViz(hash, data); }
+
 			}
 		}, this);
 	},
@@ -319,6 +345,42 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				})
 				.style(style);
 		}
+	},
+	setTopicViz: function(class_name, data) {
+		var ctx = this.get('word_viz');
+
+		var viz = d3.select(ctx.root_el)
+			.append("svg:svg")
+			.attr({
+				width: ctx.dims.width,
+				height: ctx.dims.height,
+				class: class_name
+			});
+
+		$("svg." + class_name).css('z-index', 4);
+
+		var bar = viz.selectAll("g")
+			.data(data)
+			.enter().append("g").attr({
+				"transform" : function(d, i) {
+					return "translate(" + (d.index * ctx.dims.bar_width) + ", 0)";
+				}
+			});
+
+		bar.append("rect")
+			.style({
+				fill : function(d) {
+					return d.color;
+				},
+				opacity : 0.25
+			})
+			.attr({
+				"width" : ctx.dims.bar_width,
+				"y" : 0,
+				"height" : function(d) {
+					return ctx.dims.y(d.frequency_max);
+				}
+			});
 	},
 	setWordViz: function(class_name, data, style) {
 		var ctx = this.get('word_viz');
@@ -478,14 +540,33 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		if(!this.has('topic_map')) { return; }
 
 		var topic_tmpl = getTemplate("topic_li.html");
+		var colors = _.map(_.range(10), function(c) { return getRandomColor(); });
+
+		window.reserved_colors = _.union(window.reserved_colors || [], colors);
 
 		$("#cp_topic_browser")
 			.before($(document.createElement('h4'))
 				.html("Topics <a onclick='document_viewer.toggleDocumentModule(this, \"#cp_topic_browser\");'>-</a>"))
 			.append($(document.createElement('ul'))
-				.append(_.map(this.get('topic_map'), function(topic) {
+				.append(_.map(this.get('topic_map')['topics'], function(topic) {
+					var l_count = 0;
+					var labels = _.map(topic, function(t) {
+						var label = {
+							label : t[1],
+							color: colors[l_count],
+						};
+
+						l_count++;
+						return label;
+					}, this);
+
+					topic = {
+						topic : labels,
+						id: MD5(String(_.pluck(labels, 'l').join(", ")))
+					};
+
 					return Mustache.to_html(topic_tmpl, topic);
-				})));
+				}, this)));
 	},
 	loadEntityViz: function() {
 		var viz_div = $("#cp_entity_stats");
@@ -609,7 +690,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				.append(keyword_holder));
 
 		_.each(_.keys(this.get('page_map').words), function(word) {
-			var word = {
+			word = {
 				label : word,
 				color: getRandomColor(),
 				id: MD5(String(word)),
