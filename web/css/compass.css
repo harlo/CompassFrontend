@@ -2,6 +2,11 @@ table tr {
 	vertical-align: top;
 }
 
+a.cp_white_a, a.cp_white_a:hover {
+	color:#ffffff;
+	text-decoration: none !important;
+}
+
 #content ul, #header #cp_nav_options, #cp_document_browser_holder {
 	list-style-type:none;
 }
@@ -34,7 +39,7 @@ table tr {
 #header #cp_header_options {
 	position:relative;
 	float:left;
-	margin:0.5em;
+	padding:0.5em;
 	width:100%;
 	background-color: #ffffff;
 }
@@ -196,7 +201,7 @@ div.cp_module {
 }
 
 #cp_document_viewer_holder {
-	margin-top: 8em;
+	margin-top: 5.5em;
 	position: absolute;
 	width:100%;
 }
@@ -304,7 +309,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	font-size:0.6em;
 }
 
-#cp_word_browser ul, #cp_entity_browser ul {
+#cp_word_browser ul, #cp_entity_browser ul, #cp_topic_browser ul {
 	margin:0;
 	padding:0;
 	overflow-x:auto;
@@ -318,6 +323,13 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	margin:0.2em;
 	height:2em;
 	display:inline-block;
+}
+
+#cp_topic_browser ul li {
+	border:0.1em solid #000;
+	margin:0.5em 0.2em;
+	height:2em;
+	width:auto;
 }
 
 #cp_word_browser ul li span, #cp_entity_browser ul li ul li span, #cp_entity_browser ul li.cp_in_browser span {
@@ -362,15 +374,15 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 }
 
 #cp_entity_browser, #cp_document_viewer, #cp_topic_browser {
-	width:99%;
+	width:90%;
 }
 
 #cp_browser_list_holder {
-	margin-top:34em;
+	margin-top:16em;
 }
 
 #cp_document_viewer {
-	height:34em;
+	height:16em;
 	position:fixed;
 	z-index: 2;
 	background-color: #ffffff;
@@ -384,15 +396,14 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	display:none;
 }
 
-#cp_entity_browser div.cp_entity_browser_sublist {
-	height:8em;
+#cp_entity_browser div.cp_entity_browser_sublist, #cp_topic_browser {
+	height:10em;
 	overflow-y:hidden;
 	overflow-x:auto;
-	border:1px solid #000;
 }
 
 #cp_word_stats, #cp_entity_stats {
-	height:16em;
+	height:8em;
 	width:inherit;
 	margin-left:1em;
 }
@@ -428,7 +439,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	top:5.5em;
 	z-index:2;
 	display:inline-flex;
-	height:7.5em;
+	height:8.5em;
 	width: 100%;
 }
 
@@ -452,8 +463,9 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 }
 
 #cp_document_viewer_control {
-	margin-top:3em;
-	margin-left: 1em;
+	position:absolute;
+	bottom:0;
+	right:0;
 	z-index:6;
 	display:none;
 }
@@ -533,7 +545,6 @@ rect.cp_page_window_indicator {
 
 #cp_legend {
 	border-left:1px solid #000;
-	margin-left:1em;
 	min-width: 8em;
 }
 

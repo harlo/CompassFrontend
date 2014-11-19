@@ -1,12 +1,13 @@
 <li id="cp_topic_handle_{{ id }}" class="cp_in_browser">
-	<span>
-		&nbsp;&nbsp;
-		<input type="checkbox" onchange="document_viewer.sendToViz(this, '{{ id }}', 'topic');" />
-		&nbsp;&nbsp;
-	</span>
-	{{ #topic }}
-		<a class="cp_label" style="background-color:{{ color }};">
-			&nbsp;&nbsp;{{ label }}&nbsp;&nbsp;
-		</a>
-	{{ /topic }}
+	<div>
+		<span>
+			&nbsp;&nbsp;
+			<input type="checkbox" 
+				onchange="document_viewer.sendToViz(this, '{{ id }}', 'topic');" />
+			&nbsp;&nbsp;
+		</span>
+		{{ #topic }}
+			<a class="cp_label cp_white_a" style="background-color:{{ color }};padding:0 0.5em;">{{ label }}</a>
+		{{ /topic }}
+	</div>
 </li>

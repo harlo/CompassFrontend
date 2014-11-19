@@ -5,13 +5,6 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		this.set('sort_tmpl', getTemplate("document_viewer_sort.html"));
 
 		if(this.loadPageMap()) {
-			$("#cp_document_viewer").before($(document.createElement('h4'))
-				.css({
-					'position' : 'fixed',
-					'z-index' : 4
-				})
-				.html("Histogram <a onclick='document_viewer.toggleDocumentModule(this, \"#cp_document_viewer\");'>-</a>"));
-
 			if(this.loadTopics()) {
 				this.loadTopicsViz();
 			}
@@ -60,7 +53,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				total_pages : document_browser.get('data').total_pages
 			}))
 			.css({
-				left: $(ctx.root_el).position().left + ctx.dims.width + $("#cp_entity_browser").width(),
+				left: $(ctx.root_el).offset().left + ctx.dims.width,
 				height: ctx.dims.height
 			});
 		$("#cp_word_stats").append(legend);
@@ -280,14 +273,46 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				data = _.findWhere(this.get('entities').uv_page_map, { entity : word } );
 				if(data) { this.setEntityViz(hash, data, { "fill" : color }); }
 			} else if(type == "topic") {
-				console.info(el);
-				var topic_idx = data_idx = 0;
+				var data_idx = 0;
 
-				data = _.map(this.get('topic_map').doc_comprehension, function(d) {
+				var topic_li = $("#cp_topic_handle_" + words[0])[0];
+
+				var topic_idx = _.indexOf($($(topic_li).parent()).children('li'), topic_li);
+				var topic_set = _.map(this.get('topic_map').topics[topic_idx], function(t) {
+					return t[0];
+				}).sort();
+
+				data = _.map(this.get('topic_map').doc_comprehension, function(doc) {
+					var best_topic, t_choice;
+
+					try {
+						var t_choice = _.sortedIndex(topic_set, doc[topic_idx][1]);
+					} catch(err) {}
+
+					if(t_choice && (t_choice < topic_set.length && t_choice > 0)) {
+						var a = topic_set[t_choice - 1];
+						var b = topic_set[t_choice];
+						var c = _.map([a,b], function(n) {
+							return Math.abs(n - doc[topic_idx][1]);
+						});
+						var d = [a, b][c.indexOf(_.min(c))];						
+						
+						best_topic = _.filter(this.get('topic_map').topics[topic_idx], function(t) {
+							return t[0] == d;
+						})[0];
+					} else if(t_choice == 0) {
+						best_topic = this.get('topic_map').topics[0];
+					} else {
+						best_topic = _.last(this.get('topic_map').topics);
+					}
+					
 					d = {
 						index : data_idx,
-						topic : this.get('topic_map').topics[topic_idx],
-						color : "#999999",
+						class : best_topic ? "cp_topic_" + best_topic[1] : "no_class",
+						color : best_topic ? $(_.filter($(topic_li).find('a'), function(a) {
+							console.info(a);
+							return $(a).html() == best_topic[1];
+						})[0]).css('background-color') : 'transparent',
 						frequency_max : this.get('word_viz').dims.frequency_max
 					};
 
@@ -295,9 +320,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					return d;
 				}, this);
 
-				console.info(data);
 				if(data) { this.setTopicViz(hash, data); }
-
 			}
 		}, this);
 	},
@@ -379,6 +402,9 @@ var CompassDocumentViewer = Backbone.Model.extend({
 				"y" : 0,
 				"height" : function(d) {
 					return ctx.dims.y(d.frequency_max);
+				},
+				"class" : function(d) {
+					return d.class
 				}
 			});
 	},
@@ -458,8 +484,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 								return $($(s).parent()).index();
 							}),
 							{
-								x : m[0] + $("#cp_entity_browser").width(),
-								y : m[1] + $(ctx.root_el).position().top
+								x : m[0],
+								y : m[1]
 							}
 						);
 						in_page_window.classed("in_page_window", false);
@@ -562,7 +588,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 					topic = {
 						topic : labels,
-						id: MD5(String(_.pluck(labels, 'l').join(", ")))
+						id: MD5(String(_.pluck(labels, 'label').join('')))
 					};
 
 					return Mustache.to_html(topic_tmpl, topic);
