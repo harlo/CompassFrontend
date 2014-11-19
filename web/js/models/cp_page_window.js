@@ -73,7 +73,8 @@ var CompassPageWindow = Backbone.Model.extend({
 		var setPage = _.bind(this.setPage, this);
 		var getNumWords = _.bind(this.getNumWords, this);
 
-		var width = 640;
+		var width = Number($("#cp_page_window").css('max-width').replace("px",""));
+		console.info("WIDTH: ", width);
 		var height = 16;
 		
 		this.set('slider', {

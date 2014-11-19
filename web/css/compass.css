@@ -204,6 +204,7 @@ div.cp_module {
 	margin-top: 5.5em;
 	position: absolute;
 	width:100%;
+	padding-bottom: 5.5em;
 }
 
 #cp_keyword_results {
@@ -309,7 +310,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	font-size:0.6em;
 }
 
-#cp_word_browser ul, #cp_entity_browser ul, #cp_topic_browser ul {
+#cp_word_browser ul, #cp_entity_browser ul, #cp_topic_browser ul, #cp_result_unique_documents ul {
 	margin:0;
 	padding:0;
 	overflow-x:auto;
@@ -317,12 +318,24 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	width:100%;
 }
 
-#cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li.cp_in_browser {
+#cp_results_browser ul {
+	overflow-y: auto;
+}
+
+#cp_result_unique_documents ul li, #cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li.cp_in_browser {
 	border:0.1em solid #000;
 	width:auto;
 	margin:0.2em;
 	height:2em;
 	display:inline-block;
+}
+
+#cp_result_unique_documents {
+	margin:2em 0;
+}
+
+#cp_result_unique_documents ul li {
+	padding:0.2em;
 }
 
 #cp_topic_browser ul li {
@@ -475,7 +488,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	z-index:1000;
 	min-width: 2em;
 	min-height: 2em;
-	max-width:640px;
+	max-width:80em;
 	background-color: #fff;
 	border:2px solid #000;
 }
@@ -511,6 +524,11 @@ rect.cp_page_window_indicator {
 	overflow-y:auto;
 	overflow-x:hidden;
 	max-height:20em;
+	padding:0 1em;
+}
+
+#cp_page_window #cp_page_window_control, #cp_page_window #cp_page_window_stats {
+	text-align: center;
 }
 
 #cp_page_window #cp_page_window_control {

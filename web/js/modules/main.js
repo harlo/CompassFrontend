@@ -33,7 +33,10 @@ function displaySearchResults(search_result) {
 	var result_data = {
 		mention_count : search_results.count,
 		data : _.sortBy(search_results.documents, function(res) { return res.index_in_page; }).reverse(),
-		unique_documents: _.unique(_.pluck(search_results.documents, "media_id"))
+		unique_documents: _.map(_.unique(_.pluck(search_results.documents, "media_id")), function(d) {
+			doc = doInnerAjax("documents", "post", { _id : d }, null, false);
+			return doc.data;
+		}, this)
 	};
 
 	if(search_terms) {
@@ -61,7 +64,9 @@ function displaySearchResults(search_result) {
 		}
 
 		if(result_browser.has('search_terms') && !(_.isEmpty(result_browser.get('search_terms')))) {
-			var request_cluster = $(getTemplate("result_cluster.html"));
+			var request_cluster = $(Mustache.to_html(
+				getTemplate("result_cluster.html"), result_browser.get('unique_documents')));
+			
 			$(request_cluster.find('#cp_result_cluster_ctrl')[0])
 				.click(_.bind(result_browser.requestCluster, result_browser));
 			

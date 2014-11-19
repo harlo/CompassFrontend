@@ -1,2 +1,13 @@
-<p><a class="uv_button" id="cp_result_cluster_ctrl">Vizualize search results</a></p>
-<div id="cp_result_cluster_holder"></div>
+<div id="cp_result_unique_documents">
+	<ul>
+		{{ #. }}
+		<li id="cp_in_batch_{{ _id }}">
+			<input type="checkbox" checked="true" />
+			{{ file_alias }}
+		</li>
+		{{ /. }}
+	</ul>
+</div>
+<p>
+	<a class="uv_button" id="cp_result_cluster_ctrl">Batch</a>
+</p>

@@ -17,25 +17,22 @@ var CompassResultBrowser = Backbone.Model.extend({
 			return;
 		}
 
+		var cluster_documents = _.map($("#cp_result_unique_documents").find('input:checked'), function(i) {
+			return $($(i).parents('li')[0]).attr('id').replace("cp_in_batch_", "");
+		});
+
+		if(_.size(cluster_documents) <= 1) {
+			return;
+		}
+
 		var cluster = doInnerAjax("cluster", "post", {
 			query : "[" + _.pluck(this.get('search_terms'), 'label').join() + "]",
-			documents : "[" + this.get('unique_documents').join() + "]",
+			documents : "[" + cluster_documents.join(",") + "]",
 			task_path : UV.AVAILABLE_CLUSTERS.map_similarities_gensim
 		}, null, false);
 
-		if(cluster.result == 200 && annex_channel) {
-			this.set('current_cluster', cluster.data._id);
-
-			annex_channel.get('message_map').push(
-				_.bind(this.parseClusterMessage, this));
-		}
-	},
-	setClusterResult: function() {
-
-	},
-	parseClusterMessage: function(message) {
-		if(message._id == this.get('current_cluster')) {
-			sendToNotificationTray(message);
+		if(cluster.result == 200) {
+			console.info(cluster);
 		}
 	},
 	setResultPage: function(page_num) {
@@ -54,7 +51,7 @@ var CompassResultBrowser = Backbone.Model.extend({
 			data : this.get('data').slice(min, max)
 		});
 
-		if(this.has('search_terms') && !(_.isEmpty(this.get('search_terms')))) {
+		if(this.has('search_terms') && !(_.isEmpty(this.get('search_terms')))) {		
 			try {
 				this.get('current_results').data = doInnerAjax("documents", "post", {
 					_ids : "[" + _.pluck(this.get('current_results').data, "_id").join() + "]",
@@ -65,7 +62,12 @@ var CompassResultBrowser = Backbone.Model.extend({
 				return;
 			}
 
+			var result_li_tmpl = getTemplate("result_page_item.html");
+
 			_.each(this.get('current_results').data, function(result) {
+				result.parent = _.findWhere(this.get('unique_documents'),
+					{ _id : result.media_id });
+				
 				var highlights = _.map(
 					_.filter(result.searchable_text.split(/[\!\?\.]/), function(sentence) {
 						var has_words = _.intersection(
@@ -88,33 +90,23 @@ var CompassResultBrowser = Backbone.Model.extend({
 
 						return $(document.createElement('li'))
 							.append($(document.createElement('a'))
-								.attr('href', "/document/" + result.media_id + "/?search_terms=" + words.join(","))
+								.attr('href', "/document/" + result.media_id + "/?search_terms=" + words.join(",") + "&page=" + (result.index_in_parent + 1))
 								.html(sentence.join(' ')));
 					}, this);
 
 				if(_.size(highlights) > 0) {
-					var result_li = $(document.createElement('li'))
-						.append($(document.createElement('span'))
-							.html(result.media_id + ", page " + (result.index_in_parent + 1))
-							.addClass("cp_page_text_info"))
-						.append($(document.createElement('ul')).append(highlights));
+					var result_li = $(Mustache.to_html(result_li_tmpl, result))
+						.append($(document.createElement('ul')).append(highlights));					
 					
 					$(this.get('result_holder')).append(result_li);
 				}
 			}, this);
 		} else {
-			_.each(this.get('current_results').data, function(result) {
-				console.info(result);
-				var result_li = $(document.createElement('li'))
-					.append($(document.createElement('a'))
-						.attr({
-							'href': "/document/" + result._id + "/",
-							'rel' : result.file_alias
-						})
-						.html(result.file_name)
-						.addClass('uv_translate')
-						.addClass('uv_from_rel'));
+			var result_li_tmpl = getTemplate("result_no_page_item.html");
 
+			_.each(this.get('current_results').data, function(result) {
+
+				var result_li = Mustache.to_html(result_li_tmpl, result);
 				$(this.get('result_holder')).append(result_li);
 
 			}, this);
