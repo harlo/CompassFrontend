@@ -5,6 +5,7 @@ function initDocumentBatch() {
 		return !_.contains(["", "documents"], segment)})[0];
 
 	console.info(batch_id);
+	doc_batch = new CompassBatch({'_id' : batch_id});
 
 	return false;
 }

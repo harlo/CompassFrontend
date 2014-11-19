@@ -32,7 +32,7 @@ var CompassResultBrowser = Backbone.Model.extend({
 		}, null, false);
 
 		if(cluster.result == 200) {
-			console.info(cluster);
+			window.location = "/documents/" + cluster.data._id + "/";
 		}
 	},
 	setResultPage: function(page_num) {
