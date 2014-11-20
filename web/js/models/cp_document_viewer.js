@@ -310,7 +310,6 @@ var CompassDocumentViewer = Backbone.Model.extend({
 						index : data_idx,
 						class : best_topic ? "cp_topic_" + best_topic[1] : "no_class",
 						color : best_topic ? $(_.filter($(topic_li).find('a'), function(a) {
-							console.info(a);
 							return $(a).html() == best_topic[1];
 						})[0]).css('background-color') : 'transparent',
 						frequency_max : this.get('word_viz').dims.frequency_max

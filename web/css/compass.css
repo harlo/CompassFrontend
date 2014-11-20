@@ -420,7 +420,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 
 #cp_batch_topics_holder {
 	height:24em;
-	margin-bottom:5.5em;
+	margin:2em 0 5.5em 0;
 }
 
 #cp_word_stats, #cp_entity_stats {
@@ -600,4 +600,9 @@ rect.cp_page_window_indicator {
 
 #cp_topic_visualizer_holder {
 	height:24em;
+	border-bottom:1px solid #999999;
+}
+
+#cp_topic_visualizer_holder svg {
+	border-left:1px solid #999999;
 }

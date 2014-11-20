@@ -36,7 +36,7 @@ var CompassBatch = Backbone.Model.extend({
 					});
 
 					var topic_comprehension = null;
-					var color = "transparent";
+					var color = "#cccccc";
 
 					if(has_page) {
 						topic_comprehension = has_page.topic_comprehension[topic_idx];
