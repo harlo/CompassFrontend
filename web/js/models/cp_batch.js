@@ -69,7 +69,7 @@ var CompassBatch = Backbone.Model.extend({
 						topic_comprehension : topic_comprehension,
 						style : {
 							fill : color,
-							opacity : 0.5
+							opacity : has_page ? 1 : 0.4
 						}
 					};
 
@@ -106,9 +106,10 @@ var CompassBatch = Backbone.Model.extend({
 			.empty()
 			.append(
 				_.map(this.get('data').documents, function(d) {
+					d.color = getRandomColor();
 					var doc_handle = $(Mustache.to_html(document_li_tmpl, d))
 						.addClass('cp_white_a')
-						.css('background-color', getRandomColor());
+						.css('background-color', d.color);
 
 					_.each($(doc_handle).find('a'), function(a) {
 						$(a).attr(
@@ -148,6 +149,20 @@ var CompassBatch = Backbone.Model.extend({
 
 		this.loadViz();
 	},
+	setDocumentMarker: function(i, ctx) {
+		var doc = this.get('data').documents[i];
+		var doc_label = $(document.createElement('div'))
+			.html("&nbsp;")
+			.css({
+				"width" : ctx.dims.left,
+				"height" : ctx.dims.height/ctx.dims.max_y,
+				"background-color" : doc.color,
+				"position" : "absolute",
+				"top" : $(ctx.root_el).position().top + (i * (ctx.dims.height/ctx.dims.max_y))
+			});
+
+		$(ctx.root_el).append(doc_label);
+	},
 	loadViz: function() {
 		var ctx = { 
 			root_el : "#cp_topic_visualizer_holder",
@@ -177,6 +192,8 @@ var CompassBatch = Backbone.Model.extend({
 			return _.range(ctx.dims.max_x);
 		});
 
+		var setDocumentMarker = _.bind(this.setDocumentMarker, this);
+
 		var viz = d3.select(ctx.root_el)
 			.append("svg:svg")
 			.attr({
@@ -190,6 +207,7 @@ var CompassBatch = Backbone.Model.extend({
 					.append("g")
 					.attr({
 						"transform" : function(d, i) {
+							setDocumentMarker(i, ctx);
 							return "translate(0, " + (i * (ctx.dims.height/ctx.dims.max_y)) + ")";
 						}
 					});
