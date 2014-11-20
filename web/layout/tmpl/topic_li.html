@@ -3,7 +3,7 @@
 		<span>
 			&nbsp;&nbsp;
 			<input type="checkbox" 
-				onchange="document_viewer.sendToViz(this, '{{ id }}', 'topic');" />
+				onchange="{{ ctx }}.sendToViz(this, '{{ id }}', 'topic');" />
 			&nbsp;&nbsp;
 		</span>
 		{{ #topic }}

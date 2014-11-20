@@ -2,7 +2,7 @@ table tr {
 	vertical-align: top;
 }
 
-a.cp_white_a, a.cp_white_a:hover {
+a.cp_white_a, a.cp_white_a:hover, li.cp_white_a a, li.cp_white_a a:hover {
 	color:#ffffff;
 	text-decoration: none !important;
 }
@@ -310,7 +310,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	font-size:0.6em;
 }
 
-#cp_word_browser ul, #cp_entity_browser ul, #cp_topic_browser ul, #cp_result_unique_documents ul {
+#cp_batch_documents_holder ul, #cp_batch_topics_holder ul, #cp_word_browser ul, #cp_entity_browser ul, #cp_topic_browser ul, #cp_result_unique_documents ul {
 	margin:0;
 	padding:0;
 	overflow-x:auto;
@@ -322,7 +322,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	overflow-y: auto;
 }
 
-#cp_result_unique_documents ul li, #cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li.cp_in_browser {
+#cp_batch_documents_holder ul li, #cp_result_unique_documents ul li, #cp_word_browser ul li, #cp_entity_browser ul li ul li, #cp_entity_browser ul li.cp_in_browser {
 	border:0.1em solid #000;
 	width:auto;
 	margin:0.2em;
@@ -409,10 +409,18 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	display:none;
 }
 
-#cp_entity_browser div.cp_entity_browser_sublist, #cp_topic_browser {
-	height:10em;
+#cp_entity_browser div.cp_entity_browser_sublist, #cp_topic_browser, #cp_batch_topics_holder {
 	overflow-y:hidden;
 	overflow-x:auto;
+}
+
+#cp_entity_browser div.cp_entity_browser_sublist, #cp_topic_browser {
+	height:10em;
+}
+
+#cp_batch_topics_holder {
+	height:24em;
+	margin-bottom:5.5em;
 }
 
 #cp_word_stats, #cp_entity_stats {
@@ -584,4 +592,12 @@ rect.cp_page_window_indicator {
 #cp_legend_total_pages {
 	bottom:0;
 	color:666;
+}
+
+#cp_batch_documents_holder {
+	margin-top:2em;
+}
+
+#cp_topic_visualizer_holder {
+	height:24em;
 }

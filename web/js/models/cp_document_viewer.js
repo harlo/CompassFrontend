@@ -579,7 +579,7 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					var labels = _.map(topic, function(t) {
 						var label = {
 							label : t[1],
-							color: colors[l_count],
+							color: colors[l_count]
 						};
 
 						l_count++;
@@ -588,7 +588,8 @@ var CompassDocumentViewer = Backbone.Model.extend({
 
 					topic = {
 						topic : labels,
-						id: MD5(String(_.pluck(labels, 'label').join('')))
+						id: MD5(String(_.pluck(labels, 'label').join(''))),
+						ctx: "document_viewer"
 					};
 
 					return Mustache.to_html(topic_tmpl, topic);

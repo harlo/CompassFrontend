@@ -12,6 +12,7 @@ function initDocumentBatch() {
 
 function initKeywordSearch() {
 	hideAnnex();
+	$("#cp_notifications_holder").css('display', 'none');
 	doc_search = new CompassKeywordSearch();
 }
 
@@ -20,15 +21,8 @@ function onConfLoaded() {
 
 	window.setTimeout(function() {
 		initKeywordSearch();
+		initDocumentBatch();
 	}, 200);
-
-	if(initDocumentBatch()) {
-		/*
-		if(annex_channel) {
-			annex_channel.get('message_map').push(_.bind());
-		}
-		*/
-	}
 }
 
 (function($) {
