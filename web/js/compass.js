@@ -85,9 +85,11 @@ function showAnnex() {
 	var annex_tmpl = getTemplate("annex_document_tr.html");
 
 	_.each(annex_documents.data.documents, function(doc) {
+		_.extend(doc, { date_added : UV.TRANSLATE_VALUES[0].enc(doc.date_added) });
+
 		$($("#cp_annex_holder").children('table')[0])
 			.append(Mustache.to_html(annex_tmpl, doc));
-	});
+	}, this);
 }
 
 function hideAnnex() {

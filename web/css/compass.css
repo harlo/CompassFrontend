@@ -2,6 +2,22 @@ table tr {
 	vertical-align: top;
 }
 
+#content #cp_page_window_batch {
+	position:absolute;
+	top:3em;
+	left:0;
+	background-color:#fff;
+	border:2px solid #000;
+	width:65%;
+	height: 20em;
+	display:none;
+	overflow-y:auto;
+}
+
+#content #cp_page_window_batch p {
+	cursor:auto;
+}
+
 a.cp_white_a, a.cp_white_a:hover, li.cp_white_a a, li.cp_white_a a:hover {
 	color:#ffffff;
 	text-decoration: none !important;
@@ -207,6 +223,13 @@ div.cp_module {
 	padding-bottom: 5.5em;
 }
 
+#cp_unveil_viewer_holder {
+	margin-top: 10em;
+	position: absolute;
+	width:100%;
+	padding-bottom: 5.5em;
+}
+
 #cp_keyword_results {
 	
 }
@@ -331,7 +354,8 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 }
 
 #cp_result_unique_documents {
-	margin:2em 0;
+	margin:1em 0;
+	height:10em;
 }
 
 #cp_result_unique_documents ul li {
@@ -458,7 +482,7 @@ div.cp_entity_browser_sublist span.cp_entity_global_opts {
 	background-color:#fff;
 	margin:0;
 	top:5.5em;
-	z-index:2;
+	z-index:3;
 	display:inline-flex;
 	height:8.5em;
 	width: 100%;

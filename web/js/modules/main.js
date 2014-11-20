@@ -69,6 +69,13 @@ function displaySearchResults(search_result) {
 			
 			$(request_cluster.find('#cp_result_cluster_ctrl')[0])
 				.click(_.bind(result_browser.requestCluster, result_browser));
+
+			$(request_cluster.find('#cp_result_cluster_clear')[0])
+				.click(function() {
+					$($("#cp_result_unique_documents").find('input'))
+						.prop('checked', false);
+
+				});
 			
 			$("#cp_results_browser").before(request_cluster);
 		}

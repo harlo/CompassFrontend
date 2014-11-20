@@ -1,6 +1,8 @@
 var CompassBatch = Backbone.Model.extend({
 	constructor: function() {
 		Backbone.Model.apply(this, arguments);
+
+		$("#cp_page_window_batch").drags();
 			
 		if(annex_channel) {
 			annex_channel.get('message_map').push(
@@ -11,6 +13,9 @@ var CompassBatch = Backbone.Model.extend({
 		window.reserved_colors = _.union(window.reserved_colors || [], colors);
 		this.set('topic_colors', colors);
 		this.update();
+	},
+	setInPage: function(page) {
+
 	},
 	sendToViz: function(el, hash, type) {
 		console.info($(el).prop('checked'));
@@ -65,6 +70,7 @@ var CompassBatch = Backbone.Model.extend({
 					}
 
 					p = {
+						doc_id : doc._id,
 						index_in_parent : n,
 						topic_comprehension : topic_comprehension,
 						style : {
@@ -87,9 +93,35 @@ var CompassBatch = Backbone.Model.extend({
 					d3.select($(doc_wrapper).children('rect')[t.index_in_parent])
 						.style(t.style)
 						.on({
-							click : function(d, t) {
-								//console.info("CLICK!");
-								// SOMETHING HERE! (launch page?)
+							click : function(p, t) {
+								var page_data;
+
+								try {
+									page_data = doInnerAjax("documents", "post", {
+										media_id : d._id,
+										index_in_parent : p,
+										get_all : true,
+										doc_type : "cp_page_text"
+									}, null, false).data.documents[0].searchable_text;
+								} catch(err) { console.warn(err); }
+
+								if(!page_data) { page_data = "Could not find page..."; }
+								else {
+									page_data = unescape(page_data.escape());
+
+									if($("#cp_page_window_batch").css('display') == 'none') {
+										var m = d3.mouse(this);
+								
+										$("#cp_page_window_batch").css({
+											left: m[0],
+											top:  $(viz[0]).position().top + m[1],
+											display : "block"
+										});
+									}
+
+									$($("#cp_page_window_batch").find('.cp_searchable_text')[0])
+										.html(page_data);
+								}
 							}
 						});
 				} catch(err) {}				
