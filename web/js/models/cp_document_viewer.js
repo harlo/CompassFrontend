@@ -529,7 +529,6 @@ var CompassDocumentViewer = Backbone.Model.extend({
 					if(!viz.selectAll("rect.page_window").empty()) { return; }
 
 					var word_neighbors = getWordNeighbors(i);
-					console.info("CLICK!");
 
 					if(!(_.isEmpty(word_neighbors))) {
 						$(ctx.tooltip)

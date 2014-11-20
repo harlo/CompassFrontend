@@ -85,7 +85,13 @@ var CompassBatch = Backbone.Model.extend({
 			_.each(d.pages, function(t) {
 				try{
 					d3.select($(doc_wrapper).children('rect')[t.index_in_parent])
-						.style(t.style);
+						.style(t.style)
+						.on({
+							click : function(d, t) {
+								//console.info("CLICK!");
+								// SOMETHING HERE! (launch page?)
+							}
+						});
 				} catch(err) {}				
 			});
 			c++;
