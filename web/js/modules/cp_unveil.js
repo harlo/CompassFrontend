@@ -34,7 +34,23 @@ function initKeywordSearch() {
 }
 
 function onCustomTaskRequested(el) {
+	var req = {
+		_id : document_browser.get('data')._id,
+		task_queue : "[" + $("#uv_reindex_custom").val().replace(/\s/g, '').split('\n').join(",") + "]"
+	}
+
+	try {
+		var task_extras = JSON.parse($("#uv_reindex_custom_extras").val());
+		if(task_extras) {
+			req.task_extras = task_extras;
+		}
+	} catch(err) {
+		console.warn(err);
+	}
 	
+	console.info(req);
+	var request = doInnerAjax("reindex", "post", req, null, false);
+
 }
 
 function onReindexRequested(el, task_path) {
@@ -58,7 +74,7 @@ function onReindexRequested(el, task_path) {
 		var result = "Could not reindex."
 
 		json = JSON.parse(json.responseText);		
-		if(json.result == 200) { result = "Document reindexed."; }
+		if(json.result == 200) { result = "Reindex requested."; }
 		
 		$(waiter_span).html(result);
 		window.setTimeout(function() { $(waiter_span).css('display', 'none'); }, 5000);
