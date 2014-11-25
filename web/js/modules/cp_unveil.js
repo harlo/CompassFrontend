@@ -33,6 +33,10 @@ function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
 }
 
+function onCustomTaskRequested(el) {
+	
+}
+
 function onReindexRequested(el, task_path) {
 	var req = { _id : document_browser.get('data')._id };
 	var waiter_span = $($(el).siblings('.uv_waiter')[0]);
