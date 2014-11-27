@@ -33,7 +33,7 @@ a.cp_white_a, a.cp_white_a:hover, li.cp_white_a a, li.cp_white_a a:hover {
     padding-bottom: 50px;
     position: fixed;
     width: 100%;
-    z-index:3;
+    z-index:4;
 }
 
 #header #cp_waiter, #content #cp_document_waiter {
@@ -631,6 +631,10 @@ rect.cp_page_window_indicator {
 	border-left:1px solid #999999;
 }
 
-#uv_reindex_custom, #uv_reindex_custom_extras {
+#uv_pipe_builder {
 	width:100%;
+}
+
+#uv_pipe_builder textarea {
+	width:98%;
 }
