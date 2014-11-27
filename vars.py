@@ -16,24 +16,21 @@ compass_mime_type_tasks = {
 		"PDF.process_metadata.processPDFMetadata", 
 		"PDF.split_pdf_pages.splitPDFPages",
 		"PDF.extract_pdf_text.extractPDFText", 
-		"Text.preprocess_nlp.preprocessNLP",
-		"NLP.page_map.generatePageMap",
-		"NLP.topic_modeler.createGensimObjects",
-		"NLP.ner_entity_extractor.extractNEREntities",
-		"NLP.address_parser.addressParser"
+		"DocumentCloud.get_documentcloud_text.get_documentcloud_ocr"
 	]
 }
 
 authenticated_tasks = [
-	"DocumentCloud.upload_doc.uploadDocument",
-	"DocumentCloud.get_assets.getAssets"
+	"DocumentCloud.get_documentcloud_text.get_documentcloud_ocr"
 ]
 
-text_plain_tasks = deepcopy(authenticated_tasks)
-text_plain_tasks.extend([
-	"NLP.tokenizer.basicTokenizer",
+text_plain_tasks = [
+	"Text.preprocess_nlp.preprocessNLP",
+	"NLP.page_map.generatePageMap",
+	"NLP.topic_modeler.createGensimObjects",
+	"NLP.ner_entity_extractor.extractNEREntities",
 	"NLP.address_parser.addressParser"
-])
+]
 
 compass_asset_tags = {
 	"TOKENS_NLP" : "stanford_core_nlp_tokenizer",
@@ -47,7 +44,9 @@ compass_asset_tags = {
 	"GM_D" : "gensim_dict",
 	"GM_MM" : "gensim_corpus_mm",
 	"GM_LSI" : "gensim_lsi_model",
-	"GM_TOPICS" : "gensim_lsi_topics"
+	"GM_TOPICS" : "gensim_lsi_topics",
+	"D_S" : "doc_split",
+	"AS_PDF" : "as_pdf"
 }
 
 AVAILABLE_CLUSTERS.update({
@@ -63,4 +62,4 @@ MIME_TYPE_TASKS["text/plain"].extend(text_plain_tasks)
 
 ASSET_TAGS.update(compass_asset_tags)
 
-MIME_TYPE_TASK_REQUIREMENTS.extend([{ tp : { "auth_string" : "documentcloud_auth_str"}} for tp in authenticated_tasks])
+MIME_TYPE_TASK_REQUIREMENTS.extend([{ tp : { "auth_string" : "documentcloud_auth"}} for tp in authenticated_tasks])

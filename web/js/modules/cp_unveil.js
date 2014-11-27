@@ -33,52 +33,8 @@ function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
 }
 
-function onCustomTaskRequested(el) {
-	var req = {
-		_id : document_browser.get('data')._id,
-		task_queue : "[" + $("#uv_reindex_custom").val().replace(/\s/g, '').split('\n').join(",") + "]"
-	}
-
-	try {
-		var task_extras = JSON.parse($("#uv_reindex_custom_extras").val());
-		if(task_extras) {
-			req.task_extras = task_extras;
-		}
-	} catch(err) {
-		console.warn(err);
-	}
+function initTaskPipe() {
 	
-	console.info(req);
-	var request = doInnerAjax("reindex", "post", req, null, false);
-
-}
-
-function onReindexRequested(el, task_path) {
-	var req = { _id : document_browser.get('data')._id };
-	var waiter_span = $($(el).siblings('.uv_waiter')[0]);
-	
-	$(waiter_span)
-		.html("(indexing...)")
-		.css('display', 'block');
-	
-	var extra_data;
-	try {
-		extra_data = _.find(UV.MIME_TYPE_TASK_REQUIREMENTS, function(task_req) {
-			return _.contains(_.keys(task_req), task_path);
-		});
-		_.extend(req, extra_data[task_path]);
-	} catch(err) { console.info(err); }
-	
-	console.info(req);
-	document_browser.reindex(function(json) {
-		var result = "Could not reindex."
-
-		json = JSON.parse(json.responseText);		
-		if(json.result == 200) { result = "Reindex requested."; }
-		
-		$(waiter_span).html(result);
-		window.setTimeout(function() { $(waiter_span).css('display', 'none'); }, 5000);
-	}, req, task_path);
 }
 
 function onAssetRequested(file_name) {
@@ -114,6 +70,7 @@ function onAssetRequested(file_name) {
 		if(initDocumentBrowser()) {
 			content_sammy.run();
 			initDocumentViewer();
+			initTaskPipe();
 			initAnnexChannel();
 		} else {
 			failOut($("#content"), "Sorry, could not find this document.");

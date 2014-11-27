@@ -30,6 +30,7 @@ class CompassFrontend(UnveillanceFrontend):
 			'/web/js/lib/d3.min.js',
 			'/web/js/lib/md5.js',
 			'/web/js/viz/uv_viz.js',
+			'/web/js/models/unveillance_task_pipe.js',
 			'/web/js/models/cp_document.js',
 			'/web/js/models/cp_batch.js',
 			'/web/js/models/cp_notifier.js',

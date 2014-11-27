@@ -2,6 +2,14 @@
 	<h4>Search results for <span class="cp_label">{{ search_terms }}</span></h4>
 	<h4><span class="cp_label">{{ mention_count }}</span> matches found in <span class="cp_label">{{ doc_count }} document(s)</span></h4>
 
+	<div id="cp_results_ctrl">
+		<p>
+			<a class="uv_button" id="cp_result_cluster_clear">Uncheck All</a>
+			<a class="uv_button" id="cp_result_cluster_pipe" onclick="toggleElement('#cp_pipe_builder')">Task Pipe</a>
+		</p>
+		<div id="cp_pipe_builder"></div>
+	</div>
+
 	<div id="cp_results_browser">
 		<div id="cp_results_browser_pagination"></div>
 		<ul></ul>

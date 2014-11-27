@@ -67,10 +67,12 @@ function displaySearchResults(search_result) {
 			var request_cluster = $(Mustache.to_html(
 				getTemplate("result_cluster.html"), result_browser.get('unique_documents')));
 			
-			$(request_cluster.find('#cp_result_cluster_ctrl')[0])
-				.click(_.bind(result_browser.requestCluster, result_browser));
+			$($('#cp_results_ctrl').children('p')[0])
+				.append(document.createElement('a'))
+					.attr('id', 'cp_result_cluster_ctrl')
+					.click(_.bind(result_browser.requestCluster, result_browser));
 
-			$(request_cluster.find('#cp_result_cluster_clear')[0])
+			$('#cp_result_cluster_clear')
 				.click(function() {
 					$($("#cp_result_unique_documents").find('input'))
 						.prop('checked', false);
@@ -78,7 +80,19 @@ function displaySearchResults(search_result) {
 				});
 			
 			$("#cp_results_browser").before(request_cluster);
+			//onTaskPipeInited = _.bind(initTaskPipe, $($("#cp_result_unique_documents").find('input')));
+		} else {
+			$('#cp_result_cluster_clear')
+				.click(function() {
+					$($("#cp_results_browser").find('input'))
+						.prop('checked', false);
+
+				});
 		}
+
+		$('#cp_pipe_builder')
+			.html(getTemplate("pipe_builder.html"))
+			.css('display', 'none');
 	}
 	
 	insertTemplate("results_match.html", result_data, 

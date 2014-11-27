@@ -630,3 +630,7 @@ rect.cp_page_window_indicator {
 #cp_topic_visualizer_holder svg {
 	border-left:1px solid #999999;
 }
+
+#uv_reindex_custom, #uv_reindex_custom_extras {
+	width:100%;
+}
