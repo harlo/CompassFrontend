@@ -631,10 +631,10 @@ rect.cp_page_window_indicator {
 	border-left:1px solid #999999;
 }
 
-#uv_pipe_builder {
+#cp_pipe_builder {
 	width:100%;
 }
 
-#uv_pipe_builder textarea {
+#cp_pipe_builder textarea {
 	width:98%;
 }
