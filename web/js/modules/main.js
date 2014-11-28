@@ -96,11 +96,6 @@ function displaySearchResults(search_result) {
 		if(result_browser.has('search_terms') && !(_.isEmpty(result_browser.get('search_terms')))) {
 			var request_cluster = $(Mustache.to_html(
 				getTemplate("result_cluster.html"), result_browser.get('unique_documents')));
-			
-			$($('#cp_results_ctrl').children('p')[0])
-				.append(document.createElement('a'))
-					.attr('id', 'cp_result_cluster_ctrl')
-					.click(_.bind(result_browser.requestCluster, result_browser));
 
 			$('#cp_result_cluster_clear')
 				.click(function() {
@@ -108,8 +103,14 @@ function displaySearchResults(search_result) {
 						.prop('checked', false);
 
 				});
+
+			var batch_ctrl = $(document.createElement('a'))
+				.addClass('uv_button')
+				.html("Batch Documents")
+				.click(_.bind(result_browser.requestCluster, result_browser));
 			
 			$("#cp_results_browser").before(request_cluster);
+			$($("#cp_results_ctrl").children('p')[0]).append(batch_ctrl);
 		} else {
 			$('#cp_result_cluster_clear')
 				.click(function() {
