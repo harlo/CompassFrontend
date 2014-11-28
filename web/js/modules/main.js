@@ -1,7 +1,37 @@
-var doc_search, result_browser, search_terms;
+var doc_search, result_browser, search_terms, task_pipe;
 
 function onSearchTermsDetected(search_terms) {
 	window.search_terms = search_terms.substr(1, search_terms.length - 2);
+}
+
+function buildMultiDocPipe() {
+	var el = search_terms ? $("#cp_result_unique_documents") : $("#cp_results_browser");
+
+	var with_docs = _.map($(el).find('input:checked'), function(i) {
+		var doc_id = $($(i).parent('li')[0]).attr('id')
+			.replace("cp_in_batch_", "");
+				
+		return _.findWhere(result_browser.get(search_terms ? 'unique_documents' : 'data'),
+			{ _id : doc_id });
+	});
+
+	if(!with_docs || _.size(with_docs) == 0) {
+		return;
+	}
+
+	if(annex_channel) {
+		_.each(with_docs, function(d) {
+			annex_channel.get('message_map').push(
+				_.bind(function(message) {
+					if(this._id == message.doc_id) {
+						sendToNotificationTray(message);
+					}
+				}, d));
+		});
+	}
+
+	task_pipe.buildTaskPipeFrom($("#uv_reindex_custom"), with_docs);
+
 }
 
 function initKeywordSearch() {
@@ -80,7 +110,6 @@ function displaySearchResults(search_result) {
 				});
 			
 			$("#cp_results_browser").before(request_cluster);
-			//onTaskPipeInited = _.bind(initTaskPipe, $($("#cp_result_unique_documents").find('input')));
 		} else {
 			$('#cp_result_cluster_clear')
 				.click(function() {
@@ -93,6 +122,9 @@ function displaySearchResults(search_result) {
 		$('#cp_pipe_builder')
 			.html(getTemplate("pipe_builder.html"))
 			.css('display', 'none');
+
+		task_pipe = new UnveillanceTaskPipe({'task_extras' : $("#uv_reindex_custom_extras")});
+		window.onTaskPipeRequested = _.bind(buildMultiDocPipe, this);
 	}
 	
 	insertTemplate("results_match.html", result_data, 
