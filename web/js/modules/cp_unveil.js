@@ -33,10 +33,6 @@ function initKeywordSearch() {
 	doc_search = new CompassKeywordSearch();
 }
 
-function initTaskPipe() {
-	
-}
-
 function onAssetRequested(file_name) {
 	$("#uv_document_asset_viewer").append(
 		$(document.createElement('textarea'))
@@ -70,7 +66,6 @@ function onAssetRequested(file_name) {
 		if(initDocumentBrowser()) {
 			content_sammy.run();
 			initDocumentViewer();
-			initTaskPipe();
 			initAnnexChannel();
 		} else {
 			failOut($("#content"), "Sorry, could not find this document.");
