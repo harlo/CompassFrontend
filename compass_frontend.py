@@ -86,6 +86,8 @@ class CompassFrontend(UnveillanceFrontend):
 				'/web/js/modules/cp_unveil.js'
 			]
 		})
+
+		self.restricted_routes_by_status[0].extend(['reindex'])
 		
 		with open(os.path.join(COMPASS_CONF_ROOT, "compass.init.json"), 'rb') as IV:
 			init_vars = json.loads(IV.read())['web']
