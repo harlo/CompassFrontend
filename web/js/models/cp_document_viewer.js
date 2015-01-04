@@ -27,13 +27,13 @@ var CompassDocumentViewer = Backbone.Model.extend({
 		}
 	},
 	addGlobalKeyword: function(entity) {
-		if(!current_user) { return; }
+		if(!window.current_user) { return; }
 
 		var global_keyword = new CompassGlobalKeyword({ label : entity });
 		this.onKeywordsEdited();
 	},
 	removeGlobalKeyword: function(entity) {
-		if(!current_user) { return; }
+		if(!window.current_user) { return; }
 
 		var global_keyword = new CompassGlobalKeyword({ label : entity });
 		global_keyword.remove();

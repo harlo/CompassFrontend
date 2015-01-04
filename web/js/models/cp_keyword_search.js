@@ -2,7 +2,7 @@ var CompassKeywordSearch = Backbone.Model.extend({
 	constructor: function() {
 		Backbone.Model.apply(this, arguments);
 
-		if(current_user) {
+		if(window.current_user) {
 			var tags;
 			try {
 				tags = current_user.getDirective('tags', false).tags;
