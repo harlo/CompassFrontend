@@ -6,3 +6,4 @@
 conf/
 
 test.*
+uv_env/
