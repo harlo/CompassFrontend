@@ -10,6 +10,9 @@ else
 	WITH_CONFIG=$1
 fi
 
+virtualenv venv
+source venv/bin/activate
+
 cd lib/Frontend
 ./setup.sh $WITH_CONFIG
 
@@ -24,3 +27,5 @@ chmod 0400 conf/compass.init.json
 chmod 0400 lib/Frontend/conf/unveillance.secrets.json
 chmod 0400 lib/Frontend/conf/local.config.yaml
 python compass_frontend.py -firstuse
+
+deactivate venv
